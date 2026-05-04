@@ -1,24 +1,39 @@
 import React, { useState } from 'react';
 import { useSupabaseAuth } from '../hooks/useSupabaseAuth';
-import { LogIn, UserPlus, Mail, Lock, AlertCircle } from 'lucide-react';
+import { LogIn, UserPlus, Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react';
 
 export const Auth: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const { signIn, signUp, loading, error } = useSupabaseAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSuccessMessage('');
     
     const result = isSignUp 
       ? await signUp(email, password)
       : await signIn(email, password);
       
     if (result.success) {
-      // Login/signup successful - component will re-render
-      console.log('Authentication successful');
+      if (isSignUp) {
+        setSuccessMessage('Conta criada com sucesso! Verifique seu email para confirmar o cadastro e depois faça login.');
+        // Limpar campos do formulário
+        setEmail('');
+        setPassword('');
+        setFullName('');
+        // Mudar para tela de login após 5 segundos
+        setTimeout(() => {
+          setIsSignUp(false);
+          setSuccessMessage('');
+        }, 5000);
+      } else {
+        // Login successful - component will re-render automatically
+        console.log('Login successful');
+      }
     }
   };
 
@@ -46,6 +61,15 @@ export const Auth: React.FC = () => {
               <div className="flex items-center">
                 <AlertCircle className="w-5 h-5 text-red-600 mr-2" />
                 <span className="text-red-800 text-sm">{error}</span>
+              </div>
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="flex items-center">
+                <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
+                <span className="text-green-800 text-sm">{successMessage}</span>
               </div>
             </div>
           )}

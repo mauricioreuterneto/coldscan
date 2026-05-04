@@ -60,9 +60,10 @@ export function useSupabaseAuth() {
     setError(null);
     
     try {
-      const { user } = await supabaseService.signUp(email, password);
-      setUser(user);
-      return { success: true };
+      const result = await supabaseService.signUp(email, password);
+      // Não fazer login automático após cadastro
+      // setUser(result.user);
+      return { success: true, requiresEmailConfirmation: true };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao criar conta';
       setError(errorMessage);
