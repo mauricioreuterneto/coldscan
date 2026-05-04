@@ -6,6 +6,7 @@ import { Auth } from './components/Auth';
 import { useSupabaseAuth } from './hooks/useSupabaseAuth';
 import { useSupabaseFridgeModel } from './hooks/useSupabaseFridgeModel';
 import { useSupabaseProducts } from './hooks/useSupabaseProducts';
+import { getFridgeModels } from './utils';
 import { FridgeModel, Product, Compartment } from './types';
 import { Plus, Search, AlertCircle, Package, Settings, Home, LogOut } from 'lucide-react';
 import { getExpiredProducts, getProductsExpiringSoon, getLowStockProducts } from './utils';
@@ -19,17 +20,18 @@ function App() {
   const [currentPage, setCurrentPage] = useState<Page>('setup');
   const [showProductForm, setShowProductForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
-
-  // Se não estiver autenticado, mostrar tela de login
-  if (!user) {
-    return <Auth />;
-  }
+  const availableModels = getFridgeModels();
 
   React.useEffect(() => {
     if (fridgeModel) {
       setCurrentPage('home');
     }
   }, [fridgeModel]);
+
+  // Se não estiver autenticado, mostrar tela de login
+  if (!user) {
+    return <Auth />;
+  }
 
   const handleModelSelect = async (model: FridgeModel) => {
     await saveFridgeModel(model);
@@ -189,8 +191,8 @@ function App() {
               <div key={product.id} className="p-4 hover:bg-gray-50 cursor-pointer" onClick={() => handleEditProduct(product)}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    {product.imageUrl && (
-                      <img src={product.imageUrl} alt={product.name} className="w-12 h-12 rounded-lg object-cover" />
+                    {product.image_url && (
+                      <img src={product.image_url} alt={product.name} className="w-12 h-12 rounded-lg object-cover" />
                     )}
                     <div>
                       <h3 className="font-medium">{product.name}</h3>
@@ -199,9 +201,9 @@ function App() {
                   </div>
                   <div className="text-right">
                     <p className="font-medium">{product.quantity} {product.unit}</p>
-                    {product.expiryDate && (
+                    {product.expiry_date && (
                       <p className="text-sm text-gray-500">
-                        Validade: {product.expiryDate.toLocaleDateString('pt-BR')}
+                        Validade: {new Date(product.expiry_date).toLocaleDateString('pt-BR')}
                       </p>
                     )}
                   </div>
@@ -280,8 +282,8 @@ function App() {
   );
 
   if (!fridgeModel) {
-    return <FridgeModelSelector 
-      availableModels={availableModels} 
+    return <FridgeModelSelector
+      availableModels={availableModels}
       onSelectModel={handleModelSelect}
     />;
   }
