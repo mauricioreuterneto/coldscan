@@ -24,7 +24,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState<Page>('setup');
   const [showProductForm, setShowProductForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
-  const availableModels = getFridgeModels();
+  // Não usar mais modelos hardcoded - apenas busca online
 
   React.useEffect(() => {
     if (fridgeModel) {
@@ -221,7 +221,6 @@ function App() {
 
   if (!fridgeModel) {
     return <FridgeModelSelector
-      availableModels={availableModels}
       onSelectModel={handleModelSelect}
     />;
   }

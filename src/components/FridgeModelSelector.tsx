@@ -4,7 +4,7 @@ import { Camera, Search, Loader2 } from 'lucide-react';
 import { apiService, FridgeModelInfo } from '../services/apiService';
 
 interface FridgeModelSelectorProps {
-  availableModels: FridgeModel[];
+  availableModels?: FridgeModel[];
   onSelectModel: (model: FridgeModel) => void;
   selectedModel?: FridgeModel | null;
 }
@@ -19,10 +19,10 @@ export const FridgeModelSelector: React.FC<FridgeModelSelectorProps> = ({
   const [searchResults, setSearchResults] = useState<FridgeModelInfo[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  const filteredModels = availableModels.filter(model =>
+  const filteredModels = availableModels?.filter(model =>
     model.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
     model.model.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) || [];
 
   // Buscar modelos online quando o usuário digitar
   useEffect(() => {
@@ -82,36 +82,6 @@ export const FridgeModelSelector: React.FC<FridgeModelSelectorProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Modelos locais */}
-          {filteredModels.map((model) => (
-            <div
-              key={model.id}
-              onClick={() => onSelectModel(model)}
-              className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
-                selectedModel?.id === model.id
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <div className="aspect-video bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
-                <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-lg">{model.brand}</h3>
-              <p className="text-gray-600">{model.model}</p>
-              <div className="mt-2 flex justify-between text-sm text-gray-500">
-                <span>{model.capacity}L</span>
-                <span>{model.year}</span>
-              </div>
-              <div className="mt-2">
-                <div className="text-xs text-gray-500">
-                  {model.compartments.length} compartimentos
-                </div>
-              </div>
-            </div>
-          ))}
-
           {/* Resultados da busca online */}
           {searchResults.map((model) => (
             <div
@@ -205,14 +175,17 @@ export const FridgeModelSelector: React.FC<FridgeModelSelectorProps> = ({
           )}
         </div>
 
-        {filteredModels.length === 0 && searchResults.length === 0 && !isSearching && (
+        {searchResults.length === 0 && !isSearching && (
           <div className="text-center py-8">
             <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
               <Search className="w-8 h-8 text-gray-400" />
             </div>
             <p className="text-gray-500">
-              {searchTerm.length > 2 ? 'Nenhum modelo encontrado na busca online' : 'Nenhum modelo encontrado'}
+              {searchTerm.length > 2 ? 'Nenhum modelo encontrado. Tente buscar por "Samsung", "Brastemp", "LG", etc.' : 'Digite pelo menos 3 caracteres para buscar modelos de geladeira'}
             </p>
+            <div className="mt-4 text-sm text-gray-400">
+              <p>Exemplos: "Samsung", "Brastemp", "Consul", "Electrolux"</p>
+            </div>
           </div>
         )}
 

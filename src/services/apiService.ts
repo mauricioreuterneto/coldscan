@@ -226,59 +226,30 @@ class ApiService {
   // Dados fallback quando APIs não estão disponíveis
   private getFallbackFridgeModels(query: string): FridgeModelInfo[] {
     const queryLower = query.toLowerCase();
-    const allModels: FridgeModelInfo[] = [
-      {
-        id: '1',
-        brand: 'Brastemp',
-        model: 'BRE80AK',
-        year: 2023,
-        capacity: 375,
-        energy_efficiency: 'A',
-        dimensions: { height: 185, width: 60, depth: 75 },
-        features: ['Frost Free', 'Gelo na Porta', 'Inverter']
-      },
-      {
-        id: '2',
-        brand: 'Consul',
-        model: 'CRM40NB',
-        year: 2023,
-        capacity: 340,
-        energy_efficiency: 'A+',
-        dimensions: { height: 180, width: 60, depth: 72 },
-        features: ['Frost Free', 'Turbo Congelamento']
-      },
-      {
-        id: '3',
-        brand: 'Samsung',
-        model: 'RB38T6761S9',
-        year: 2023,
-        capacity: 408,
-        energy_efficiency: 'A',
-        dimensions: { height: 185, width: 70, depth: 78 },
-        features: ['Smart', 'Frost Free', 'Água na Porta', 'Inverter']
-      },
-      {
-        id: '4',
-        brand: 'LG',
-        model: 'GC-B509SLUV',
-        year: 2023,
-        capacity: 425,
-        energy_efficiency: 'A+',
-        dimensions: { height: 190, width: 70, depth: 75 },
-        features: ['Smart', 'Frost Free', 'Gelo na Porta', 'Door-in-Door']
-      },
-      {
-        id: '5',
-        brand: 'Electrolux',
-        model: 'DF53X',
-        year: 2023,
-        capacity: 460,
-        energy_efficiency: 'A',
-        dimensions: { height: 195, width: 75, depth: 80 },
-        features: ['Frost Free', 'Turbo Congelamento', 'Multi Air Flow']
-      }
+    
+    // Criar modelos dinâmicos baseados na busca
+    const brands = ['Brastemp', 'Consul', 'Samsung', 'LG', 'Electrolux', 'Panasonic'];
+    const models = [
+      { name: 'BRE80AK', capacity: 375, brand: 'Brastemp' },
+      { name: 'CRM40NB', capacity: 340, brand: 'Consul' },
+      { name: 'RT38', capacity: 380, brand: 'Samsung' },
+      { name: 'GBD458', capacity: 458, brand: 'LG' },
+      { name: 'DF48', capacity: 480, brand: 'Electrolux' },
+      { name: 'W420', capacity: 420, brand: 'Panasonic' }
     ];
 
+    const allModels: FridgeModelInfo[] = models.map((model, index) => ({
+      id: `fallback-${index}`,
+      brand: model.brand,
+      model: model.name,
+      year: 2023,
+      capacity: model.capacity,
+      energy_efficiency: ['A', 'A+', 'B'][index % 3],
+      dimensions: { height: 180 + index * 5, width: 60, depth: 70 + index * 2 },
+      features: ['Frost Free', 'Inverter', 'Smart'].slice(0, index % 3 + 1)
+    }));
+
+    // Filtrar modelos baseados na busca
     return allModels.filter(model => 
       model.brand.toLowerCase().includes(queryLower) ||
       model.model.toLowerCase().includes(queryLower)
