@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabaseService } from '../lib/supabase';
 import { useSupabaseAuth } from './useSupabaseAuth';
 
@@ -21,7 +21,7 @@ export function useSupabaseFridgeModel() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const loadFridgeModel = async () => {
+  const loadFridgeModel = useCallback(async () => {
     if (!user) return;
     
     setLoading(true);
@@ -36,13 +36,13 @@ export function useSupabaseFridgeModel() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (user) {
       loadFridgeModel();
     }
-  }, [user]);
+  }, [user, loadFridgeModel]);
 
   const saveFridgeModel = async (modelData: Omit<FridgeModel, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     if (!user) throw new Error('Usuário não autenticado');
