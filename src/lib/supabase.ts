@@ -125,9 +125,12 @@ export const supabaseService = {
       .from('fridge_models')
       .select('*')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle(); // Usar maybeSingle() em vez de single() para evitar erro 406
     
-    if (error && error.code !== 'PGRST116') throw error;
+    if (error && error.code !== 'PGRST116') {
+      console.error('Erro ao buscar modelo de geladeira:', error);
+      throw error;
+    }
     return data;
   },
 

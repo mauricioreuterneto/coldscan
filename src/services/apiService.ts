@@ -39,6 +39,15 @@ class ApiService {
   private readonly SERPER_API_KEY = process.env.REACT_APP_SERPER_API_KEY;
   private readonly SERPER_URL = 'https://google.serper.dev/search';
 
+  constructor() {
+    // Debug: Verificar variáveis de ambiente no construtor
+    console.log('=== VERIFICAÇÃO DE VARIÁVEIS DE AMBIENTE ===');
+    console.log('REACT_APP_SERPER_API_KEY:', process.env.REACT_APP_SERPER_API_KEY ? '✅ Configurada' : '❌ Não configurada');
+    console.log('REACT_APP_GOOGLE_SEARCH_API_KEY:', process.env.REACT_APP_GOOGLE_SEARCH_API_KEY ? '✅ Configurada' : '❌ Não configurada');
+    console.log('Valor SERPER_API_KEY:', this.SERPER_API_KEY);
+    console.log('=====================================');
+  }
+
   // Buscar informações de produto por código de barras
   async getProductByBarcode(barcode: string): Promise<ProductInfo | null> {
     try {
@@ -78,8 +87,13 @@ class ApiService {
   // Buscar modelos de geladeira por marca ou modelo
   async searchFridgeModels(query: string): Promise<FridgeModelInfo[]> {
     try {
+      // Debug: Verificar se as APIs estão configuradas
+      console.log('API Keys - Serper:', this.SERPER_API_KEY ? 'Configurada' : 'Não configurada');
+      console.log('API Keys - Google:', this.GOOGLE_SEARCH_API_KEY ? 'Configurada' : 'Não configurada');
+      
       // Tentar usar Serper API (gratuita e mais fácil)
       if (this.SERPER_API_KEY) {
+        console.log('Usando Serper API para busca');
         return this.searchWithSerper(query);
       }
 
