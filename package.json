@@ -2,6 +2,7 @@
   "name": "fridge-scanner",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://mauricioreuterneto.github.io/coldscan",
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
