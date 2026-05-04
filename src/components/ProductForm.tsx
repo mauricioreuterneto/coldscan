@@ -8,6 +8,7 @@ interface ProductFormProps {
   onSubmit: (product: Omit<Product, 'id'>) => void;
   onCancel: () => void;
   initialProduct?: Partial<Product>;
+  selectedApplianceId?: string;
 }
 
 export const ProductForm: React.FC<ProductFormProps> = ({
@@ -45,6 +46,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
       expiryDate: formData.expiryDate ? new Date(formData.expiryDate) : undefined,
       purchaseDate: formData.purchaseDate ? new Date(formData.purchaseDate) : undefined,
       imageUrl: imagePreview || undefined,
+      location: {
+        applianceId: initialProduct?.location?.applianceId || 'default-appliance',
+        compartmentId: formData.location.compartmentId,
+        shelfId: formData.location.shelfId,
+      },
     };
 
     onSubmit(product);

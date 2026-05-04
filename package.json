@@ -20,6 +20,7 @@
     "date-fns": "^4.1.0",
     "html5-qrcode": "^2.3.8",
     "lucide-react": "^1.14.0",
+    "node-fetch": "^3.3.2",
     "react": "^19.2.5",
     "react-camera-pro": "^1.4.0",
     "react-dom": "^19.2.5",

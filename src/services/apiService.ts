@@ -1,4 +1,5 @@
 // Serviço para integração com APIs externas
+import { FridgeModel, Compartment, FridgeModelInfo } from '../types';
 
 export interface ProductInfo {
   name: string;
@@ -16,35 +17,104 @@ export interface ProductInfo {
   };
 }
 
-export interface FridgeModelInfo {
-  id: string;
-  brand: string;
-  model: string;
-  year?: number;
-  capacity: number;
-  image_url?: string;
-  energy_efficiency?: string;
-  dimensions?: {
-    height: number;
-    width: number;
-    depth: number;
+// Importar FridgeModelInfo do types para evitar duplicação
+
+// Função para converter FridgeModelInfo para FridgeModel
+export function convertToFridgeModel(info: FridgeModelInfo): FridgeModel {
+  return {
+    id: info.id,
+    brand: info.brand,
+    model: info.model,
+    year: info.year || new Date().getFullYear(),
+    capacity: info.capacity,
+    imageUrl: info.image_url,
+    compartments: generateDefaultCompartments(info.capacity)
   };
-  features?: string[];
+}
+
+// Função avançada para conversão com layout inteligente
+export async function convertToFridgeModelWithLayout(info: FridgeModelInfo): Promise<FridgeModel> {
+  const { fridgeLayoutService } = await import('./fridgeLayoutService');
+  
+  try {
+    // Tenta encontrar layout específico para este modelo
+    const layoutResults = await fridgeLayoutService.findBestLayout(info);
+    
+    if (layoutResults.length > 0 && layoutResults[0].confidence > 0.7) {
+      // Usa layout de alta confiança
+      return {
+        id: info.id,
+        brand: info.brand,
+        model: info.model,
+        year: info.year || new Date().getFullYear(),
+        capacity: info.capacity,
+        imageUrl: info.image_url,
+        compartments: layoutResults[0].template.compartments.map(comp => ({
+          ...comp,
+          capacity: Math.floor(info.capacity * (comp.capacity / 100)) // Ajusta capacidade proporcionalmente
+        }))
+      };
+    }
+  } catch (error) {
+    console.warn('Falha ao buscar layout inteligente, usando adaptativo');
+  }
+  
+  // Fallback para layout adaptativo
+  const adaptiveLayout = fridgeLayoutService.generateAdaptiveLayout(info);
+  
+  return {
+    id: info.id,
+    brand: info.brand,
+    model: info.model,
+    year: info.year || new Date().getFullYear(),
+    capacity: info.capacity,
+    imageUrl: info.image_url,
+    compartments: adaptiveLayout
+  };
+}
+
+// Função para gerar compartimentos padrão baseados na capacidade
+function generateDefaultCompartments(capacity: number): Compartment[] {
+  return [
+    {
+      id: 'fridge-main',
+      name: 'Geladeira Principal',
+      type: 'fridge',
+      capacity: Math.floor(capacity * 0.7),
+      position: { x: 0, y: 0, width: 100, height: 70 },
+      shelves: [
+        { id: 'shelf-1', name: 'Prateleira Superior', position: 1, capacity: Math.floor(capacity * 0.3) },
+        { id: 'shelf-2', name: 'Prateleira Meio', position: 2, capacity: Math.floor(capacity * 0.3) },
+        { id: 'shelf-3', name: 'Prateleira Inferior', position: 3, capacity: Math.floor(capacity * 0.1) }
+      ]
+    },
+    {
+      id: 'freezer-main',
+      name: 'Freezer',
+      type: 'freezer',
+      capacity: Math.floor(capacity * 0.3),
+      position: { x: 0, y: 70, width: 100, height: 30 },
+      shelves: [
+        { id: 'freezer-shelf-1', name: 'Prateleira Freezer', position: 1, capacity: Math.floor(capacity * 0.3) }
+      ]
+    }
+  ];
 }
 
 class ApiService {
   private readonly OPEN_FOOD_FACTS_URL = 'https://world.openfoodfacts.org/api/v2';
   private readonly GOOGLE_SEARCH_API_KEY = process.env.REACT_APP_GOOGLE_SEARCH_API_KEY;
   private readonly GOOGLE_SEARCH_URL = 'https://www.googleapis.com/customsearch/v1';
-  private readonly SERPER_API_KEY = process.env.REACT_APP_SERPER_API_KEY;
   private readonly SERPER_URL = 'https://google.serper.dev/search';
+  
+  private readonly SERPER_API_KEY = process.env.REACT_APP_SERPER_API_KEY;
 
   constructor() {
     // Debug: Verificar variáveis de ambiente no construtor
     console.log('=== VERIFICAÇÃO DE VARIÁVEIS DE AMBIENTE ===');
     console.log('REACT_APP_SERPER_API_KEY:', process.env.REACT_APP_SERPER_API_KEY ? '✅ Configurada' : '❌ Não configurada');
     console.log('REACT_APP_GOOGLE_SEARCH_API_KEY:', process.env.REACT_APP_GOOGLE_SEARCH_API_KEY ? '✅ Configurada' : '❌ Não configurada');
-    console.log('Valor SERPER_API_KEY:', this.SERPER_API_KEY);
+    console.log('Valor SERPER_API_KEY:', this.SERPER_API_KEY ? '✅ Carregada' : '❌ Não carregada');
     console.log('=====================================');
   }
 
