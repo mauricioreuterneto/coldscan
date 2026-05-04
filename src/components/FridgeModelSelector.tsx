@@ -19,11 +19,7 @@ export const FridgeModelSelector: React.FC<FridgeModelSelectorProps> = ({
   const [searchResults, setSearchResults] = useState<FridgeModelInfo[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  const filteredModels = availableModels?.filter(model =>
-    model.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    model.model.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
-
+  
   // Buscar modelos online quando o usuário digitar
   useEffect(() => {
     if (searchTerm.length > 2) {

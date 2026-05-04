@@ -228,7 +228,6 @@ class ApiService {
     const queryLower = query.toLowerCase();
     
     // Criar modelos dinâmicos baseados na busca
-    const brands = ['Brastemp', 'Consul', 'Samsung', 'LG', 'Electrolux', 'Panasonic'];
     const models = [
       { name: 'BRE80AK', capacity: 375, brand: 'Brastemp' },
       { name: 'CRM40NB', capacity: 340, brand: 'Consul' },

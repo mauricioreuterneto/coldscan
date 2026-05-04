@@ -10,7 +10,6 @@ import { Analytics } from './components/Analytics';
 import { useSupabaseAuth } from './hooks/useSupabaseAuth';
 import { useSupabaseFridgeModel } from './hooks/useSupabaseFridgeModel';
 import { useSupabaseProducts } from './hooks/useSupabaseProducts';
-import { getFridgeModels } from './utils';
 import { FridgeModel, Product, Compartment } from './types';
 import { Plus } from 'lucide-react';
 import { getExpiredProducts, getProductsExpiringSoon } from './utils';
