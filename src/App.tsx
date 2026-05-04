@@ -12,8 +12,8 @@ import { useSupabaseFridgeModel } from './hooks/useSupabaseFridgeModel';
 import { useSupabaseProducts } from './hooks/useSupabaseProducts';
 import { getFridgeModels } from './utils';
 import { FridgeModel, Product, Compartment } from './types';
-import { Plus, Search, AlertCircle, Package, Settings, Home, LogOut } from 'lucide-react';
-import { getExpiredProducts, getProductsExpiringSoon, getLowStockProducts } from './utils';
+import { Plus } from 'lucide-react';
+import { getExpiredProducts, getProductsExpiringSoon } from './utils';
 
 type Page = 'setup' | 'home' | 'fridge' | 'products' | 'shopping' | 'analytics' | 'settings';
 
@@ -75,7 +75,6 @@ function App() {
 
   const expiredProducts = getExpiredProducts(products);
   const expiringSoonProducts = getProductsExpiringSoon(products);
-  const lowStockProducts = getLowStockProducts(products);
 
   const renderCurrentPage = () => {
     switch (currentPage) {

@@ -1,18 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { Product, FridgeModel } from '../types';
 import { 
-  BarChart3, 
-  TrendingUp, 
   TrendingDown, 
   Calendar, 
   Package, 
   AlertTriangle,
   DollarSign,
   ShoppingCart,
-  PieChart,
   Activity,
-  Download,
-  Filter
+  Download
 } from 'lucide-react';
 import { getExpiredProducts, getProductsExpiringSoon, getLowStockProducts, getCategories, getDaysUntilExpiry } from '../utils';
 
@@ -25,7 +21,6 @@ export const Analytics: React.FC<AnalyticsProps> = ({
   products,
   fridgeModel,
 }) => {
-  const [timeRange, setTimeRange] = useState('30'); // dias
   const [selectedMetric, setSelectedMetric] = useState('overview');
 
   const expiredProducts = getExpiredProducts(products);

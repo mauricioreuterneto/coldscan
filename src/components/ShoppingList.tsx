@@ -3,16 +3,13 @@ import { Product } from '../types';
 import { 
   ShoppingCart, 
   Plus, 
-  Minus, 
   Trash2, 
   Check, 
   X, 
   AlertTriangle,
   Calendar,
-  TrendingUp,
   Package,
-  Search,
-  Filter
+  Search
 } from 'lucide-react';
 import { getExpiredProducts, getProductsExpiringSoon, getLowStockProducts, getCategories } from '../utils';
 
@@ -134,7 +131,7 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({
     if (shoppingItems.length === 0 && suggestions.length > 0) {
       setShoppingItems(suggestions);
     }
-  }, [suggestions]);
+  }, [suggestions, shoppingItems.length]);
 
   const filteredItems = useMemo(() => {
     let filtered = shoppingItems;

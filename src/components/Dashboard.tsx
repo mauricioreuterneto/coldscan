@@ -14,7 +14,6 @@ import {
   Plus,
   AlertTriangle,
   TrendingUp,
-  Calendar,
   Clock,
   Refrigerator
 } from 'lucide-react';
