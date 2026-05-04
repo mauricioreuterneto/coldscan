@@ -21,12 +21,6 @@ export function useSupabaseFridgeModel() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      loadFridgeModel();
-    }
-  }, [user]);
-
   const loadFridgeModel = async () => {
     if (!user) return;
     
@@ -43,6 +37,12 @@ export function useSupabaseFridgeModel() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      loadFridgeModel();
+    }
+  }, [user]);
 
   const saveFridgeModel = async (modelData: Omit<FridgeModel, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     if (!user) throw new Error('Usuário não autenticado');

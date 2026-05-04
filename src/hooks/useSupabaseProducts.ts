@@ -25,12 +25,6 @@ export function useSupabaseProducts() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      loadProducts();
-    }
-  }, [user]);
-
   const loadProducts = async () => {
     if (!user) return;
     
@@ -47,6 +41,12 @@ export function useSupabaseProducts() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      loadProducts();
+    }
+  }, [user]);
 
   const addProduct = async (productData: any) => {
     if (!user) throw new Error('Usuário não autenticado');
