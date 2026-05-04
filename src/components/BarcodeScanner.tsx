@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { ScanResult } from '../types';
+import { apiService, ProductInfo } from '../services/apiService';
 
 interface BarcodeScannerProps {
   onScanSuccess: (result: ScanResult) => void;
@@ -30,14 +31,23 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     );
 
     html5QrcodeScanner.render(
-      (decodedText) => {
-        const result: ScanResult = {
-          barcode: decodedText,
-          productInfo: lookupProduct(decodedText),
-        };
-        onScanSuccess(result);
-        html5QrcodeScanner.clear();
-        setIsScanning(false);
+      async (decodedText) => {
+        try {
+          const productInfo = await lookupProduct(decodedText);
+          const result: ScanResult = {
+            barcode: decodedText,
+            productInfo: productInfo ? {
+              name: productInfo.name,
+              category: productInfo.category,
+              description: productInfo.brand ? `${productInfo.brand} - ${productInfo.name}` : productInfo.name
+            } : undefined,
+          };
+          onScanSuccess(result);
+          html5QrcodeScanner.clear();
+          setIsScanning(false);
+        } catch (error) {
+          onScanError?.(`Erro ao processar código: ${error}`);
+        }
       },
       (error) => {
         onScanError?.(`Erro ao ler código: ${error}`);
@@ -56,23 +66,14 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     onClose?.();
   }, [scanner, onClose]);
 
-  const lookupProduct = (barcode: string) => {
-    // Simulação de lookup de produto
-    // Em um app real, isso seria uma chamada para uma API
-    const productDatabase: Record<string, { name: string; category: string }> = {
-      '7896000012345': { name: 'Leite Integral', category: 'Laticínios' },
-      '7896000023456': { name: 'Pão de Forma', category: 'Padaria' },
-      '7896000034567': { name: 'Ovos Brancos', category: 'Ovos' },
-      '7896000045678': { name: 'Queijo Mussarela', category: 'Laticínios' },
-      '7896000056789': { name: 'Presunto', category: 'Carnes' },
-      '7896000067890': { name: 'Manteiga', category: 'Laticínios' },
-      '7896000078901': { name: 'Iogurte Natural', category: 'Laticínios' },
-      '7896000089012': { name: 'Maçã', category: 'Frutas' },
-      '7896000090123': { name: 'Tomate', category: 'Legumes' },
-      '7896000101234': { name: 'Cenoura', category: 'Legumes' },
-    };
-
-    return productDatabase[barcode] || undefined;
+  const lookupProduct = async (barcode: string): Promise<ProductInfo | null> => {
+    try {
+      const productInfo = await apiService.getProductByBarcode(barcode);
+      return productInfo;
+    } catch (error) {
+      console.error('Erro ao buscar produto:', error);
+      return null;
+    }
   };
 
   return (
