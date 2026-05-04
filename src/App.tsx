@@ -2,20 +2,28 @@ import React, { useState } from 'react';
 import { FridgeModelSelector } from './components/FridgeModelSelector';
 import { FridgeViewer } from './components/FridgeViewer';
 import { ProductForm } from './components/ProductForm';
-import { useFridgeModel } from './hooks/useFridgeModel';
-import { useProducts } from './hooks/useProducts';
+import { Auth } from './components/Auth';
+import { useSupabaseAuth } from './hooks/useSupabaseAuth';
+import { useSupabaseFridgeModel } from './hooks/useSupabaseFridgeModel';
+import { useSupabaseProducts } from './hooks/useSupabaseProducts';
 import { FridgeModel, Product, Compartment } from './types';
-import { Plus, Search, AlertCircle, Package, Settings, Home } from 'lucide-react';
+import { Plus, Search, AlertCircle, Package, Settings, Home, LogOut } from 'lucide-react';
 import { getExpiredProducts, getProductsExpiringSoon, getLowStockProducts } from './utils';
 
 type Page = 'setup' | 'home' | 'products' | 'settings';
 
 function App() {
-  const { fridgeModel, availableModels, selectModel } = useFridgeModel();
-  const { products, addProduct, updateProduct } = useProducts();
+  const { user, signOut } = useSupabaseAuth();
+  const { fridgeModel, saveFridgeModel } = useSupabaseFridgeModel();
+  const { products, addProduct, updateProduct } = useSupabaseProducts();
   const [currentPage, setCurrentPage] = useState<Page>('setup');
   const [showProductForm, setShowProductForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
+
+  // Se não estiver autenticado, mostrar tela de login
+  if (!user) {
+    return <Auth />;
+  }
 
   React.useEffect(() => {
     if (fridgeModel) {
@@ -23,12 +31,12 @@ function App() {
     }
   }, [fridgeModel]);
 
-  const handleModelSelect = (model: FridgeModel) => {
-    selectModel(model);
+  const handleModelSelect = async (model: FridgeModel) => {
+    await saveFridgeModel(model);
   };
 
-  const handleAddProduct = (productData: Omit<Product, 'id'>) => {
-    addProduct(productData);
+  const handleAddProduct = async (productData: Omit<Product, 'id'>) => {
+    await addProduct(productData);
     setShowProductForm(false);
   };
 
@@ -37,9 +45,9 @@ function App() {
     setShowProductForm(true);
   };
 
-  const handleUpdateProduct = (productData: Omit<Product, 'id'>) => {
+  const handleUpdateProduct = async (productData: Omit<Product, 'id'>) => {
     if (selectedProduct) {
-      updateProduct(selectedProduct.id, productData);
+      await updateProduct(selectedProduct.id, productData);
       setShowProductForm(false);
       setSelectedProduct(undefined);
     }
@@ -64,6 +72,7 @@ function App() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <h1 className="text-xl font-bold text-gray-900">Fridge Scanner</h1>
+            <span className="ml-2 text-sm text-gray-500">Bem-vindo, {user.email}</span>
           </div>
           <div className="flex items-center space-x-4">
             <button
@@ -83,6 +92,13 @@ function App() {
               className={`p-2 rounded-lg ${currentPage === 'settings' ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}
             >
               <Settings className="w-5 h-5" />
+            </button>
+            <button
+              onClick={signOut}
+              className="p-2 rounded-lg text-red-600 hover:bg-red-50"
+              title="Sair"
+            >
+              <LogOut className="w-5 h-5" />
             </button>
           </div>
         </div>
