@@ -177,10 +177,14 @@ export const FridgeModelSelector: React.FC<FridgeModelSelectorProps> = ({
               <Search className="w-8 h-8 text-gray-400" />
             </div>
             <p className="text-gray-500">
-              {searchTerm.length > 2 ? 'Nenhum modelo encontrado. Tente buscar por "Samsung", "Brastemp", "LG", etc.' : 'Digite pelo menos 3 caracteres para buscar modelos de geladeira'}
+              {searchTerm.length > 2 ? 'Nenhum modelo encontrado. Tente uma busca mais ampla.' : 'Digite pelo menos 3 caracteres para buscar modelos de geladeira'}
             </p>
             <div className="mt-4 text-sm text-gray-400">
-              <p>Exemplos: "Samsung", "Brastemp", "Consul", "Electrolux"</p>
+              <p className="font-medium mb-2">Dicas de busca:</p>
+              <p>• Por marca: "Samsung", "Brastemp", "Consul", "LG", "Electrolux"</p>
+              <p>• Por modelo: "RT38", "BRE80AK", "CRM40NB", "DF48"</p>
+              <p>• Por capacidade: "380", "450", "500"</p>
+              <p className="mt-2 text-xs">Temos 70+ modelos de 13 marcas diferentes!</p>
             </div>
           </div>
         )}
