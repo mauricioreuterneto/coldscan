@@ -25,7 +25,18 @@ Qualquer pessoa com essa chave pode:
 
 ## 🛠️ Ações Imediatas Necessárias
 
+### ✅ STATUS: Credenciais Removidas do Repositório
+
+As credenciais vazadas foram **completamente removidas** do histórico do Git via `git filter-branch`. Os arquivos:
+- `docs/SETUP.md`
+- `scripts/supabase-direct-connect.js`
+- `scripts/supabase-rest-api.js`
+
+Foram removidos de **todo o histórico** do repositório.
+
 ### 1. ROTACIONAR CHAVES NO SUPABASE (FAÇA ISSO AGORA!)
+
+**⚠️ IMPORTANTE:** Mesmo removendo do GitHub, as chaves ainda podem estar em caches ou terem sido copiadas. **Rotacione imediatamente:**
 
 1. Acesse: https://supabase.com/dashboard/project/wcuozglfynltyafwivqj/settings/api
 2. Clique em **"Reveal"** na Service Role Key
@@ -51,26 +62,7 @@ REACT_APP_SUPABASE_ANON_KEY=sua_nova_anon_key_aqui
 
 **NUNCA commite o arquivo `.env`!**
 
-### 3. LIMPAR HISTÓRICO DO GIT (Opcional mas recomendado)
-
-Se quiser remover as chaves do histórico (evita que fiquem acessíveis no GitHub):
-
-```bash
-# Instalar git-filter-repo (ferramenta moderna)
-pip install git-filter-repo
-
-# Ou usar git nativo (mais arriscado)
-git filter-branch --force --index-filter \
-  'git rm --cached --ignore-unmatch scripts/supabase-direct-connect.js scripts/supabase-rest-api.js docs/SETUP.md' \
-  --prune-empty --tag-name-filter cat -- --all
-
-# Force push (CUIDADO: isso reescreve o histórico!)
-git push origin main --force-with-lease
-```
-
-**Aviso:** Isso reescreve o histórico do Git. Todos os colaboradores precisarão clonar o repositório novamente.
-
-### 4. VERIFICAR ACESSO NÃO AUTORIZADO
+### 3. VERIFICAR ACESSO NÃO AUTORIZADO
 
 1. No Supabase Dashboard: https://supabase.com/dashboard/project/wcuozglfynltyafwivqj/logs
 2. Verifique logs de acesso nas últimas 48 horas
