@@ -1,4 +1,4 @@
-import { Product, ProductCategory, ConsumptionRecord } from '../types/unified';
+import { Product } from '../types/unified';
 import { supabase } from '../lib/supabase';
 
 /**

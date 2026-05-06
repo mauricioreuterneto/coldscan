@@ -8,7 +8,6 @@ import {
   Search,
   Filter,
   ChevronRight,
-  MapPin,
   Thermometer,
   Calendar,
   Eye,
@@ -85,10 +84,10 @@ export const StorageOverview: React.FC<StorageOverviewProps> = ({
     showOnlyInStock: false
   });
 
-  useEffect(() => {
+  useEffect(() => { // eslint-disable-line react-hooks/exhaustive-deps
     loadData();
   }, [householdId]);
-
+  
   const loadData = async () => {
     try {
       setLoading(true);
@@ -553,6 +552,7 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const expiryStatus = ExpiryService.getExpiryStatus(product);
   const currentQuantity = getProductQuantity(product);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const originalQuantity = getProductOriginalQuantity(product) || 1;
   const stockPercentage = originalQuantity > 0 ? (currentQuantity / originalQuantity) * 100 : 0;
 
@@ -613,6 +613,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 const ProductListItem: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const expiryStatus = ExpiryService.getExpiryStatus(product);
   const currentQuantity = getProductQuantity(product);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const originalQuantity = getProductOriginalQuantity(product) || 1;
 
   return (

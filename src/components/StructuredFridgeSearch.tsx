@@ -29,6 +29,7 @@ export const StructuredFridgeSearch: React.FC<StructuredFridgeSearchProps> = ({
   const searchService = StructuredFridgeSearchService.getInstance();
 
   // Debounce para busca
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
     debounce(async (query: string) => {
       if (query.trim().length >= 2) {

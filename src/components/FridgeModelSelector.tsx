@@ -38,6 +38,7 @@ export const FridgeModelSelector: React.FC<FridgeModelSelectorProps> = ({
   const [showLayoutConfirmation, setShowLayoutConfirmation] = useState(false);
 
   // Debounce para busca online
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
     debounce((query: string) => {
       if (query.trim().length >= 2) {

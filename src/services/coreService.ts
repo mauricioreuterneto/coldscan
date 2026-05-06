@@ -9,10 +9,7 @@ import type {
   ShoppingList,
   Notification,
   Appliance,
-  FridgeModel,
-  ApiResponse,
   ServiceResponse,
-  PaginatedResult,
   SearchFilters
 } from '../types/unified';
 import { mapProductRow, toProductRow, toProductUpdateRow } from './productMapper';
@@ -56,7 +53,7 @@ export class CoreService {
 
   async signIn(email: string, password: string): Promise<ServiceResponse<User>> {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password
       });

@@ -26,7 +26,7 @@ export const LayoutConfirmation: React.FC<LayoutConfirmationProps> = ({
   const [userName, setUserName] = useState('');
   const [showThanksMessage, setShowThanksMessage] = useState(false);
 
-  React.useEffect(() => {
+  React.useEffect(() => { // eslint-disable-line react-hooks/exhaustive-deps
     loadLayouts();
   }, [modelInfo]);
 

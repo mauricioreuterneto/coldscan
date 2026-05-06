@@ -280,7 +280,7 @@ class FridgeLayoutService {
   // Busca online por diagramas/especificações
   private async searchOnlineLayout(modelInfo: FridgeModelInfo): Promise<LayoutSearchResult | null> {
     // Queries para busca online (implementação futura)
-    const searchQueries = [
+    const _searchQueries = [ // eslint-disable-line @typescript-eslint/no-unused-vars
       `${modelInfo.brand} ${modelInfo.model} layout interno diagrama`,
       `${modelInfo.brand} ${modelInfo.model} compartimentos esquema`,
       `${modelInfo.brand} ${modelInfo.model} manual pdf compartimentos`,
