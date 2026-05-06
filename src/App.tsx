@@ -30,33 +30,22 @@ function App() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Carregar dados iniciais
-  useEffect(() => {
-    loadInitialData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // Listener de mudanças de autenticação
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
-          // Atualizar usuário e carregar dados
-          const currentUser = await coreService.getCurrentUser();
-          setUser(currentUser);
-          if (currentUser) {
-            await Promise.all([
-              loadProducts(),
-              loadShoppingLists(),
-              loadAppliances(),
-              loadDashboardStats()
-            ]);
+        console.log('Auth state changed:', event, session?.user?.email);
+        if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+          if (session?.user) {
+            const currentUser = await coreService.getCurrentUser();
+            setUser(currentUser);
           }
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
           setProducts([]);
           setShoppingLists([]);
           setAppliances([]);
+          setFridgeModel(null);
         }
       }
     );
@@ -65,29 +54,43 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Carregar dados quando usuário muda
+  useEffect(() => {
+    if (user) {
+      loadUserData();
+    } else {
+      setLoading(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  // Timeout para garantir que loading nunca fique preso
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 5000); // 5 segundos de timeout
+
+    return () => clearTimeout(timeout);
+  }, []);
+
   useEffect(() => {
     if (!fridgeModel && currentPage !== 'setup') {
       setCurrentPage('setup');
     }
   }, [fridgeModel, currentPage]);
 
-  const loadInitialData = async () => {
+  const loadUserData = async () => {
     try {
       setLoading(true);
-      const currentUser = await coreService.getCurrentUser();
-      setUser(currentUser);
-
-      if (currentUser) {
-        // Carregar dados do usuário
-        await Promise.all([
-          loadProducts(),
-          loadShoppingLists(),
-          loadAppliances(),
-          loadDashboardStats()
-        ]);
-      }
+      // Carregar dados do usuário
+      await Promise.all([
+        loadProducts(),
+        loadShoppingLists(),
+        loadAppliances(),
+        loadDashboardStats()
+      ]);
     } catch (error) {
-      console.error('Erro ao carregar dados iniciais:', error);
+      console.error('Erro ao carregar dados do usuário:', error);
     } finally {
       setLoading(false);
     }
@@ -130,20 +133,12 @@ function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSignIn = async (email: string, password: string) => {
     const result = await coreService.signIn(email, password);
-    if (result.success && result.data) {
-      setUser(result.data);
-      await loadInitialData();
-    }
     return result;
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSignUp = async (email: string, password: string, name?: string) => {
     const result = await coreService.signUp(email, password, name);
-    if (result.success && result.data) {
-      setUser(result.data);
-      await loadInitialData();
-    }
     return result;
   };
 
