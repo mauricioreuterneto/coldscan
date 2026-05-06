@@ -13,29 +13,53 @@ export function useSupabaseAuth() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+    let loadingTimeout: NodeJS.Timeout;
+
     // Verificar usuário atual
     const getCurrentUser = async () => {
       try {
         const currentUser = await supabaseService.getCurrentUser();
-        setUser(currentUser);
+        if (isMounted) {
+          setUser(currentUser);
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erro ao carregar usuário');
+        if (isMounted) {
+          setError(err instanceof Error ? err.message : 'Erro ao carregar usuário');
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     getCurrentUser();
 
+    // Timeout para garantir que loading nunca fique preso
+    loadingTimeout = setTimeout(() => {
+      if (isMounted) {
+        console.warn('Auth loading timeout - forcing loading to false');
+        setLoading(false);
+      }
+    }, 5000);
+
     // Listener de mudanças de autenticação
     const { data: { subscription } } = supabaseService.onAuthStateChange(
       (event, session) => {
-        setUser(session?.user || null);
-        setLoading(false);
+        console.log('Auth state change:', event);
+        if (isMounted) {
+          setUser(session?.user || null);
+          setLoading(false);
+        }
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      clearTimeout(loadingTimeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
