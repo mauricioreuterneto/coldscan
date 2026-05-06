@@ -37,8 +37,10 @@ function App() {
         console.log('Auth state changed:', event, session?.user?.email);
         if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
           if (session?.user) {
-            const currentUser = await coreService.getCurrentUser();
-            setUser(currentUser);
+            // Usar o usuário da sessão diretamente em vez de chamar getCurrentUser
+            setUser(session.user as unknown as User);
+          } else {
+            setUser(null);
           }
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
