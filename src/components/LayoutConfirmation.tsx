@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FridgeModel, Compartment, FridgeModelInfo } from '../types/unified';
 import { fridgeLayoutService, LayoutSearchResult } from '../services/fridgeLayoutService';
 import { layoutPersistenceService, UserLayout } from '../services/layoutPersistenceService';
@@ -26,11 +26,7 @@ export const LayoutConfirmation: React.FC<LayoutConfirmationProps> = ({
   const [userName, setUserName] = useState('');
   const [showThanksMessage, setShowThanksMessage] = useState(false);
 
-  React.useEffect(() => { // eslint-disable-line react-hooks/exhaustive-deps
-    loadLayouts();
-  }, [modelInfo]);
-
-  const loadLayouts = async () => {
+  const loadLayoutsData = async () => {
     setIsLoading(true);
     try {
       // 1. Carregar layouts da comunidade
@@ -60,6 +56,11 @@ export const LayoutConfirmation: React.FC<LayoutConfirmationProps> = ({
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadLayoutsData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modelInfo]);
 
   const handleConfirmLayout = () => {
     const fridgeModel: FridgeModel = {
@@ -99,7 +100,7 @@ export const LayoutConfirmation: React.FC<LayoutConfirmationProps> = ({
       setSaveReason('');
       
       // Recarregar layouts para incluir o novo
-      await loadLayouts();
+      await loadLayoutsData();
       
       // Esconder mensagem após 3 segundos
       setTimeout(() => setShowThanksMessage(false), 3000);
@@ -112,7 +113,7 @@ export const LayoutConfirmation: React.FC<LayoutConfirmationProps> = ({
   const handleVerifyLayout = async (layoutId: string) => {
     try {
       await layoutPersistenceService.verifyLayout(layoutId);
-      await loadLayouts(); // Recarregar para atualizar contadores
+      await loadLayoutsData(); // Recarregar para atualizar contadores
     } catch (error) {
       console.error('Erro ao verificar layout:', error);
     }
@@ -123,7 +124,7 @@ export const LayoutConfirmation: React.FC<LayoutConfirmationProps> = ({
     if (shouldReport) {
       try {
         await layoutPersistenceService.reportLayout(layoutId);
-        await loadLayouts(); // Recarregar para atualizar
+        await loadLayoutsData(); // Recarregar para atualizar
       } catch (error) {
         console.error('Erro ao reportar layout:', error);
       }

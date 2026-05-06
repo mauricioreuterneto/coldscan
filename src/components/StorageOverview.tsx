@@ -84,98 +84,98 @@ export const StorageOverview: React.FC<StorageOverviewProps> = ({
     showOnlyInStock: false
   });
 
-  useEffect(() => { // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        
+        // Carregar locais de armazenamento
+        const { data: storageLocations } = await supabase
+          .from('storage_locations')
+          .select('*')
+          .eq('household_id', householdId)
+          .order('name');
+
+        // Carregar produtos
+        const { data: allProducts } = await supabase
+          .from('products')
+          .select('*')
+          .eq('household_id', householdId);
+
+        // Processar dados
+        const processStorageLocations = async (locations: any[], products: any[]): Promise<StorageLocation[]> => {
+          const processed = locations.map(location => {
+            const locationProducts = products.filter(product => 
+              getProductLocationId(product) === location.id ||
+              getProductZoneId(product) === location.id ||
+              getProductShelfId(product) === location.id ||
+              product.location?.applianceId === location.id ||
+              product.location?.compartmentId === location.id ||
+              product.location?.shelfId === location.id
+            );
+
+            const expiringItems = locationProducts.filter(product => {
+              const status = ExpiryService.getExpiryStatus(product);
+              return status.isExpiringSoon || status.isExpired;
+            }).length;
+
+            const expiredItems = locationProducts.filter(product => {
+              const status = ExpiryService.getExpiryStatus(product);
+              return status.isExpired;
+            }).length;
+
+            return {
+              id: location.id,
+              name: location.name,
+              type: location.type,
+              description: location.description,
+              temperature: location.temperature,
+              itemCount: locationProducts.length,
+              expiringItems,
+              expiredItems
+            };
+          });
+
+          // Adicionar local "Fora da Geladeira" para produtos não categorizados
+          const uncategorizedProducts = products.filter(product => !getProductLocationId(product));
+          if (uncategorizedProducts.length > 0) {
+            const uncategorizedExpiring = uncategorizedProducts.filter(product => {
+              const status = ExpiryService.getExpiryStatus(product);
+              return status.isExpiringSoon || status.isExpired;
+            }).length;
+
+            const uncategorizedExpired = uncategorizedProducts.filter(product => {
+              const status = ExpiryService.getExpiryStatus(product);
+              return status.isExpired;
+            }).length;
+
+            processed.push({
+              id: 'uncategorized',
+              name: 'Fora da Geladeira',
+              type: 'other',
+              temperature: undefined,
+              description: 'Produtos sem localização específica',
+              itemCount: uncategorizedProducts.length,
+              expiringItems: uncategorizedExpiring,
+              expiredItems: uncategorizedExpired
+            });
+          }
+
+          return processed;
+        };
+
+        const processedLocations = await processStorageLocations(storageLocations || [], allProducts || []);
+        setLocations(processedLocations);
+        setProducts(allProducts || []);
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadData();
   }, [householdId]);
-  
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      
-      // Carregar locais de armazenamento
-      const { data: storageLocations } = await supabase
-        .from('storage_locations')
-        .select('*')
-        .eq('household_id', householdId)
-        .order('name');
-
-      // Carregar produtos
-      const { data: allProducts } = await supabase
-        .from('products')
-        .select('*')
-        .eq('household_id', householdId);
-
-      // Processar dados
-      const processedLocations = await processStorageLocations(storageLocations || [], allProducts || []);
-      setLocations(processedLocations);
-      setProducts(allProducts || []);
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const processStorageLocations = async (locations: any[], products: any[]): Promise<StorageLocation[]> => {
-    const processed = locations.map(location => {
-      const locationProducts = products.filter(product => 
-        getProductLocationId(product) === location.id ||
-        getProductZoneId(product) === location.id ||
-        getProductShelfId(product) === location.id ||
-        product.location?.applianceId === location.id ||
-        product.location?.compartmentId === location.id ||
-        product.location?.shelfId === location.id
-      );
-
-      const expiringItems = locationProducts.filter(product => {
-        const status = ExpiryService.getExpiryStatus(product);
-        return status.isExpiringSoon || status.isExpired;
-      }).length;
-
-      const expiredItems = locationProducts.filter(product => {
-        const status = ExpiryService.getExpiryStatus(product);
-        return status.isExpired;
-      }).length;
-
-      return {
-        id: location.id,
-        name: location.name,
-        type: location.type,
-        description: location.description,
-        temperature: location.temperature,
-        itemCount: locationProducts.length,
-        expiringItems,
-        expiredItems
-      };
-    });
-
-    // Adicionar local "Fora da Geladeira" para produtos não categorizados
-    const uncategorizedProducts = products.filter(product => !getProductLocationId(product));
-    if (uncategorizedProducts.length > 0) {
-      const uncategorizedExpiring = uncategorizedProducts.filter(product => {
-        const status = ExpiryService.getExpiryStatus(product);
-        return status.isExpiringSoon || status.isExpired;
-      }).length;
-
-      const uncategorizedExpired = uncategorizedProducts.filter(product => {
-        const status = ExpiryService.getExpiryStatus(product);
-        return status.isExpired;
-      }).length;
-
-      processed.push({
-        id: 'uncategorized',
-        name: 'Fora da Geladeira',
-        type: 'other',
-        temperature: undefined,
-        description: 'Produtos sem localização específica',
-        itemCount: uncategorizedProducts.length,
-        expiringItems: uncategorizedExpiring,
-        expiredItems: uncategorizedExpired
-      });
-    }
-
-    return processed;
-  };
 
   const getFilteredProducts = () => {
     let filtered = products;
