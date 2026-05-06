@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { coreService } from './services/coreService';
-import { supabase } from './lib/supabase';
+import { supabase, supabaseService } from './lib/supabase';
 import type { User, ShoppingList, Appliance, Product, FridgeModel } from './types/unified';
 import { Plus, Home, Package, ShoppingCart, BarChart3, Grid3X3, Menu, X } from 'lucide-react';
 
@@ -24,6 +24,7 @@ function App() {
   const [shoppingLists, setShoppingLists] = useState<ShoppingList[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [appliances, setAppliances] = useState<Appliance[]>([]);
+  const [household, setHousehold] = useState<any>(null);
   const [fridgeModel, setFridgeModel] = useState<FridgeModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [showProductModal, setShowProductModal] = useState(false);
@@ -47,6 +48,7 @@ function App() {
           setProducts([]);
           setShoppingLists([]);
           setAppliances([]);
+          setHousehold(null);
           setFridgeModel(null);
         }
       }
@@ -65,6 +67,14 @@ function App() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+
+  // Carregar appliances quando household muda
+  useEffect(() => {
+    if (household) {
+      loadAppliances();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [household]);
 
   // Timeout para garantir que loading nunca fique preso
   useEffect(() => {
@@ -86,6 +96,7 @@ function App() {
       setLoading(true);
       // Carregar dados do usuário
       await Promise.all([
+        loadHousehold(),
         loadProducts(),
         loadShoppingLists(),
         loadAppliances(),
@@ -98,6 +109,29 @@ function App() {
     }
   };
 
+  const loadHousehold = async () => {
+    try {
+      const householdData = await supabaseService.getHousehold(user?.id || '');
+      if (householdData) {
+        setHousehold(householdData);
+      } else {
+        // Criar household se não existir
+        const newHousehold = await supabaseService.createHousehold({
+          user_id: user?.id || '',
+          name: 'Minha Casa',
+          settings: {
+            defaultAlerts: true,
+            temperatureUnit: 'celsius',
+            inventoryTracking: true
+          }
+        });
+        setHousehold(newHousehold);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar household:', error);
+    }
+  };
+
   const loadProducts = async () => {
     const result = await coreService.getProducts();
     if (result.success && result.data) {
@@ -106,21 +140,31 @@ function App() {
   };
 
   const loadShoppingLists = async () => {
-    const result = await coreService.getShoppingLists();
-    if (result.success && result.data) {
-      setShoppingLists(result.data);
+    try {
+      const lists = await supabaseService.getShoppingLists(user?.id || '');
+      setShoppingLists(lists);
+    } catch (error) {
+      console.error('Erro ao carregar shopping lists:', error);
     }
   };
 
   const loadAppliances = async () => {
-    const result = await coreService.getAppliances();
-    if (result.success && result.data) {
-      setAppliances(result.data);
-      // Definir primeiro aparelho como principal se não houver
-      const activeAppliance = result.data.find(a => a.isActive);
-      if (activeAppliance && activeAppliance.model) {
-        setFridgeModel(activeAppliance.model as unknown as FridgeModel);
+    try {
+      if (household) {
+        const appliancesData = await supabaseService.getAppliances(household.id);
+        setAppliances(appliancesData);
+        // Definir primeiro aparelho ativo como principal
+        const activeAppliance = appliancesData.find(a => a.is_active);
+        if (activeAppliance) {
+          // Carregar modelo da geladeira associado ao appliance
+          const fridgeModelData = await supabaseService.getFridgeModel(user?.id || '');
+          if (fridgeModelData) {
+            setFridgeModel(fridgeModelData as unknown as FridgeModel);
+          }
+        }
       }
+    } catch (error) {
+      console.error('Erro ao carregar appliances:', error);
     }
   };
 
@@ -150,6 +194,7 @@ function App() {
     setProducts([]);
     setShoppingLists([]);
     setAppliances([]);
+    setHousehold(null);
     setFridgeModel(null);
     setCurrentPage('setup');
   };
