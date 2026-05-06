@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  RefrigerationAppliance, 
+  Appliance, 
   ApplianceType, 
   ApplianceLocation, 
   Household,
   FridgeModel 
-} from '../types';
+} from '../types/unified';
 import { multiApplianceService } from '../services/multiApplianceService';
 import { 
   Plus, 
@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 
 interface ApplianceManagerProps {
-  onApplianceSelect?: (appliance: RefrigerationAppliance) => void;
+  onApplianceSelect?: (appliance: Appliance) => void;
   onAddNewAppliance?: () => void;
 }
 
@@ -36,10 +36,10 @@ export const ApplianceManager: React.FC<ApplianceManagerProps> = ({
   onAddNewAppliance
 }) => {
   const [household, setHousehold] = useState<Household | null>(null);
-  const [appliances, setAppliances] = useState<RefrigerationAppliance[]>([]);
-  const [selectedAppliance, setSelectedAppliance] = useState<RefrigerationAppliance | null>(null);
+  const [appliances, setAppliances] = useState<Appliance[]>([]);
+  const [selectedAppliance, setSelectedAppliance] = useState<Appliance | null>(null);
   const [isAddingAppliance, setIsAddingAppliance] = useState(false);
-  const [editingAppliance, setEditingAppliance] = useState<RefrigerationAppliance | null>(null);
+  const [editingAppliance, setEditingAppliance] = useState<Appliance | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
 
@@ -79,11 +79,9 @@ export const ApplianceManager: React.FC<ApplianceManagerProps> = ({
     try {
       const newAppliance = await multiApplianceService.addAppliance(
         applianceData.name,
-        applianceData.designation,
         applianceData.applianceType,
-        applianceData.model,
         applianceData.location,
-        applianceData.positionDescription
+        applianceData.model
       );
 
       setAppliances(prev => [...prev, newAppliance]);
@@ -101,10 +99,10 @@ export const ApplianceManager: React.FC<ApplianceManagerProps> = ({
     }
   };
 
-  const handleUpdateAppliance = async (applianceId: string, updates: Partial<RefrigerationAppliance>) => {
+  const handleUpdateAppliance = async (applianceId: string, updates: Partial<Appliance>) => {
     try {
       const updatedAppliance = await multiApplianceService.updateAppliance(applianceId, updates);
-      
+
       setAppliances(prev => prev.map(a => a.id === applianceId ? updatedAppliance : a));
       
       if (selectedAppliance?.id === applianceId) {
@@ -194,7 +192,7 @@ export const ApplianceManager: React.FC<ApplianceManagerProps> = ({
     return icons[locationType] || <MapPin className="w-4 h-4" />;
   };
 
-  const renderApplianceCard = (appliance: RefrigerationAppliance) => (
+  const renderApplianceCard = (appliance: Appliance) => (
     <div
       key={appliance.id}
       className={`bg-white border rounded-lg p-4 cursor-pointer transition-all ${
@@ -210,18 +208,20 @@ export const ApplianceManager: React.FC<ApplianceManagerProps> = ({
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-gray-100 rounded-lg">
-            {getApplianceIcon(appliance.applianceType.category)}
+            {getApplianceIcon((appliance.applianceType || appliance.type)?.category || 'refrigerator')}
           </div>
           <div>
             <h3 className="font-semibold text-gray-800">{appliance.name}</h3>
             {appliance.designation && (
               <p className="text-sm text-gray-600">{appliance.designation}</p>
             )}
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs text-gray-500">{appliance.model.brand} {appliance.model.model}</span>
-              <span className="text-xs text-gray-400">•</span>
-              <span className="text-xs text-gray-500">{appliance.model.capacity}L</span>
-            </div>
+            {appliance.model && (
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-gray-500">{appliance.model.brand} {appliance.model.model}</span>
+                <span className="text-xs text-gray-400">•</span>
+                <span className="text-xs text-gray-500">{appliance.model.capacity}L</span>
+              </div>
+            )}
           </div>
         </div>
         
@@ -246,8 +246,8 @@ export const ApplianceManager: React.FC<ApplianceManagerProps> = ({
 
       <div className="flex items-center justify-between text-sm">
         <div className="flex items-center gap-2 text-gray-600">
-          {getLocationIcon(appliance.location.type)}
-          <span>{appliance.location.name}</span>
+          {appliance.location && getLocationIcon(appliance.location.type)}
+          <span>{appliance.location?.name || 'Localização não configurada'}</span>
         </div>
         
         <div className="flex items-center gap-2">
@@ -292,9 +292,9 @@ export const ApplianceManager: React.FC<ApplianceManagerProps> = ({
         </div>
       </div>
 
-      {appliance.position?.description && (
+      {appliance.positionDescription && (
         <div className="mt-2 text-xs text-gray-500 italic">
-          📍 {appliance.position.description}
+          📍 {appliance.positionDescription}
         </div>
       )}
     </div>
@@ -395,12 +395,15 @@ export const ApplianceManager: React.FC<ApplianceManagerProps> = ({
             <div>
               <h4 className="font-semibold text-blue-800">Aparelho Selecionado</h4>
               <p className="text-blue-700">
-                {selectedAppliance.name} - {selectedAppliance.model.capacity}L
+                {selectedAppliance.name}
+                {selectedAppliance.model && ` - ${selectedAppliance.model.capacity}L`}
               </p>
             </div>
-            <div className="text-sm text-blue-600">
-              {selectedAppliance.model.compartments.length} compartimentos
-            </div>
+            {selectedAppliance.model && (
+              <div className="text-sm text-blue-600">
+                {selectedAppliance.model.compartments?.length || 0} compartimentos
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -439,10 +442,15 @@ const AddApplianceForm: React.FC<{
     // Criar modelo básico (depois será substituído pelo fluxo normal)
     const basicModel: FridgeModel = {
       id: `model-${Date.now()}`,
+      name: 'Modelo Básico',
       brand: 'Genérico',
       model: 'Modelo Básico',
+      category: 'standard',
+      description: 'Modelo básico genérico',
       capacity: 300,
-      compartments: []
+      compartments: [],
+      dimensions: { width: 60, height: 170, depth: 65 },
+      features: []
     };
 
     onSubmit({
@@ -546,7 +554,7 @@ const AddApplianceForm: React.FC<{
 
 // Form Component for Editing Appliance
 const EditApplianceForm: React.FC<{
-  appliance: RefrigerationAppliance;
+  appliance: Appliance;
   onSubmit: (updates: any) => void;
   onCancel: () => void;
   household: Household;
@@ -554,7 +562,7 @@ const EditApplianceForm: React.FC<{
   const [formData, setFormData] = useState({
     name: appliance.name,
     designation: appliance.designation || '',
-    positionDescription: appliance.position?.description || '',
+    positionDescription: appliance.positionDescription || '',
     isActive: appliance.isActive,
     alertsEnabled: appliance.customSettings?.alertsEnabled ?? true
   });
@@ -565,10 +573,7 @@ const EditApplianceForm: React.FC<{
     onSubmit({
       name: formData.name,
       designation: formData.designation || undefined,
-      position: {
-        ...appliance.position,
-        description: formData.positionDescription
-      },
+      positionDescription: formData.positionDescription || undefined,
       isActive: formData.isActive,
       customSettings: {
         ...appliance.customSettings,
@@ -637,10 +642,16 @@ const EditApplianceForm: React.FC<{
       <div className="bg-gray-50 p-3 rounded">
         <h4 className="text-sm font-medium text-gray-700 mb-2">Informações do Modelo</h4>
         <div className="text-sm text-gray-600 space-y-1">
-          <p><strong>Tipo:</strong> {appliance.applianceType.name}</p>
-          <p><strong>Modelo:</strong> {appliance.model.brand} {appliance.model.model}</p>
-          <p><strong>Capacidade:</strong> {appliance.model.capacity}L</p>
-          <p><strong>Local:</strong> {appliance.location.name}</p>
+          <p><strong>Tipo:</strong> {(appliance.applianceType || appliance.type)?.name || 'N/A'}</p>
+          {appliance.model ? (
+            <>
+              <p><strong>Modelo:</strong> {appliance.model.brand} {appliance.model.model}</p>
+              <p><strong>Capacidade:</strong> {appliance.model.capacity}L</p>
+            </>
+          ) : (
+            <p><strong>Modelo:</strong> Não especificado</p>
+          )}
+          <p><strong>Local:</strong> {appliance.location?.name || 'Não configurado'}</p>
         </div>
       </div>
 

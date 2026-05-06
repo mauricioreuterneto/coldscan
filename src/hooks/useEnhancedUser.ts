@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { User, Household, NotificationPreferences } from '../types/enhanced';
+import { User, Household, NotificationPreferences } from '../types/unified';
 
 interface EnhancedUser extends User {
   household?: Household;
@@ -84,12 +84,14 @@ export const useEnhancedUser = () => {
           lowStockAlerts: notificationPrefs.low_stock_alerts,
           shoppingReminders: notificationPrefs.shopping_reminders,
           weeklyDigest: notificationPrefs.weekly_digest,
+          wastePrevention: notificationPrefs.waste_prevention ?? true,
           timeOfDay: notificationPrefs.time_of_day
         } : {
           expiryWarnings: true,
           lowStockAlerts: true,
           shoppingReminders: true,
           weeklyDigest: false,
+          wastePrevention: true,
           timeOfDay: 'morning'
         }
       };
@@ -139,6 +141,7 @@ export const useEnhancedUser = () => {
           low_stock_alerts: preferences.lowStockAlerts,
           shopping_reminders: preferences.shoppingReminders,
           weekly_digest: preferences.weeklyDigest,
+          waste_prevention: preferences.wastePrevention,
           time_of_day: preferences.timeOfDay,
           updated_at: new Date().toISOString()
         });

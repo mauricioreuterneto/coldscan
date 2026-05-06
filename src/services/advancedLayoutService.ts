@@ -1,4 +1,4 @@
-import { Compartment, Shelf } from '../types';
+import { Compartment, Shelf } from '../types/unified';
 
 export interface FridgeType {
   id: string;
@@ -456,8 +456,10 @@ class AdvancedLayoutService {
     const shelves: Shelf[] = template.shelfTypes.map(shelfTemplate => ({
       id: `shelf-${template.type}-${shelfTemplate.defaultPosition}`,
       name: this.generateShelfName(shelfTemplate.type, shelfTemplate.defaultPosition),
-      position: shelfTemplate.defaultPosition,
-      capacity: Math.floor(capacity * (shelfTemplate.capacity / template.typicalCapacity.max))
+      type: 'shelf',
+      position: { x: 0, y: shelfTemplate.defaultPosition * 10, width: 100, height: 10 },
+      capacity: Math.floor(capacity * (shelfTemplate.capacity / template.typicalCapacity.max)),
+      products: []
     }));
 
     return {

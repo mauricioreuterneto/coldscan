@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Product, Compartment } from '../types';
+import { Product, Compartment } from '../types/unified';
 import { 
   Search, 
   Filter, 
@@ -12,7 +12,19 @@ import {
   Package,
   X
 } from 'lucide-react';
-import { getExpiredProducts, getProductsExpiringSoon, getLowStockProducts, getCategories, searchProducts, filterProductsByCategory } from '../utils';
+import {
+  getExpiredProducts,
+  getProductsExpiringSoon,
+  getLowStockProducts,
+  getCategories,
+  searchProducts,
+  filterProductsByCategory,
+  getProductCategoryName,
+  getProductQuantity,
+  getProductUnit,
+  getProductShelfId,
+  getProductZoneId
+} from '../utils';
 
 interface ProductManagerProps {
   products: Product[];
@@ -71,22 +83,24 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
 
     // Filtro por compartimento
     if (selectedCompartment !== 'all') {
-      filtered = filtered.filter(p => p.location.compartmentId === selectedCompartment);
+      filtered = filtered.filter(p => getProductZoneId(p) === selectedCompartment);
     }
 
     // Ordenação
-    filtered.sort((a, b) => {
+    filtered = [...filtered].sort((a, b) => {
       switch (sortBy) {
         case 'name':
           return a.name.localeCompare(b.name);
         case 'expiryDate':
-          if (!a.expiryDate) return 1;
-          if (!b.expiryDate) return -1;
-          return new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime();
+          const aExpiry = a.expiry?.sealedExpiryDate;
+          const bExpiry = b.expiry?.sealedExpiryDate;
+          if (!aExpiry) return 1;
+          if (!bExpiry) return -1;
+          return new Date(aExpiry).getTime() - new Date(bExpiry).getTime();
         case 'quantity':
-          return b.quantity - a.quantity;
+          return getProductQuantity(b) - getProductQuantity(a);
         case 'category':
-          return a.category.localeCompare(b.category);
+          return getProductCategoryName(a).localeCompare(getProductCategoryName(b));
         default:
           return 0;
       }
@@ -96,16 +110,16 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
   }, [products, searchQuery, selectedCategory, selectedStatus, selectedCompartment, sortBy, expiredProducts, expiringSoonProducts, lowStockProducts]);
 
   const getProductStatus = (product: Product) => {
-    if (product.expiryDate) {
+    const expiryDate = product.expiry?.sealedExpiryDate;
+    if (expiryDate) {
       const today = new Date();
-      const expiryDate = new Date(product.expiryDate);
-      const daysUntilExpiry = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      const daysUntilExpiry = Math.ceil((new Date(expiryDate).getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
       
       if (daysUntilExpiry < 0) return { status: 'expired', color: 'red', label: 'Vencido' };
       if (daysUntilExpiry <= 3) return { status: 'expiring', color: 'yellow', label: 'Vencendo em breve' };
     }
     
-    if (product.quantity <= 2) return { status: 'lowStock', color: 'blue', label: 'Estoque baixo' };
+    if (getProductQuantity(product) <= 2) return { status: 'lowStock', color: 'blue', label: 'Estoque baixo' };
     return { status: 'good', color: 'green', label: 'OK' };
   };
 
@@ -326,15 +340,16 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
             <tbody className="divide-y divide-gray-200">
               {filteredProducts.map((product) => {
                 const status = getProductStatus(product);
-                const compartment = compartments.find(c => c.id === product.location.compartmentId);
+                const compartment = compartments.find(c => c.id === getProductZoneId(product));
+                const shelfId = getProductShelfId(product);
                 
                 return (
                   <tr key={product.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        {product.imageUrl && (
+                        {product.image && (
                           <img
-                            src={product.imageUrl}
+                            src={product.image}
                             alt={product.name}
                             className="w-10 h-10 rounded-lg object-cover"
                           />
@@ -349,22 +364,22 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
-                        {product.category}
+                        {getProductCategoryName(product)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {product.quantity} {product.unit}
+                        {getProductQuantity(product)} {getProductUnit(product)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {product.expiryDate ? (
+                      {product.expiry?.sealedExpiryDate ? (
                         <div className="text-sm">
                           <div className={status.color === 'red' ? 'text-red-600 font-medium' : 'text-gray-900'}>
-                            {new Date(product.expiryDate).toLocaleDateString('pt-BR')}
+                            {new Date(product.expiry.sealedExpiryDate).toLocaleDateString('pt-BR')}
                           </div>
                           <div className="text-xs text-gray-500">
-                            {Math.ceil((new Date(product.expiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} dias
+                            {Math.ceil((new Date(product.expiry.sealedExpiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} dias
                           </div>
                         </div>
                       ) : (
@@ -375,9 +390,9 @@ export const ProductManager: React.FC<ProductManagerProps> = ({
                       <div className="text-sm text-gray-900">
                         {compartment?.name || 'Não definido'}
                       </div>
-                      {product.location.shelfId && (
+                      {shelfId && (
                         <div className="text-xs text-gray-500">
-                          {compartment?.shelves?.find(s => s.id === product.location.shelfId)?.name}
+                          {compartment?.shelves?.find(s => s.id === shelfId)?.name || shelfId}
                         </div>
                       )}
                     </td>

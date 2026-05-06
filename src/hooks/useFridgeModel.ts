@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FridgeModel } from '../types';
+import { FridgeModel } from '../types/unified';
 import { useLocalStorage } from './useLocalStorage';
 import { getFridgeModels } from '../utils';
 

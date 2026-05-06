@@ -165,7 +165,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete
       const { data: locations } = await supabase
         .from('storage_locations')
         .select('id, name')
-        .eq('household_id', household.household_id);
+        .eq('household_id', household?.household_id);
 
       const fridgeLocation = locations?.find(l => l.name === 'Geladeira Principal');
 
@@ -189,7 +189,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete
           .from('products')
           .insert({
             user_id: user.id,
-            household_id: household.household_id,
+            household_id: household?.household_id,
             name: product.name,
             category: product.category,
             quantity: product.quantity,
@@ -407,7 +407,7 @@ const HouseholdSetupStep = ({ selectedLocations, setSelectedLocations }: any) =>
   ];
 
   const toggleLocation = (locationId: string) => {
-    setSelectedLocations(prev => 
+    setSelectedLocations((prev: string[]) => 
       prev.includes(locationId) 
         ? prev.filter(id => id !== locationId)
         : [...prev, locationId]

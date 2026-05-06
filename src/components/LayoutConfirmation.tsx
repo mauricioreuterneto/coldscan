@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FridgeModel, Compartment, FridgeModelInfo } from '../types';
+import { FridgeModel, Compartment, FridgeModelInfo } from '../types/unified';
 import { fridgeLayoutService, LayoutSearchResult } from '../services/fridgeLayoutService';
 import { layoutPersistenceService, UserLayout } from '../services/layoutPersistenceService';
 import { Check, Edit3, AlertTriangle, RefreshCw, Users, Star, Flag, Save } from 'lucide-react';
@@ -64,12 +64,17 @@ export const LayoutConfirmation: React.FC<LayoutConfirmationProps> = ({
   const handleConfirmLayout = () => {
     const fridgeModel: FridgeModel = {
       id: modelInfo.id,
+      name: `${modelInfo.brand} ${modelInfo.model}`,
       brand: modelInfo.brand,
       model: modelInfo.model,
       year: modelInfo.year || new Date().getFullYear(),
+      category: 'standard',
+      description: 'Modelo configurado pelo usuário',
       capacity: modelInfo.capacity,
-      imageUrl: modelInfo.image_url,
-      compartments: customCompartments
+      image: modelInfo.image,
+      compartments: customCompartments,
+      dimensions: modelInfo.dimensions || { width: 60, height: 170, depth: 65 },
+      features: modelInfo.features || []
     };
     onLayoutConfirmed(fridgeModel);
   };

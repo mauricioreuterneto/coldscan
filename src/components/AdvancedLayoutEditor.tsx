@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Compartment, Shelf } from '../types';
+import { Compartment, Shelf } from '../types/unified';
 import { advancedLayoutService, AdvancedLayoutConfig, FridgeType, CompartmentTemplate } from '../services/advancedLayoutService';
 import { 
   Move, 
@@ -103,11 +103,13 @@ export const AdvancedLayoutEditor: React.FC<AdvancedLayoutEditorProps> = ({
       type: template.type as any,
       capacity: template.typicalCapacity.min,
       position: { x: 50, y: 50, width: 100, height: 80 },
-      shelves: template.shelfTypes.map((shelf, index) => ({
+      shelves: template.shelfTypes.map((shelfType, index) => ({
         id: `shelf-${Date.now()}-${index}`,
         name: `${template.name} - Prateleira ${index + 1}`,
-        position: index + 1,
-        capacity: Math.floor(template.typicalCapacity.min / template.shelfTypes.length)
+        type: 'shelf' as const,
+        capacity: Math.floor(template.typicalCapacity.min / template.shelfTypes.length),
+        position: { x: 0, y: index * 20, width: 100, height: 15 },
+        products: []
       }))
     };
 
@@ -442,8 +444,10 @@ export const AdvancedLayoutEditor: React.FC<AdvancedLayoutEditorProps> = ({
                     const newShelf: Shelf = {
                       id: `shelf-${Date.now()}`,
                       name: 'Nova Prateleira',
-                      position: (selectedCompartment.shelves?.length || 0) + 1,
-                      capacity: 10
+                      type: 'shelf',
+                      position: { x: 0, y: ((selectedCompartment.shelves?.length || 0) + 1) * 10, width: 100, height: 10 },
+                      capacity: 10,
+                      products: []
                     };
                     updateCompartment(selectedCompartment.id, {
                       shelves: [...(selectedCompartment.shelves || []), newShelf]

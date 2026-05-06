@@ -1,4 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
+import type { Product } from '../types/unified';
+import { mapProductRow, toProductRow, toProductUpdateRow } from '../services/productMapper';
 
 // Configuração do Supabase
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -84,30 +86,37 @@ export const supabaseService = {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data;
+    return (data || []).map(mapProductRow);
   },
 
-  async createProduct(product: Database['public']['Tables']['products']['Insert']) {
+  async createProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'> & { user_id?: string }) {
+    const productRow = product.currentState
+      ? {
+          ...toProductRow(product, product.user_id),
+          created_at: new Date().toISOString()
+        }
+      : product;
+
     const { data, error } = await supabase
       .from('products')
-      .insert(product)
+      .insert(productRow)
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    return mapProductRow(data);
   },
 
-  async updateProduct(id: string, updates: Database['public']['Tables']['products']['Update']) {
+  async updateProduct(id: string, updates: Partial<Product>) {
     const { data, error } = await supabase
       .from('products')
-      .update(updates)
+      .update(toProductUpdateRow(updates))
       .eq('id', id)
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    return mapProductRow(data);
   },
 
   async deleteProduct(id: string) {

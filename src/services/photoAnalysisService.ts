@@ -1,4 +1,4 @@
-import { Compartment, Shelf } from '../types';
+import { Compartment, Shelf } from '../types/unified';
 
 export interface PhotoAnalysisResult {
   compartments: DetectedCompartment[];
@@ -329,8 +329,10 @@ class PhotoAnalysisService {
         shelves.push({
           id: `fridge-shelf-${i}`,
           name: `Prateleira ${i}`,
-          position: i,
-          capacity: Math.floor(capacity / shelfCount)
+          type: 'shelf',
+          position: { x: 0, y: i * 10, width: 100, height: 10 },
+          capacity: Math.floor(capacity / shelfCount),
+          products: []
         });
       }
 
@@ -355,8 +357,10 @@ class PhotoAnalysisService {
         shelves.push({
           id: `freezer-drawer-${i}`,
           name: `Gaveta ${i}`,
-          position: i,
-          capacity: Math.floor(capacity / drawerCount)
+          type: 'drawer',
+          position: { x: 0, y: i * 10, width: 100, height: 10 },
+          capacity: Math.floor(capacity / drawerCount),
+          products: []
         });
       }
 
@@ -381,8 +385,10 @@ class PhotoAnalysisService {
         shelves.push({
           id: `door-shelf-${i}`,
           name: `Prateleira Porta ${i}`,
-          position: i,
-          capacity: Math.floor(capacity / compartmentCount)
+          type: 'shelf',
+          position: { x: 0, y: i * 10, width: 100, height: 10 },
+          capacity: Math.floor(capacity / compartmentCount),
+          products: []
         });
       }
 
@@ -408,8 +414,10 @@ class PhotoAnalysisService {
         shelves: [{
           id: 'crisper-shelf',
           name: 'Gaveta de Legumes',
-          position: 1,
-          capacity: parseInt(crisperMatch[1])
+          type: 'drawer',
+          position: { x: 0, y: 5, width: 100, height: 10 },
+          capacity: parseInt(crisperMatch[1]),
+          products: []
         }]
       });
     }

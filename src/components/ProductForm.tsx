@@ -1,11 +1,13 @@
 import React, { useState, useRef } from 'react';
-import { Product, Compartment, ScanResult } from '../types';
+import { Product, Compartment } from '../types/unified';
+import type { ScanResult } from '../types/unified';
 import { Camera, X } from 'lucide-react';
 import { BarcodeScanner } from './BarcodeScanner';
+import { getProductQuantity, getProductUnit, getProductShelfId, getProductZoneId } from '../utils';
 
 interface ProductFormProps {
   compartments: Compartment[];
-  onSubmit: (product: Omit<Product, 'id'>) => void;
+  onSubmit: (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => void;
   onCancel: () => void;
   initialProduct?: Partial<Product>;
   selectedApplianceId?: string;
@@ -16,41 +18,120 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   onSubmit,
   onCancel,
   initialProduct,
+  selectedApplianceId,
 }) => {
   const [formData, setFormData] = useState({
     name: initialProduct?.name || '',
     category: initialProduct?.category || '',
-    quantity: initialProduct?.quantity || 1,
-    unit: initialProduct?.unit || 'unidade',
-    expiryDate: initialProduct?.expiryDate ? new Date(initialProduct.expiryDate).toISOString().split('T')[0] : '',
-    purchaseDate: initialProduct?.purchaseDate ? new Date(initialProduct.purchaseDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    quantity: initialProduct ? getProductQuantity(initialProduct as Product) || 1 : 1,
+    unit: initialProduct ? getProductUnit(initialProduct as Product) : 'unidade',
+    expiryDate: initialProduct?.expiry?.sealedExpiryDate ? new Date(initialProduct.expiry.sealedExpiryDate).toISOString().split('T')[0] : '',
+    purchaseDate: initialProduct?.purchase?.purchaseDate ? new Date(initialProduct.purchase.purchaseDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     notes: initialProduct?.notes || '',
     barcode: initialProduct?.barcode || '',
     location: {
-      compartmentId: initialProduct?.location?.compartmentId || compartments[0]?.id || '',
-      shelfId: initialProduct?.location?.shelfId || '',
+      compartmentId: initialProduct ? getProductZoneId(initialProduct as Product) || compartments[0]?.id || '' : compartments[0]?.id || '',
+      shelfId: initialProduct ? getProductShelfId(initialProduct as Product) || '' : '',
     },
   });
 
   const [showScanner, setShowScanner] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(initialProduct?.image || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const selectedCompartment = compartments.find(comp => comp.id === formData.location.compartmentId);
+  const selectedShelf = selectedCompartment?.shelves?.find(shelf => shelf.id === formData.location.shelfId);
+
+  const calculateExpiry = (dateValue: string) => {
+    if (!dateValue) {
+      return {
+        daysUntilExpiry: 0,
+        isExpiringSoon: false,
+        isExpired: false,
+        riskLevel: 'low' as const,
+      };
+    }
+
+    const expiryDate = new Date(dateValue);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const daysUntilExpiry = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+    return {
+      daysUntilExpiry,
+      isExpiringSoon: daysUntilExpiry >= 0 && daysUntilExpiry <= 7,
+      isExpired: daysUntilExpiry < 0,
+      riskLevel: daysUntilExpiry < 0 ? 'critical' as const : daysUntilExpiry <= 2 ? 'high' as const : daysUntilExpiry <= 7 ? 'medium' as const : 'low' as const,
+    };
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const purchaseDate = new Date(formData.purchaseDate);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+
+    if (purchaseDate > today) {
+      window.alert('A data de compra não pode ser futura.');
+      return;
+    }
+
+    if (!formData.location.compartmentId) {
+      window.alert('Selecione uma localização para o produto.');
+      return;
+    }
+
+    const expiryStatus = calculateExpiry(formData.expiryDate);
     
-    const product: Omit<Product, 'id'> = {
-      ...formData,
-      expiryDate: formData.expiryDate ? new Date(formData.expiryDate) : undefined,
-      purchaseDate: formData.purchaseDate ? new Date(formData.purchaseDate) : undefined,
-      imageUrl: imagePreview || undefined,
+    const product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'> = {
+      name: formData.name.trim(),
+      category: formData.category,
+      barcode: formData.barcode || undefined,
+      notes: formData.notes || undefined,
+      image: imagePreview || undefined,
       location: {
-        applianceId: initialProduct?.location?.applianceId || 'default-appliance',
+        locationId: formData.location.compartmentId,
+        locationName: selectedCompartment?.name || 'Local não definido',
+        applianceId: selectedApplianceId || initialProduct?.location?.applianceId,
         compartmentId: formData.location.compartmentId,
         shelfId: formData.location.shelfId,
+        zoneId: formData.location.compartmentId,
+        zoneName: selectedCompartment?.name,
+        position: formData.location.shelfId ? {
+          shelf: selectedShelf?.name || formData.location.shelfId,
+        } : undefined,
       },
+      currentState: {
+        status: initialProduct?.currentState?.status || 'closed',
+        openedAt: initialProduct?.currentState?.openedAt,
+        lastConsumedAt: initialProduct?.currentState?.lastConsumedAt,
+        remainingPercentage: initialProduct?.currentState?.remainingPercentage || 100,
+        condition: expiryStatus.isExpired ? 'expired' : expiryStatus.isExpiringSoon ? 'expiring_soon' : 'fresh',
+      },
+      consumption: {
+        originalQuantity: initialProduct?.consumption?.originalQuantity || formData.quantity,
+        currentQuantity: formData.quantity,
+        unit: formData.unit,
+        consumptionHistory: initialProduct?.consumption?.consumptionHistory || [],
+      },
+      expiry: {
+        sealedExpiryDate: formData.expiryDate ? new Date(formData.expiryDate) : undefined,
+        daysUntilExpiry: expiryStatus.daysUntilExpiry,
+        expiryType: 'sealed',
+        isExpiringSoon: expiryStatus.isExpiringSoon,
+        isExpired: expiryStatus.isExpired,
+        riskLevel: expiryStatus.riskLevel,
+      },
+      purchase: {
+        purchaseDate,
+        quantity: formData.quantity,
+        unit: formData.unit,
+        currency: 'BRL',
+      },
+      tags: initialProduct?.tags || [],
+      nutritionalInfo: initialProduct?.nutritionalInfo,
+      householdId: initialProduct?.householdId || '',
     };
 
     onSubmit(product);
@@ -59,7 +140,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   const handleScanResult = (result: ScanResult) => {
     setFormData(prev => ({
       ...prev,
-      barcode: result.barcode,
+      barcode: result.barcode || prev.barcode,
       name: result.productInfo?.name || prev.name,
       category: result.productInfo?.category || prev.category,
     }));
@@ -331,4 +412,3 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     </div>
   );
 };
-

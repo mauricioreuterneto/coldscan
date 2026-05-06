@@ -1,5 +1,5 @@
 // Serviço para integração com APIs externas
-import { FridgeModel, Compartment, FridgeModelInfo } from '../types';
+import { FridgeModel, Compartment, FridgeModelInfo } from '../types/unified';
 
 export interface ProductInfo {
   name: string;
@@ -23,12 +23,17 @@ export interface ProductInfo {
 export function convertToFridgeModel(info: FridgeModelInfo): FridgeModel {
   return {
     id: info.id,
+    name: `${info.brand} ${info.model}`,
     brand: info.brand,
     model: info.model,
     year: info.year || new Date().getFullYear(),
+    category: 'standard',
+    description: 'Modelo de geladeira',
     capacity: info.capacity,
-    imageUrl: info.image_url,
-    compartments: generateDefaultCompartments(info.capacity)
+    image: info.image,
+    compartments: generateDefaultCompartments(info.capacity),
+    dimensions: info.dimensions || { width: 60, height: 170, depth: 65 },
+    features: info.features || []
   };
 }
 
@@ -44,15 +49,20 @@ export async function convertToFridgeModelWithLayout(info: FridgeModelInfo): Pro
       // Usa layout de alta confiança
       return {
         id: info.id,
+        name: `${info.brand} ${info.model}`,
         brand: info.brand,
         model: info.model,
         year: info.year || new Date().getFullYear(),
+        category: 'standard',
+        description: 'Modelo de geladeira',
         capacity: info.capacity,
-        imageUrl: info.image_url,
+        image: info.image,
         compartments: layoutResults[0].template.compartments.map(comp => ({
           ...comp,
           capacity: Math.floor(info.capacity * (comp.capacity / 100)) // Ajusta capacidade proporcionalmente
-        }))
+        })),
+        dimensions: info.dimensions || { width: 60, height: 170, depth: 65 },
+        features: info.features || []
       };
     }
   } catch (error) {
@@ -64,12 +74,17 @@ export async function convertToFridgeModelWithLayout(info: FridgeModelInfo): Pro
   
   return {
     id: info.id,
+    name: `${info.brand} ${info.model}`,
     brand: info.brand,
     model: info.model,
     year: info.year || new Date().getFullYear(),
+    category: 'standard',
+    description: 'Modelo de geladeira',
     capacity: info.capacity,
-    imageUrl: info.image_url,
-    compartments: adaptiveLayout
+    image: info.image,
+    compartments: adaptiveLayout,
+    dimensions: info.dimensions || { width: 60, height: 170, depth: 65 },
+    features: info.features || []
   };
 }
 
@@ -83,9 +98,9 @@ function generateDefaultCompartments(capacity: number): Compartment[] {
       capacity: Math.floor(capacity * 0.7),
       position: { x: 0, y: 0, width: 100, height: 70 },
       shelves: [
-        { id: 'shelf-1', name: 'Prateleira Superior', position: 1, capacity: Math.floor(capacity * 0.3) },
-        { id: 'shelf-2', name: 'Prateleira Meio', position: 2, capacity: Math.floor(capacity * 0.3) },
-        { id: 'shelf-3', name: 'Prateleira Inferior', position: 3, capacity: Math.floor(capacity * 0.1) }
+        { id: 'shelf-1', name: 'Prateleira Superior', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.3), products: [] },
+        { id: 'shelf-2', name: 'Prateleira Meio', type: 'shelf', position: { x: 0, y: 30, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.3), products: [] },
+        { id: 'shelf-3', name: 'Prateleira Inferior', type: 'shelf', position: { x: 0, y: 50, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.1), products: [] }
       ]
     },
     {
@@ -95,7 +110,7 @@ function generateDefaultCompartments(capacity: number): Compartment[] {
       capacity: Math.floor(capacity * 0.3),
       position: { x: 0, y: 70, width: 100, height: 30 },
       shelves: [
-        { id: 'freezer-shelf-1', name: 'Prateleira Freezer', position: 1, capacity: Math.floor(capacity * 0.3) }
+        { id: 'freezer-shelf-1', name: 'Prateleira Freezer', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.3), products: [] }
       ]
     }
   ];
@@ -411,7 +426,7 @@ class ApiService {
       model,
       year,
       capacity,
-      image_url: item.pagemap?.cse_image?.[0]?.src || item.pagemap?.cse_thumbnail?.[0]?.src,
+      image: item.pagemap?.cse_image?.[0]?.src || item.pagemap?.cse_thumbnail?.[0]?.src,
       energy_efficiency: this.extractEnergyEfficiency(snippet),
       dimensions: this.extractDimensions(snippet),
       features: this.extractFeatures(snippet)

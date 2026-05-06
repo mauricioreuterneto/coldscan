@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { RefrigerationAppliance, Household, FridgeModel } from '../types';
+import { Appliance, Household, FridgeModel } from '../types/unified';
 import { multiApplianceService } from '../services/multiApplianceService';
 import { ApplianceManager } from './ApplianceManager';
 import { FridgeModelSelector } from './FridgeModelSelector';
@@ -7,14 +7,14 @@ import { LayoutConfirmation } from './LayoutConfirmation';
 import { AdvancedLayoutEditor } from './AdvancedLayoutEditor';
 
 interface HouseholdManagerProps {
-  onApplianceSelected?: (appliance: RefrigerationAppliance) => void;
+  onApplianceSelected?: (appliance: Appliance) => void;
 }
 
 export const HouseholdManager: React.FC<HouseholdManagerProps> = ({
   onApplianceSelected
 }) => {
   const [household, setHousehold] = useState<Household | null>(null);
-  const [selectedAppliance, setSelectedAppliance] = useState<RefrigerationAppliance | null>(null);
+  const [selectedAppliance, setSelectedAppliance] = useState<Appliance | null>(null);
   const [currentView, setCurrentView] = useState<'appliances' | 'add-model' | 'layout-confirmation' | 'advanced-editor'>('appliances');
   const [pendingModel, setPendingModel] = useState<FridgeModel | null>(null);
 
@@ -53,7 +53,7 @@ export const HouseholdManager: React.FC<HouseholdManagerProps> = ({
     loadHousehold(); // Recarregar para mostrar o novo aparelho
   };
 
-  const handleApplianceSelect = (appliance: RefrigerationAppliance) => {
+  const handleApplianceSelect = (appliance: Appliance) => {
     setSelectedAppliance(appliance);
     onApplianceSelected?.(appliance);
   };
@@ -83,7 +83,7 @@ export const HouseholdManager: React.FC<HouseholdManagerProps> = ({
             </div>
             <FridgeModelSelector
               onSelectModel={handleModelSelected}
-              availableModels={household?.appliances.map(a => a.model) || []}
+              availableModels={household?.appliances.map(a => a.model).filter((m): m is FridgeModel => !!m) || []}
             />
           </div>
         );
@@ -110,7 +110,7 @@ export const HouseholdManager: React.FC<HouseholdManagerProps> = ({
                 model: pendingModel.model,
                 year: pendingModel.year,
                 capacity: pendingModel.capacity,
-                image_url: pendingModel.imageUrl
+                image: pendingModel.image
               }}
               onLayoutConfirmed={handleLayoutConfirmed}
               onBack={() => setCurrentView('add-model')}
@@ -131,7 +131,7 @@ export const HouseholdManager: React.FC<HouseholdManagerProps> = ({
                   typicalFeatures: [],
                   defaultStructure: []
                 },
-                customCompartments: selectedAppliance?.model.compartments || [],
+                customCompartments: selectedAppliance?.model?.compartments || [],
                 dimensions: {
                   totalHeight: 180,
                   totalWidth: 60,
@@ -182,9 +182,11 @@ export const HouseholdManager: React.FC<HouseholdManagerProps> = ({
                   <span className="text-blue-800 font-medium">
                     {selectedAppliance.name}
                   </span>
-                  <span className="text-blue-600 text-sm">
-                    {selectedAppliance.model.capacity}L
-                  </span>
+                  {selectedAppliance.model && (
+                    <span className="text-blue-600 text-sm">
+                      {selectedAppliance.model.capacity}L
+                    </span>
+                  )}
                 </div>
               </div>
             )}

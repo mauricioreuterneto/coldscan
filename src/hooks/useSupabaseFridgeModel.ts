@@ -1,19 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabaseService } from '../lib/supabase';
 import { useSupabaseAuth } from './useSupabaseAuth';
-
-interface FridgeModel {
-  id: string;
-  user_id: string;
-  brand: string;
-  model: string;
-  year?: number;
-  capacity: number;
-  compartments: any;
-  image_url?: string;
-  created_at: string;
-  updated_at: string;
-}
+import { FridgeModel } from '../types/unified';
 
 export function useSupabaseFridgeModel() {
   const { user } = useSupabaseAuth();
@@ -44,7 +32,7 @@ export function useSupabaseFridgeModel() {
     }
   }, [user, loadFridgeModel]);
 
-  const saveFridgeModel = async (modelData: Omit<FridgeModel, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+  const saveFridgeModel = async (modelData: Omit<FridgeModel, 'id'>) => {
     if (!user) throw new Error('Usuário não autenticado');
     
     setLoading(true);
@@ -54,6 +42,7 @@ export function useSupabaseFridgeModel() {
       const savedModel = await supabaseService.saveFridgeModel({
         ...modelData,
         user_id: user.id,
+        image_url: modelData.image,
       });
       setFridgeModel(savedModel);
       return { success: true, model: savedModel };

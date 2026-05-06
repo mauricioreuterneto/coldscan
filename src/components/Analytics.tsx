@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Product, FridgeModel } from '../types';
+import { Product, FridgeModel } from '../types/unified';
 import { 
   TrendingDown, 
   Calendar, 
@@ -31,16 +31,16 @@ export const Analytics: React.FC<AnalyticsProps> = ({
   // Análises baseadas nos dados
   const analytics = useMemo(() => {
     const totalProducts = products.length;
-    const totalValue = products.reduce((acc, p) => acc + (p.quantity * 10), 0); // Valor estimado
-    const expiredValue = expiredProducts.reduce((acc, p) => acc + (p.quantity * 10), 0);
-    const expiringValue = expiringSoonProducts.reduce((acc, p) => acc + (p.quantity * 10), 0);
+    const totalValue = products.reduce((acc, p) => acc + ((p.consumption?.currentQuantity || 0) * 10), 0); // Valor estimado
+    const expiredValue = expiredProducts.reduce((acc, p) => acc + ((p.consumption?.currentQuantity || 0) * 10), 0);
+    const expiringValue = expiringSoonProducts.reduce((acc, p) => acc + ((p.consumption?.currentQuantity || 0) * 10), 0);
     
     // Análise por categoria
     const categoryAnalysis = categories.map(category => {
-      const categoryProducts = products.filter(p => p.category === category);
-      const expired = categoryProducts.filter(p => p.expiryDate && new Date(p.expiryDate) < new Date());
-      const expiring = categoryProducts.filter(p => p.expiryDate && getDaysUntilExpiry(new Date(p.expiryDate)) <= 3);
-      const lowStock = categoryProducts.filter(p => p.quantity <= 2);
+      const categoryProducts = products.filter(p => p.category && p.category.toString() === category.toString());
+      const expired = categoryProducts.filter(p => p.expiry?.sealedExpiryDate && new Date(p.expiry.sealedExpiryDate) < new Date());
+      const expiring = categoryProducts.filter(p => p.expiry?.sealedExpiryDate && getDaysUntilExpiry(new Date(p.expiry.sealedExpiryDate)) <= 3);
+      const lowStock = categoryProducts.filter(p => (p.consumption?.currentQuantity || 0) <= 2);
       
       return {
         category,
@@ -53,9 +53,9 @@ export const Analytics: React.FC<AnalyticsProps> = ({
     });
 
     // Análise por compartimento
-    const compartmentAnalysis = fridgeModel.compartments.map(compartment => {
-      const compartmentProducts = products.filter(p => p.location.compartmentId === compartment.id);
-      const usage = (compartmentProducts.reduce((acc, p) => acc + p.quantity, 0) / compartment.capacity) * 100;
+    const compartmentAnalysis = (fridgeModel.compartments || []).map(compartment => {
+      const compartmentProducts = products.filter(p => p.location?.zoneId === compartment.id);
+      const usage = (compartmentProducts.reduce((acc, p) => acc + (p.consumption?.currentQuantity || 0), 0) / compartment.capacity) * 100;
       
       return {
         name: compartment.name,

@@ -1,5 +1,5 @@
 import { FridgeModelSpec, FridgeModelSearchService, FRIDGE_MODELS_DATABASE } from '../data/fridgeModelsDatabase';
-import { FridgeModelInfo } from '../types';
+import { FridgeModelInfo } from '../types/unified';
 
 // Serviço de busca estruturada que elimina duplicatas e otimiza tokens
 export class StructuredFridgeSearchService {
@@ -87,7 +87,7 @@ export class StructuredFridgeSearchService {
       energy_efficiency: model.energy_efficiency,
       dimensions: model.dimensions,
       features: model.features,
-      image_url: model.image_url
+      image: model.image || (model as any).image_url
     };
   }
 

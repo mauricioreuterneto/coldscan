@@ -1,6 +1,6 @@
 import React from 'react';
-import { FridgeModel, Compartment, Product } from '../types';
-import { calculateCompartmentUsage } from '../utils';
+import { FridgeModel, Compartment, Product } from '../types/unified';
+import { calculateCompartmentUsage, getProductShelfId, getProductZoneId } from '../utils';
 
 interface FridgeViewerProps {
   fridgeModel: FridgeModel;
@@ -34,7 +34,7 @@ export const FridgeViewer: React.FC<FridgeViewerProps> = ({
   };
 
   const getCompartmentProducts = (compartmentId: string) => {
-    return products.filter(product => product.location.compartmentId === compartmentId);
+    return products.filter(product => getProductZoneId(product) === compartmentId);
   };
 
   const renderCompartment = (compartment: Compartment) => {
@@ -85,7 +85,7 @@ export const FridgeViewer: React.FC<FridgeViewerProps> = ({
             <div className="flex-1 space-y-1">
               {compartment.shelves.map((shelf, index) => {
                 const shelfProducts = compartmentProducts.filter(
-                  product => product.location.shelfId === shelf.id
+                  product => getProductShelfId(product) === shelf.id
                 );
                 return (
                   <div
@@ -123,12 +123,12 @@ export const FridgeViewer: React.FC<FridgeViewerProps> = ({
           )}
 
           {/* Produtos sem prateleira específica */}
-          {compartmentProducts.filter(p => !p.location.shelfId).length > 0 && (
+          {compartmentProducts.filter(p => !getProductShelfId(p)).length > 0 && (
             <div className="mt-2">
               <div className="bg-white bg-opacity-30 rounded p-1 text-xs">
                 <span className="font-medium">Outros</span>
                 <div className="flex flex-wrap gap-1 mt-1">
-                  {compartmentProducts.filter(p => !p.location.shelfId).slice(0, 3).map(product => (
+                  {compartmentProducts.filter(p => !getProductShelfId(p)).slice(0, 3).map(product => (
                     <div
                       key={product.id}
                       className="bg-white rounded px-1 py-0.5 text-xs cursor-pointer hover:bg-gray-100"
@@ -141,8 +141,8 @@ export const FridgeViewer: React.FC<FridgeViewerProps> = ({
                       {product.name.length > 8 ? product.name.substring(0, 8) + '...' : product.name}
                     </div>
                   ))}
-                  {compartmentProducts.filter(p => !p.location.shelfId).length > 3 && (
-                    <span className="text-gray-500">+{compartmentProducts.filter(p => !p.location.shelfId).length - 3}</span>
+                  {compartmentProducts.filter(p => !getProductShelfId(p)).length > 3 && (
+                    <span className="text-gray-500">+{compartmentProducts.filter(p => !getProductShelfId(p)).length - 3}</span>
                   )}
                 </div>
               </div>

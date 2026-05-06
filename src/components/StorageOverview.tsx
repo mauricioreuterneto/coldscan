@@ -16,6 +16,16 @@ import {
 } from 'lucide-react';
 import { ExpiryService } from '../services/expiryService';
 import { supabase } from '../lib/supabase';
+import { Product } from '../types/unified';
+import {
+  getProductCategoryName,
+  getProductLocationId,
+  getProductOriginalQuantity,
+  getProductQuantity,
+  getProductShelfId,
+  getProductUnit,
+  getProductZoneId
+} from '../utils';
 
 interface StorageLocation {
   id: string;
@@ -28,25 +38,28 @@ interface StorageLocation {
   expiredItems: number;
 }
 
-interface Product {
-  id: string;
-  name: string;
-  category: string;
-  quantity: number;
-  unit: string;
-  sealed_expiry_date?: string;
-  opened_expiry_date?: string;
-  current_state: any;
-  consumption: any;
-  location?: {
-    applianceId?: string;
-    compartmentId?: string;
-    shelfId?: string;
-  };
-  image_url?: string;
-  tags: string[];
-  notes?: string;
-}
+// Helper functions moved outside component for shared access
+const getLocationIcon = (type: StorageLocation['type']) => {
+  switch (type) {
+    case 'fridge': return <Refrigerator className="w-6 h-6 text-blue-600" />;
+    case 'freezer': return <div className="w-6 h-6 bg-blue-100 rounded flex items-center justify-center">❄️</div>;
+    case 'pantry': return <Package className="w-6 h-6 text-green-600" />;
+    case 'cabinet': return <Home className="w-6 h-6 text-yellow-600" />;
+    case 'counter': return <div className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">🏠</div>;
+    default: return <div className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">📦</div>;
+  }
+};
+
+const getLocationColor = (type: StorageLocation['type']) => {
+  switch (type) {
+    case 'fridge': return 'border-blue-200 bg-blue-50';
+    case 'freezer': return 'border-cyan-200 bg-cyan-50';
+    case 'pantry': return 'border-green-200 bg-green-50';
+    case 'cabinet': return 'border-yellow-200 bg-yellow-50';
+    case 'counter': return 'border-gray-200 bg-gray-50';
+    default: return 'border-purple-200 bg-purple-50';
+  }
+};
 
 interface StorageOverviewProps {
   householdId: string;
@@ -107,6 +120,9 @@ export const StorageOverview: React.FC<StorageOverviewProps> = ({
   const processStorageLocations = async (locations: any[], products: any[]): Promise<StorageLocation[]> => {
     const processed = locations.map(location => {
       const locationProducts = products.filter(product => 
+        getProductLocationId(product) === location.id ||
+        getProductZoneId(product) === location.id ||
+        getProductShelfId(product) === location.id ||
         product.location?.applianceId === location.id ||
         product.location?.compartmentId === location.id ||
         product.location?.shelfId === location.id
@@ -135,7 +151,7 @@ export const StorageOverview: React.FC<StorageOverviewProps> = ({
     });
 
     // Adicionar local "Fora da Geladeira" para produtos não categorizados
-    const uncategorizedProducts = products.filter(product => !product.location?.applianceId);
+    const uncategorizedProducts = products.filter(product => !getProductLocationId(product));
     if (uncategorizedProducts.length > 0) {
       const uncategorizedExpiring = uncategorizedProducts.filter(product => {
         const status = ExpiryService.getExpiryStatus(product);
@@ -151,6 +167,7 @@ export const StorageOverview: React.FC<StorageOverviewProps> = ({
         id: 'uncategorized',
         name: 'Fora da Geladeira',
         type: 'other',
+        temperature: undefined,
         description: 'Produtos sem localização específica',
         itemCount: uncategorizedProducts.length,
         expiringItems: uncategorizedExpiring,
@@ -161,55 +178,36 @@ export const StorageOverview: React.FC<StorageOverviewProps> = ({
     return processed;
   };
 
-  const getLocationIcon = (type: StorageLocation['type']) => {
-    switch (type) {
-      case 'fridge': return <Refrigerator className="w-6 h-6 text-blue-600" />;
-      case 'freezer': return <div className="w-6 h-6 bg-blue-100 rounded flex items-center justify-center">❄️</div>;
-      case 'pantry': return <Package className="w-6 h-6 text-green-600" />;
-      case 'cabinet': return <Home className="w-6 h-6 text-yellow-600" />;
-      case 'counter': return <div className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">🏠</div>;
-      default: return <div className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">📦</div>;
-    }
-  };
-
-  const getLocationColor = (type: StorageLocation['type']) => {
-    switch (type) {
-      case 'fridge': return 'border-blue-200 bg-blue-50';
-      case 'freezer': return 'border-cyan-200 bg-cyan-50';
-      case 'pantry': return 'border-green-200 bg-green-50';
-      case 'cabinet': return 'border-yellow-200 bg-yellow-50';
-      case 'counter': return 'border-gray-200 bg-gray-50';
-      default: return 'border-purple-200 bg-purple-50';
-    }
-  };
-
   const getFilteredProducts = () => {
     let filtered = products;
 
     // Filtrar por local selecionado
     if (selectedLocation && selectedLocation !== 'uncategorized') {
       filtered = filtered.filter(product => 
+        getProductLocationId(product) === selectedLocation ||
+        getProductZoneId(product) === selectedLocation ||
+        getProductShelfId(product) === selectedLocation ||
         product.location?.applianceId === selectedLocation ||
         product.location?.compartmentId === selectedLocation ||
         product.location?.shelfId === selectedLocation
       );
     } else if (selectedLocation === 'uncategorized') {
-      filtered = filtered.filter(product => !product.location?.applianceId);
+      filtered = filtered.filter(product => !getProductLocationId(product));
     }
 
     // Filtrar por busca
     if (searchQuery) {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+        getProductCategoryName(product).toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     }
 
     // Filtrar por categoria
     if (filterOptions.categories.length > 0) {
       filtered = filtered.filter(product =>
-        filterOptions.categories.includes(product.category)
+        filterOptions.categories.includes(getProductCategoryName(product))
       );
     }
 
@@ -229,8 +227,7 @@ export const StorageOverview: React.FC<StorageOverviewProps> = ({
     // Filtrar apenas em estoque
     if (filterOptions.showOnlyInStock) {
       filtered = filtered.filter(product => {
-        const currentQuantity = (product.consumption as any)?.current_quantity || 0;
-        return currentQuantity > 0;
+        return getProductQuantity(product) > 0;
       });
     }
 
@@ -238,7 +235,7 @@ export const StorageOverview: React.FC<StorageOverviewProps> = ({
   };
 
   const getCategories = () => {
-    const categories = new Set(products.map(p => p.category));
+    const categories = new Set(products.map(p => getProductCategoryName(p)));
     return Array.from(categories).sort();
   };
 
@@ -555,8 +552,8 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const expiryStatus = ExpiryService.getExpiryStatus(product);
-  const currentQuantity = (product.consumption as any)?.current_quantity || 0;
-  const originalQuantity = (product.consumption as any)?.original_quantity || 1;
+  const currentQuantity = getProductQuantity(product);
+  const originalQuantity = getProductOriginalQuantity(product) || 1;
   const stockPercentage = originalQuantity > 0 ? (currentQuantity / originalQuantity) * 100 : 0;
 
   const getStatusColor = () => {
@@ -570,20 +567,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       onClick={onClick}
       className={`border rounded-lg p-3 cursor-pointer hover:shadow-md transition-all ${getStatusColor()}`}
     >
-      {product.image_url && (
+      {product.image && (
         <img
-          src={product.image_url}
+          src={product.image}
           alt={product.name}
           className="w-full h-24 object-cover rounded mb-2"
         />
       )}
       
       <h4 className="font-medium text-gray-800 text-sm mb-1 truncate">{product.name}</h4>
-      <p className="text-xs text-gray-600 mb-2">{product.category}</p>
+      <p className="text-xs text-gray-600 mb-2">{getProductCategoryName(product)}</p>
       
       <div className="flex items-center justify-between text-xs">
         <span className="text-gray-700">
-          {currentQuantity} {product.unit}
+          {currentQuantity} {getProductUnit(product)}
         </span>
         {expiryStatus.isExpiringSoon || expiryStatus.isExpired ? (
           <span className={`font-medium ${
@@ -615,8 +612,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 // Product List Item Component
 const ProductListItem: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const expiryStatus = ExpiryService.getExpiryStatus(product);
-  const currentQuantity = (product.consumption as any)?.current_quantity || 0;
-  const originalQuantity = (product.consumption as any)?.original_quantity || 1;
+  const currentQuantity = getProductQuantity(product);
+  const originalQuantity = getProductOriginalQuantity(product) || 1;
 
   return (
     <div
@@ -626,18 +623,18 @@ const ProductListItem: React.FC<ProductCardProps> = ({ product, onClick }) => {
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            {product.image_url && (
+            {product.image && (
               <img
-                src={product.image_url}
+                src={product.image}
                 alt={product.name}
                 className="w-12 h-12 object-cover rounded"
               />
             )}
             <div>
               <h4 className="font-medium text-gray-800">{product.name}</h4>
-              <p className="text-sm text-gray-600">{product.category}</p>
+              <p className="text-sm text-gray-600">{getProductCategoryName(product)}</p>
               <div className="flex items-center gap-4 text-xs text-gray-600 mt-1">
-                <span>Quantidade: {currentQuantity} {product.unit}</span>
+                <span>Quantidade: {currentQuantity} {getProductUnit(product)}</span>
                 {expiryStatus.isExpiringSoon || expiryStatus.isExpired ? (
                   <span className={`font-medium ${
                     expiryStatus.isExpired ? 'text-red-600' : 'text-yellow-600'

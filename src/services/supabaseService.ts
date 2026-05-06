@@ -1,12 +1,13 @@
 import { supabase } from '../lib/supabase';
 import { 
   Household, 
-  RefrigerationAppliance, 
+  Appliance, 
   ApplianceLocation, 
   ApplianceType,
   FridgeModel,
   Product 
-} from '../types';
+} from '../types/unified';
+import { mapProductRow, toProductRow } from './productMapper';
 
 // Serviço para integração com Supabase
 export class SupabaseService {
@@ -34,10 +35,12 @@ export class SupabaseService {
       return {
         id: data.id,
         name: data.name,
+        members: [], // TODO: carregar membros separadamente
         locations: data.locations || [],
         appliances: data.appliances || [],
-        primaryApplianceId: data.primary_appliance_id,
-        settings: data.settings
+        settings: data.settings || { sharedShopping: false, sharedInventory: false, allowanceNotifications: false },
+        createdAt: data.created_at ? new Date(data.created_at) : new Date(),
+        updatedAt: data.updated_at ? new Date(data.updated_at) : new Date()
       };
     } catch (error) {
       console.error('Erro ao buscar household:', error);
@@ -141,7 +144,7 @@ export class SupabaseService {
   // APPLIANCE OPERATIONS
   // =====================================================
 
-  static async getAppliances(householdId: string): Promise<RefrigerationAppliance[]> {
+  static async getAppliances(householdId: string): Promise<Appliance[]> {
     try {
       const { data, error } = await supabase
         .from('appliance_details')
@@ -154,37 +157,41 @@ export class SupabaseService {
       return data.map(appliance => ({
         id: appliance.id,
         name: appliance.name,
-        designation: appliance.designation,
-        applianceType: {
+        type: {
           id: appliance.appliance_category,
           name: appliance.appliance_type_name,
           category: appliance.appliance_category as any,
-          description: '',
-          icon: appliance.appliance_icon,
-          defaultCompartments: []
+          defaultZones: [],
+          icon: appliance.appliance_icon
         },
-        model: {
-          id: appliance.id, // Isso precisa ser ajustado
+        model: appliance.model_brand ? {
+          id: appliance.model_id || appliance.id,
+          name: `${appliance.model_brand || 'Modelo'} ${appliance.model_name || ''}`.trim(),
           brand: appliance.model_brand,
           model: appliance.model_name,
+          year: appliance.model_year,
+          category: appliance.appliance_category as any,
+          description: appliance.model_description || '',
+          image: appliance.model_image_url,
+          compartments: [],
           capacity: appliance.model_capacity,
-          compartments: [] // Isso precisa ser carregado separadamente
-        },
-        location: {
-          id: appliance.id, // Isso precisa ser ajustado
-          name: appliance.location_name,
-          type: appliance.location_type as any,
-          description: ''
-        },
-        position: appliance.position_description ? {
-          description: appliance.position_description,
-          coordinates: appliance.position_coordinates
+          dimensions: {
+            width: appliance.model_width || 60,
+            height: appliance.model_height || 170,
+            depth: appliance.model_depth || 65
+          },
+          features: []
         } : undefined,
+        locationId: appliance.location_id || appliance.id,
+        zones: [],
+        settings: {
+          targetTemperature: appliance.target_temperature,
+          alertsEnabled: appliance.alerts_enabled !== false,
+          maintenanceReminder: appliance.maintenance_reminder ? new Date(appliance.maintenance_reminder) : undefined,
+          ecoMode: appliance.eco_mode || false
+        },
         isActive: appliance.is_active,
-        isPrimary: appliance.is_primary,
-        customSettings: appliance.custom_settings,
-        createdAt: appliance.created_at,
-        updatedAt: appliance.updated_at
+        isPrimary: appliance.is_primary
       }));
     } catch (error) {
       console.error('Erro ao buscar appliances:', error);
@@ -202,7 +209,7 @@ export class SupabaseService {
       location: ApplianceLocation;
       positionDescription?: string;
     }
-  ): Promise<RefrigerationAppliance> {
+  ): Promise<Appliance> {
     try {
       // Primeiro, salvar o modelo se não existir
       let modelId = await this.findOrCreateModel(applianceData.model);
@@ -240,15 +247,15 @@ export class SupabaseService {
 
   static async updateAppliance(
     applianceId: string, 
-    updates: Partial<RefrigerationAppliance>
-  ): Promise<RefrigerationAppliance> {
+    updates: Partial<Appliance>
+  ): Promise<Appliance> {
     try {
       const { data, error } = await supabase
         .from('refrigeration_appliances')
         .update({
           name: updates.name,
           designation: updates.designation,
-          position_description: updates.position?.description,
+          position_description: updates.positionDescription,
           is_active: updates.isActive,
           custom_settings: updates.customSettings
         })
@@ -327,7 +334,7 @@ export class SupabaseService {
           year: model.year,
           capacity: model.capacity,
           compartments: model.compartments,
-          image_url: model.imageUrl
+          image_url: model.image
         })
         .select('id')
         .single();
@@ -359,59 +366,28 @@ export class SupabaseService {
 
       if (error) throw error;
 
-      return data.map(product => ({
-        id: product.id,
-        name: product.name,
-        category: product.category,
-        quantity: product.quantity,
-        unit: product.unit,
-        expiryDate: product.expiry_date ? new Date(product.expiry_date) : undefined,
-        purchaseDate: product.purchase_date ? new Date(product.purchase_date) : undefined,
-        imageUrl: product.image_url,
-        barcode: product.barcode,
-        location: product.location,
-        notes: product.notes
-      }));
+      return data.map(mapProductRow);
     } catch (error) {
       console.error('Erro ao buscar produtos:', error);
       return [];
     }
   }
 
-  static async createProduct(product: Omit<Product, 'id'>): Promise<Product> {
+  static async createProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<Product> {
     try {
       const { data, error } = await supabase
         .from('products')
         .insert({
-          name: product.name,
-          category: product.category,
-          quantity: product.quantity,
-          unit: product.unit,
-          expiry_date: product.expiryDate?.toISOString().split('T')[0],
-          purchase_date: product.purchaseDate?.toISOString().split('T')[0],
-          image_url: product.imageUrl,
-          barcode: product.barcode,
-          location: product.location,
-          notes: product.notes
+          ...toProductRow(product),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         })
         .select()
         .single();
 
       if (error) throw error;
 
-      return {
-        id: data.id,
-        name: data.name,
-        category: data.category,
-        quantity: data.quantity,
-        unit: data.unit,
-        expiryDate: data.expiry_date ? new Date(data.expiry_date) : undefined,
-        purchaseDate: data.purchase_date ? new Date(data.purchase_date) : undefined,
-        imageUrl: data.image_url,
-        barcode: data.barcode,
-        location: data.location,
-        notes: data.notes
-      };
+      return mapProductRow(data);
     } catch (error) {
       console.error('Erro ao criar produto:', error);
       throw error;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FridgeModel, Product } from '../types';
+import { FridgeModel, Product } from '../types/unified';
 import { 
   Home, 
   Package, 
@@ -17,7 +17,15 @@ import {
   Clock,
   Refrigerator
 } from 'lucide-react';
-import { getExpiredProducts, getProductsExpiringSoon, getLowStockProducts, getCategories } from '../utils';
+import {
+  getExpiredProducts,
+  getProductsExpiringSoon,
+  getLowStockProducts,
+  getCategories,
+  getProductCategoryName,
+  getProductQuantity,
+  getProductUnit
+} from '../utils';
 
 interface DashboardProps {
   fridgeModel: FridgeModel;
@@ -246,7 +254,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <Refrigerator className="w-5 h-5 text-purple-600" />
         </div>
         <p className="text-2xl font-bold text-gray-900">
-          {fridgeModel ? Math.round((products.reduce((acc, p) => acc + p.quantity, 0) / fridgeModel.capacity) * 100) : 0}%
+          {fridgeModel ? Math.round((products.reduce((acc, p) => acc + getProductQuantity(p), 0) / fridgeModel.capacity) * 100) : 0}%
         </p>
         <p className="text-xs text-gray-500 mt-1">Do espaço total</p>
       </div>
@@ -307,23 +315,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                {product.imageUrl && (
+                {product.image && (
                   <img
-                    src={product.imageUrl}
+                    src={product.image}
                     alt={product.name}
                     className="w-10 h-10 rounded-lg object-cover"
                   />
                 )}
                 <div>
                   <h4 className="font-medium">{product.name}</h4>
-                  <p className="text-sm text-gray-500">{product.category}</p>
+                  <p className="text-sm text-gray-500">{getProductCategoryName(product)}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-medium">{product.quantity} {product.unit}</p>
-                {product.expiryDate && (
+                <p className="font-medium">{getProductQuantity(product)} {getProductUnit(product)}</p>
+                {product.expiry?.sealedExpiryDate && (
                   <p className="text-sm text-gray-500">
-                    {new Date(product.expiryDate).toLocaleDateString('pt-BR')}
+                    {new Date(product.expiry.sealedExpiryDate).toLocaleDateString('pt-BR')}
                   </p>
                 )}
               </div>

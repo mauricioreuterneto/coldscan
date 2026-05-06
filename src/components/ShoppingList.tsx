@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Product } from '../types';
+import { Product } from '../types/unified';
 import { 
   ShoppingCart, 
   Plus, 
@@ -11,7 +11,15 @@ import {
   Package,
   Search
 } from 'lucide-react';
-import { getExpiredProducts, getProductsExpiringSoon, getLowStockProducts, getCategories } from '../utils';
+import {
+  getExpiredProducts,
+  getProductsExpiringSoon,
+  getLowStockProducts,
+  getCategories,
+  getProductCategoryName,
+  getProductQuantity,
+  getProductUnit
+} from '../utils';
 
 interface ShoppingItem {
   id: string;
@@ -53,9 +61,9 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({
       items.push({
         id: `expired-${product.id}`,
         name: product.name,
-        category: product.category,
-        quantity: product.quantity,
-        unit: product.unit,
+        category: getProductCategoryName(product),
+        quantity: getProductQuantity(product),
+        unit: getProductUnit(product),
         priority: 'high',
         reason: 'Produto vencido - precisa ser reposto',
         checked: false,
@@ -68,9 +76,9 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({
       items.push({
         id: `expiring-${product.id}`,
         name: product.name,
-        category: product.category,
-        quantity: Math.max(product.quantity, 1),
-        unit: product.unit,
+        category: getProductCategoryName(product),
+        quantity: Math.max(getProductQuantity(product), 1),
+        unit: getProductUnit(product),
         priority: 'high',
         reason: 'Vence em breve - compre antes que acabe',
         checked: false,
@@ -80,13 +88,14 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({
 
     // Produtos com estoque baixo
     lowStockProducts.forEach(product => {
-      const suggestedQuantity = product.quantity <= 1 ? 3 : product.quantity * 2;
+      const currentQuantity = getProductQuantity(product);
+      const suggestedQuantity = currentQuantity <= 1 ? 3 : currentQuantity * 2;
       items.push({
         id: `lowstock-${product.id}`,
         name: product.name,
-        category: product.category,
+        category: getProductCategoryName(product),
         quantity: suggestedQuantity,
-        unit: product.unit,
+        unit: getProductUnit(product),
         priority: 'medium',
         reason: 'Estoque baixo - sugestão de reposição',
         checked: false,

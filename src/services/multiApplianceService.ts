@@ -1,10 +1,10 @@
 import { 
   Household, 
-  RefrigerationAppliance, 
+  Appliance, 
   ApplianceType, 
   ApplianceLocation,
   FridgeModel 
-} from '../types';
+} from '../types/unified';
 import { SupabaseService } from './supabaseService';
 import { supabase } from '../lib/supabase';
 
@@ -23,11 +23,9 @@ export interface ApplianceSuggestion {
   reason: string;
 }
 
-class MultiApplianceService {
-  private readonly STORAGE_KEY = 'household_appliances';
-  private readonly APPLIANCE_TYPES_KEY = 'appliance_types';
-  private readonly LOCATIONS_KEY = 'appliance_locations';
-
+export class MultiApplianceService {
+  private STORAGE_KEY = 'multi_appliance_data';
+  private household: Household | null = null;
   private applianceTypes: ApplianceType[] = [];
   private defaultLocations: ApplianceLocation[] = [];
 
@@ -42,7 +40,7 @@ class MultiApplianceService {
         id: 'fridge',
         name: 'Geladeira',
         category: 'fridge',
-        description: 'Geladeira residencial padrão com freezer',
+        description: 'Geladeira tradicional',
         icon: '🧊',
         defaultCompartments: ['fridge', 'freezer', 'door']
       },
@@ -77,14 +75,6 @@ class MultiApplianceService {
         description: 'Refrigerador exclusivo para bebidas',
         icon: '🍺',
         defaultCompartments: ['beverage_shelf', 'can_holder', 'door']
-      },
-      {
-        id: 'commercial',
-        name: 'Refrigerador Comercial',
-        category: 'commercial',
-        description: 'Equipamento comercial de grande porte',
-        icon: '🏪',
-        defaultCompartments: ['commercial_shelf', 'display_area', 'storage']
       }
     ];
   }
@@ -124,8 +114,15 @@ class MultiApplianceService {
         id: 'garage',
         name: 'Garagem',
         type: 'room',
-        description: 'Área de estacionamento e oficina',
+        description: 'Área de estacionamento e armazenamento',
         subLocations: [
+          {
+            id: 'garage_main',
+            name: 'Área Principal',
+            type: 'area',
+            parentLocationId: 'garage',
+            description: 'Área de estacionamento'
+          },
           {
             id: 'garage_storage',
             name: 'Área de Armazenamento',
@@ -158,14 +155,14 @@ class MultiApplianceService {
         subLocations: [
           {
             id: 'master_bedroom',
-            name: 'Quarto Principal',
+            name: 'Suíte Principal',
             type: 'area',
             parentLocationId: 'bedroom',
-            description: 'Quarto do casal'
+            description: 'Quarto principal'
           },
           {
             id: 'guest_bedroom',
-            name: 'Quarto de Hóspedes',
+            name: 'Quarto de Visitas',
             type: 'area',
             parentLocationId: 'bedroom',
             description: 'Quarto para visitantes'
@@ -212,17 +209,33 @@ class MultiApplianceService {
     let household = await SupabaseService.getHousehold(user.id);
     
     if (!household) {
-      household = await SupabaseService.createHousehold(user.id, 'Minha Casa');
+      const defaultHousehold: Household = {
+        id: user.id,
+        name: 'Minha Casa',
+        members: [],
+        locations: [],
+        appliances: [],
+        settings: {
+          sharedShopping: false,
+          sharedInventory: true,
+          allowanceNotifications: true,
+          defaultAlerts: true,
+          temperatureUnit: 'celsius',
           inventoryTracking: true
-        }
+        },
+        createdAt: new Date(),
+        updatedAt: new Date()
       };
 
-      await this.saveHousehold(defaultHousehold);
+      await SupabaseService.createHousehold(user.id, 'Minha Casa');
       return defaultHousehold;
-    } catch (error) {
-      console.error('Erro ao carregar household:', error);
-      throw new Error('Falha ao carregar dados da residência');
     }
+    
+    return household;
+  }
+
+  async getHousehold(): Promise<Household> {
+    return MultiApplianceService.getHousehold();
   }
 
   async saveHousehold(household: Household): Promise<void> {
@@ -237,234 +250,166 @@ class MultiApplianceService {
   // Gerenciar Aparelhos
   async addAppliance(
     name: string,
-    designation: string | undefined,
     applianceType: ApplianceType,
-    model: FridgeModel,
     location: ApplianceLocation,
-    positionDescription?: string
-  ): Promise<RefrigerationAppliance> {
-    const household = await this.getHousehold();
-    
-    const appliance: RefrigerationAppliance = {
-      id: `appliance-${Date.now()}`,
-      name,
-      designation,
-      applianceType,
-      model,
-      location,
-      position: {
-        description: positionDescription || ''
-      },
-      isActive: true,
-      isPrimary: household.appliances.length === 0, // Primeiro aparelho é o principal
-      customSettings: {
-        alertsEnabled: true
-      },
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+    model?: FridgeModel
+  ): Promise<Appliance> {
+    try {
+      const household = await this.getHousehold();
+      
+      const newAppliance: Appliance = {
+        id: `appliance_${Date.now()}`,
+        name,
+        type: applianceType,
+        applianceType,
+        locationId: location.id,
+        location,
+        model,
+        settings: {
+          alertsEnabled: true,
+          ecoMode: false
+        },
+        isActive: true,
+        isPrimary: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
 
-    household.appliances.push(appliance);
-    
-    // Se for o primeiro aparelho ou não tiver principal, definir como principal
-    if (!household.primaryApplianceId || appliance.isPrimary) {
-      household.primaryApplianceId = appliance.id;
+      household.appliances.push(newAppliance);
+      await this.saveHousehold(household);
+      
+      return newAppliance;
+    } catch (error) {
+      console.error('Erro ao adicionar aparelho:', error);
+      throw new Error('Falha ao adicionar aparelho');
     }
-
-    await this.saveHousehold(household);
-    return appliance;
   }
 
-  async updateAppliance(applianceId: string, updates: Partial<RefrigerationAppliance>): Promise<RefrigerationAppliance> {
-    const household = await this.getHousehold();
-    const applianceIndex = household.appliances.findIndex(a => a.id === applianceId);
-    
-    if (applianceIndex === -1) {
-      throw new Error('Aparelho não encontrado');
+  async updateAppliance(applianceId: string, updates: Partial<Appliance>): Promise<Appliance> {
+    try {
+      const household = await this.getHousehold();
+      const applianceIndex = household.appliances.findIndex(a => a.id === applianceId);
+      
+      if (applianceIndex === -1) {
+        throw new Error('Aparelho não encontrado');
+      }
+
+      household.appliances[applianceIndex] = {
+        ...household.appliances[applianceIndex],
+        ...updates,
+        updatedAt: new Date()
+      };
+
+      await this.saveHousehold(household);
+      return household.appliances[applianceIndex];
+    } catch (error) {
+      console.error('Erro ao atualizar aparelho:', error);
+      throw new Error('Falha ao atualizar aparelho');
     }
-
-    const appliance = household.appliances[applianceIndex];
-    const updatedAppliance = {
-      ...appliance,
-      ...updates,
-      updatedAt: new Date()
-    };
-
-    household.appliances[applianceIndex] = updatedAppliance;
-    await this.saveHousehold(household);
-    
-    return updatedAppliance;
   }
 
   async removeAppliance(applianceId: string): Promise<void> {
-    const household = await this.getHousehold();
-    const applianceIndex = household.appliances.findIndex(a => a.id === applianceId);
-    
-    if (applianceIndex === -1) {
-      throw new Error('Aparelho não encontrado');
+    try {
+      const household = await this.getHousehold();
+      household.appliances = household.appliances.filter(a => a.id !== applianceId);
+      await this.saveHousehold(household);
+    } catch (error) {
+      console.error('Erro ao remover aparelho:', error);
+      throw new Error('Falha ao remover aparelho');
     }
+  }
 
-    household.appliances.splice(applianceIndex, 1);
-
-    // Se era o aparelho principal, definir outro como principal
-    if (household.primaryApplianceId === applianceId && household.appliances.length > 0) {
-      household.primaryApplianceId = household.appliances[0].id;
-    } else if (household.appliances.length === 0) {
-      household.primaryApplianceId = undefined;
+  async getAllAppliances(): Promise<Appliance[]> {
+    try {
+      const household = await this.getHousehold();
+      return household.appliances;
+    } catch (error) {
+      console.error('Erro ao buscar aparelhos:', error);
+      return [];
     }
+  }
 
-    await this.saveHousehold(household);
+  async getPrimaryAppliance(): Promise<Appliance | null> {
+    try {
+      const household = await this.getHousehold();
+      return household.appliances.find(a => a.isActive) || null;
+    } catch (error) {
+      console.error('Erro ao buscar aparelho principal:', error);
+      return null;
+    }
   }
 
   async setPrimaryAppliance(applianceId: string): Promise<void> {
-    const household = await this.getHousehold();
-    const appliance = household.appliances.find(a => a.id === applianceId);
-    
-    if (!appliance) {
-      throw new Error('Aparelho não encontrado');
+    try {
+      const household = await this.getHousehold();
+      
+      // Desativar todos os aparelhos
+      household.appliances = household.appliances.map(a => ({
+        ...a,
+        isActive: a.id === applianceId
+      }));
+
+      await this.saveHousehold(household);
+    } catch (error) {
+      console.error('Erro ao definir aparelho principal:', error);
+      throw new Error('Falha ao definir aparelho principal');
     }
-
-    // Remover primary status de todos
-    household.appliances.forEach(a => a.isPrimary = false);
-    
-    // Definir novo primary
-    appliance.isPrimary = true;
-    household.primaryApplianceId = applianceId;
-    appliance.updatedAt = new Date();
-
-    await this.saveHousehold(household);
   }
 
-  async getAppliance(applianceId: string): Promise<RefrigerationAppliance | null> {
-    const household = await this.getHousehold();
-    return household.appliances.find(a => a.id === applianceId) || null;
+  // Métodos de acesso
+  getApplianceTypes(): ApplianceType[] {
+    return this.applianceTypes;
   }
 
-  async getAllAppliances(): Promise<RefrigerationAppliance[]> {
-    const household = await this.getHousehold();
-    return household.appliances;
+  getDefaultLocations(): ApplianceLocation[] {
+    return this.defaultLocations;
   }
 
-  async getActiveAppliances(): Promise<RefrigerationAppliance[]> {
+  async getAppliancesByLocation(locationId: string): Promise<Appliance[]> {
     const household = await this.getHousehold();
-    return household.appliances.filter(a => a.isActive);
+    return household.appliances.filter(a => (a.location?.id || a.locationId) === locationId);
   }
 
-  async getPrimaryAppliance(): Promise<RefrigerationAppliance | null> {
+  async getAppliancesByCategory(category: string): Promise<Appliance[]> {
     const household = await this.getHousehold();
-    
-    if (household.primaryApplianceId) {
-      return household.appliances.find(a => a.id === household.primaryApplianceId) || null;
+    return household.appliances.filter(a => (a.applianceType || a.type).category === category);
+  }
+
+  // Backup e Exportação
+  async exportHouseholdData(): Promise<string> {
+    const household = await this.getHousehold();
+    return JSON.stringify(household, null, 2);
+  }
+
+  async importHouseholdData(data: string): Promise<void> {
+    try {
+      const household: Household = JSON.parse(data);
+      await this.saveHousehold(household);
+    } catch (error) {
+      throw new Error('Formato de dados inválido');
     }
-    
-    // Fallback: primeiro aparelho ativo
-    return household.appliances.find(a => a.isActive) || null;
   }
 
-  // Gerenciar Localizações
-  async addLocation(location: Omit<ApplianceLocation, 'id'>): Promise<ApplianceLocation> {
-    const household = await this.getHousehold();
-    
-    const newLocation: ApplianceLocation = {
-      id: `location-${Date.now()}`,
-      ...location
-    };
-
-    if (location.parentLocationId) {
-      // Adicionar como sub-localização
-      const parentLocation = this.findLocationById(household.locations, location.parentLocationId);
-      if (parentLocation) {
-        if (!parentLocation.subLocations) {
-          parentLocation.subLocations = [];
-        }
-        parentLocation.subLocations.push(newLocation);
-      }
-    } else {
-      // Adicionar como localização principal
-      household.locations.push(newLocation);
-    }
-
-    await this.saveHousehold(household);
-    return newLocation;
-  }
-
-  async updateLocation(locationId: string, updates: Partial<ApplianceLocation>): Promise<ApplianceLocation> {
-    const household = await this.getHousehold();
-    const location = this.findLocationById(household.locations, locationId);
-    
-    if (!location) {
-      throw new Error('Localização não encontrada');
-    }
-
-    Object.assign(location, updates);
-    await this.saveHousehold(household);
-    
-    return location;
-  }
-
-  async removeLocation(locationId: string): Promise<void> {
-    const household = await this.getHousehold();
-    
-    // Verificar se há aparelhos nesta localização
-    const appliancesInLocation = household.appliances.filter(a => a.location.id === locationId);
-    if (appliancesInLocation.length > 0) {
-      throw new Error('Não é possível remover localização com aparelhos associados');
-    }
-
-    // Remover localização
-    this.removeLocationById(household.locations, locationId);
-    await this.saveHousehold(household);
-  }
-
-  // Métodos utilitários
-  private findLocationById(locations: ApplianceLocation[], id: string): ApplianceLocation | null {
-    for (const location of locations) {
-      if (location.id === id) return location;
-      if (location.subLocations) {
-        const found = this.findLocationById(location.subLocations, id);
-        if (found) return found;
-      }
-    }
-    return null;
-  }
-
-  private removeLocationById(locations: ApplianceLocation[], id: string): boolean {
-    for (let i = 0; i < locations.length; i++) {
-      if (locations[i].id === id) {
-        locations.splice(i, 1);
-        return true;
-      }
-      if (locations[i].subLocations) {
-        if (this.removeLocationById(locations[i].subLocations!, id)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  // Análise e Sugestões
+  // Análises e Sugestões
   async getApplianceSummary(): Promise<ApplianceSummary> {
-    const appliances = await this.getAllAppliances();
-    const activeAppliances = appliances.filter(a => a.isActive);
+    const household = await this.getHousehold();
+    const appliances = household.appliances;
 
     const summary: ApplianceSummary = {
       totalAppliances: appliances.length,
-      activeAppliances: activeAppliances.length,
-      totalCapacity: activeAppliances.reduce((sum, a) => sum + a.model.capacity, 0),
+      activeAppliances: appliances.filter(a => a.isActive).length,
+      totalCapacity: 0, // Calcular baseado nos modelos
       byCategory: {},
       byLocation: {}
     };
 
-    // Agrupar por categoria
-    activeAppliances.forEach(appliance => {
-      const category = appliance.applianceType.category;
+    appliances.forEach(appliance => {
+      // Agrupar por categoria
+      const category = (appliance.applianceType || appliance.type).category;
       summary.byCategory[category] = (summary.byCategory[category] || 0) + 1;
-    });
 
-    // Agrupar por localização
-    activeAppliances.forEach(appliance => {
-      const location = appliance.location.name;
+      // Agrupar por localização
+      const location = appliance.location?.name || appliance.locationId || 'Sem local';
       summary.byLocation[location] = (summary.byLocation[location] || 0) + 1;
     });
 
@@ -475,20 +420,26 @@ class MultiApplianceService {
     const household = await this.getHousehold();
     const suggestions: ApplianceSuggestion[] = [];
 
-    // Analisar padrões e sugerir melhorias
-    const hasKitchenFridge = household.appliances.some(a => 
-      a.location.id === 'kitchen' && a.applianceType.category === 'fridge'
+    // Verificar se tem geladeira principal
+    const hasMainFridge = household.appliances.some(a => 
+      (a.applianceType || a.type).category === 'fridge' && a.isActive
     );
 
-    const hasGarageFreezer = household.appliances.some(a => 
-      a.location.id === 'garage' && a.applianceType.category === 'freezer'
-    );
-
-    const hasBarCooler = household.appliances.some(a => 
-      a.location.id.includes('bar') && a.applianceType.category === 'beverage_cooler'
-    );
+    if (!hasMainFridge) {
+      suggestions.push({
+        type: this.applianceTypes.find(t => t.id === 'fridge')!,
+        suggestedName: 'Geladeira Principal',
+        suggestedLocation: this.findLocationById(this.defaultLocations, 'kitchen_main')!,
+        reason: 'Toda cozinha precisa de uma geladeira principal'
+      });
+    }
 
     // Sugerir freezer na garagem se não tiver
+    const hasGarageFreezer = household.appliances.some(a => 
+      (a.applianceType || a.type).category === 'freezer' && 
+      (a.location?.id || a.locationId).includes('garage')
+    );
+
     if (!hasGarageFreezer && household.appliances.length > 0) {
       suggestions.push({
         type: this.applianceTypes.find(t => t.id === 'freezer')!,
@@ -499,6 +450,10 @@ class MultiApplianceService {
     }
 
     // Sugerir refrigerador de bebidas se tiver área de bar
+    const hasBarCooler = household.appliances.some(a => 
+      (a.applianceType || a.type).category === 'beverage_cooler'
+    );
+
     if (!hasBarCooler && this.hasBarArea(household.locations)) {
       suggestions.push({
         type: this.applianceTypes.find(t => t.id === 'beverage_cooler')!,
@@ -518,38 +473,15 @@ class MultiApplianceService {
     );
   }
 
-  // Métodos de acesso
-  getApplianceTypes(): ApplianceType[] {
-    return this.applianceTypes;
-  }
-
-  getDefaultLocations(): ApplianceLocation[] {
-    return this.defaultLocations;
-  }
-
-  async getAppliancesByLocation(locationId: string): Promise<RefrigerationAppliance[]> {
-    const household = await this.getHousehold();
-    return household.appliances.filter(a => a.location.id === locationId);
-  }
-
-  async getAppliancesByCategory(category: string): Promise<RefrigerationAppliance[]> {
-    const household = await this.getHousehold();
-    return household.appliances.filter(a => a.applianceType.category === category);
-  }
-
-  // Backup e Exportação
-  async exportHouseholdData(): Promise<string> {
-    const household = await this.getHousehold();
-    return JSON.stringify(household, null, 2);
-  }
-
-  async importHouseholdData(data: string): Promise<void> {
-    try {
-      const household: Household = JSON.parse(data);
-      await this.saveHousehold(household);
-    } catch (error) {
-      throw new Error('Formato de dados inválido');
+  private findLocationById(locations: ApplianceLocation[], id: string): ApplianceLocation | undefined {
+    for (const location of locations) {
+      if (location.id === id) return location;
+      if (location.subLocations) {
+        const found = this.findLocationById(location.subLocations, id);
+        if (found) return found;
+      }
     }
+    return undefined;
   }
 }
 

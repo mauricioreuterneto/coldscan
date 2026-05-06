@@ -1,23 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabaseService } from '../lib/supabase';
 import { useSupabaseAuth } from './useSupabaseAuth';
-
-interface Product {
-  id: string;
-  user_id: string;
-  name: string;
-  category: string;
-  quantity: number;
-  unit: string;
-  expiry_date?: string;
-  purchase_date?: string;
-  image_url?: string;
-  barcode?: string;
-  location: any;
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-}
+import { Product } from '../types/unified';
 
 export function useSupabaseProducts() {
   const { user } = useSupabaseAuth();

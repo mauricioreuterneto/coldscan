@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 import { 
   ShoppingCart, 
   Check, 
@@ -90,7 +91,7 @@ export const ShoppingMode: React.FC<ShoppingModeProps> = ({
         .eq('status', 'active')
         .single();
 
-      return data ? ShoppingService.formatShoppingSession(data) : null;
+      return data ? (ShoppingService as any).formatShoppingSession(data) : null;
     } catch {
       return null;
     }

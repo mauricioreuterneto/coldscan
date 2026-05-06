@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Filter, X, ChevronDown } from 'lucide-react';
-import { FridgeModelInfo } from '../types';
+import { FridgeModelInfo, FridgeModel } from '../types/unified';
 import { StructuredFridgeSearchService } from '../services/structuredFridgeSearch';
-import { FridgeModel } from '../types';
 
 interface StructuredFridgeSearchProps {
   onSelectModel: (model: FridgeModel) => void;
@@ -129,11 +128,16 @@ export const StructuredFridgeSearch: React.FC<StructuredFridgeSearchProps> = ({
     if (selectedSearchResult) {
       const fridgeModel: FridgeModel = {
         id: selectedSearchResult.id,
+        name: `${selectedSearchResult.brand} ${selectedSearchResult.model}`,
         brand: selectedSearchResult.brand,
         model: selectedSearchResult.model,
         year: selectedSearchResult.year || new Date().getFullYear(),
+        category: 'standard',
+        description: 'Modelo de geladeira',
         capacity: selectedSearchResult.capacity,
-        compartments: [], // Será preenchido posteriormente pelo LayoutConfirmation
+        compartments: [],
+        dimensions: { width: 60, height: 170, depth: 65 },
+        features: []
       };
       onSelectModel(fridgeModel);
     }
@@ -330,10 +334,10 @@ export const StructuredFridgeSearch: React.FC<StructuredFridgeSearchProps> = ({
                 }`}
               >
                 {/* Imagem */}
-                {model.image_url && (
+                {model.image && (
                   <div className="aspect-video bg-gray-100 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
                     <img
-                      src={model.image_url}
+                      src={model.image}
                       alt={`${model.brand} ${model.model}`}
                       className="w-full h-full object-cover"
                       onError={(e) => {

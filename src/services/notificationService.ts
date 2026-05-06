@@ -634,7 +634,7 @@ export class NotificationService {
         .from('notifications')
         .delete()
         .lt('created_at', cutoffDate.toISOString())
-        .not('read_at', null); // Apenas exclui notificações lidas
+        .not('read_at', 'is', null); // Apenas exclui notificações lidas
     } catch (error) {
       console.error('Erro ao limpar notificações antigas:', error);
     }

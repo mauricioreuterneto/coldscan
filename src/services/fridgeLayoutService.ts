@@ -1,4 +1,4 @@
-import { FridgeModelInfo, Compartment } from '../types';
+import { FridgeModelInfo, Compartment } from '../types/unified';
 
 export interface FridgeLayoutTemplate {
   id: string;
@@ -41,9 +41,9 @@ class FridgeLayoutService {
             capacity: 0.4,
             position: { x: 0, y: 0, width: 100, height: 35 },
             shelves: [
-              { id: 'shelf-1', name: 'Prateleira 1', position: 1, capacity: 0.15 },
-              { id: 'shelf-2', name: 'Prateleira 2', position: 2, capacity: 0.15 },
-              { id: 'shelf-3', name: 'Prateleira 3', position: 3, capacity: 0.1 }
+              { id: 'shelf-1', name: 'Prateleira 1', type: 'shelf', position: { x: 0, y: 5, width: 100, height: 8 }, capacity: 0.15, products: [] },
+              { id: 'shelf-2', name: 'Prateleira 2', type: 'shelf', position: { x: 0, y: 15, width: 100, height: 8 }, capacity: 0.15, products: [] },
+              { id: 'shelf-3', name: 'Prateleira 3', type: 'shelf', position: { x: 0, y: 25, width: 100, height: 8 }, capacity: 0.1, products: [] }
             ]
           },
           {
@@ -53,8 +53,8 @@ class FridgeLayoutService {
             capacity: 0.3,
             position: { x: 0, y: 35, width: 100, height: 35 },
             shelves: [
-              { id: 'drawer-1', name: 'Gavetão 1', position: 1, capacity: 0.2 },
-              { id: 'drawer-2', name: 'Gavetão 2', position: 2, capacity: 0.1 }
+              { id: 'drawer-1', name: 'Gavetão 1', type: 'drawer', position: { x: 0, y: 5, width: 100, height: 10 }, capacity: 0.2, products: [] },
+              { id: 'drawer-2', name: 'Gavetão 2', type: 'drawer', position: { x: 0, y: 20, width: 100, height: 10 }, capacity: 0.1, products: [] }
             ]
           },
           {
@@ -64,8 +64,8 @@ class FridgeLayoutService {
             capacity: 0.3,
             position: { x: 0, y: 70, width: 100, height: 30 },
             shelves: [
-              { id: 'freezer-shelf-1', name: 'Prateleira Freezer', position: 1, capacity: 0.15 },
-              { id: 'freezer-drawer-1', name: 'Gaveta Freezer', position: 2, capacity: 0.15 }
+              { id: 'freezer-shelf-1', name: 'Prateleira Freezer', type: 'shelf', position: { x: 0, y: 5, width: 100, height: 10 }, capacity: 0.15, products: [] },
+              { id: 'freezer-drawer-1', name: 'Gaveta Freezer', type: 'drawer', position: { x: 0, y: 18, width: 100, height: 10 }, capacity: 0.15, products: [] }
             ]
           }
         ]
@@ -87,10 +87,10 @@ class FridgeLayoutService {
             capacity: 0.75,
             position: { x: 0, y: 0, width: 100, height: 75 },
             shelves: [
-              { id: 'shelf-1', name: 'Prateleira Superior', position: 1, capacity: 0.25 },
-              { id: 'shelf-2', name: 'Prateleira Meio', position: 2, capacity: 0.25 },
-              { id: 'shelf-3', name: 'Prateleira Inferior', position: 3, capacity: 0.15 },
-              { id: 'legumeira', name: 'Legumeira', position: 4, capacity: 0.1 }
+              { id: 'shelf-1', name: 'Prateleira Superior', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: 0.25, products: [] },
+              { id: 'shelf-2', name: 'Prateleira Meio', type: 'shelf', position: { x: 0, y: 20, width: 100, height: 10 }, capacity: 0.25, products: [] },
+              { id: 'shelf-3', name: 'Prateleira Inferior', type: 'shelf', position: { x: 0, y: 30, width: 100, height: 10 }, capacity: 0.15, products: [] },
+              { id: 'legumeira', name: 'Legumeira', type: 'drawer', position: { x: 0, y: 40, width: 100, height: 10 }, capacity: 0.1, products: [] }
             ]
           },
           {
@@ -100,7 +100,7 @@ class FridgeLayoutService {
             capacity: 0.25,
             position: { x: 0, y: 75, width: 100, height: 25 },
             shelves: [
-              { id: 'freezer-shelf', name: 'Prateleira Freezer', position: 1, capacity: 0.25 }
+              { id: 'freezer-shelf', name: 'Prateleira Freezer', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: 0.25, products: [] }
             ]
           }
         ]
@@ -122,8 +122,8 @@ class FridgeLayoutService {
             capacity: 0.35,
             position: { x: 0, y: 0, width: 100, height: 35 },
             shelves: [
-              { id: 'freezer-shelf-1', name: 'Prateleira 1', position: 1, capacity: 0.2 },
-              { id: 'freezer-drawer-1', name: 'Gaveta 1', position: 2, capacity: 0.15 }
+              { id: 'freezer-shelf-1', name: 'Prateleira 1', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: 0.2, products: [] },
+              { id: 'freezer-drawer-1', name: 'Gaveta 1', type: 'drawer', position: { x: 0, y: 20, width: 100, height: 10 }, capacity: 0.15, products: [] }
             ]
           },
           {
@@ -133,10 +133,10 @@ class FridgeLayoutService {
             capacity: 0.65,
             position: { x: 0, y: 35, width: 100, height: 65 },
             shelves: [
-              { id: 'shelf-1', name: 'Prateleira 1', position: 1, capacity: 0.2 },
-              { id: 'shelf-2', name: 'Prateleira 2', position: 2, capacity: 0.2 },
-              { id: 'drawer-1', name: 'Gavetão', position: 3, capacity: 0.15 },
-              { id: 'drawer-2', name: 'Gavetão 2', position: 4, capacity: 0.1 }
+              { id: 'shelf-1', name: 'Prateleira 1', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: 0.2, products: [] },
+              { id: 'shelf-2', name: 'Prateleira 2', type: 'shelf', position: { x: 0, y: 20, width: 100, height: 10 }, capacity: 0.2, products: [] },
+              { id: 'drawer-1', name: 'Gavetão', type: 'drawer', position: { x: 0, y: 30, width: 100, height: 10 }, capacity: 0.15, products: [] },
+              { id: 'drawer-2', name: 'Gavetão 2', type: 'drawer', position: { x: 0, y: 40, width: 100, height: 10 }, capacity: 0.1, products: [] }
             ]
           }
         ]
@@ -158,8 +158,8 @@ class FridgeLayoutService {
             capacity: 0.3,
             position: { x: 0, y: 0, width: 100, height: 30 },
             shelves: [
-              { id: 'freezer-shelf-1', name: 'Prateleira Freezer', position: 1, capacity: 0.15 },
-              { id: 'freezer-drawer-1', name: 'Gaveta Freezer', position: 2, capacity: 0.15 }
+              { id: 'freezer-shelf-1', name: 'Prateleira Freezer', type: 'shelf', position: { x: 0, y: 5, width: 100, height: 10 }, capacity: 0.15, products: [] },
+              { id: 'freezer-drawer-1', name: 'Gaveta Freezer', type: 'drawer', position: { x: 0, y: 18, width: 100, height: 10 }, capacity: 0.15, products: [] }
             ]
           },
           {
@@ -169,7 +169,7 @@ class FridgeLayoutService {
             capacity: 0.1,
             position: { x: 0, y: 30, width: 100, height: 10 },
             shelves: [
-              { id: 'door-shelf-1', name: 'Prateleira Porta', position: 1, capacity: 0.1 }
+              { id: 'door-shelf-1', name: 'Prateleira Porta', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: 0.1, products: [] }
             ]
           },
           {
@@ -179,10 +179,10 @@ class FridgeLayoutService {
             capacity: 0.6,
             position: { x: 0, y: 40, width: 100, height: 60 },
             shelves: [
-              { id: 'shelf-1', name: 'Prateleira 1', position: 1, capacity: 0.2 },
-              { id: 'shelf-2', name: 'Prateleira 2', position: 2, capacity: 0.2 },
-              { id: 'drawer-1', name: 'Gavetão', position: 3, capacity: 0.15 },
-              { id: 'drawer-2', name: 'Gaveta 2', position: 4, capacity: 0.05 }
+              { id: 'shelf-1', name: 'Prateleira 1', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: 0.2, products: [] },
+              { id: 'shelf-2', name: 'Prateleira 2', type: 'shelf', position: { x: 0, y: 20, width: 100, height: 10 }, capacity: 0.2, products: [] },
+              { id: 'drawer-1', name: 'Gavetão', type: 'drawer', position: { x: 0, y: 30, width: 100, height: 10 }, capacity: 0.15, products: [] },
+              { id: 'drawer-2', name: 'Gaveta 2', type: 'drawer', position: { x: 0, y: 40, width: 100, height: 10 }, capacity: 0.05, products: [] }
             ]
           }
         ]
@@ -204,9 +204,9 @@ class FridgeLayoutService {
             capacity: 0.8,
             position: { x: 0, y: 0, width: 100, height: 80 },
             shelves: [
-              { id: 'shelf-1', name: 'Prateleira Superior', position: 1, capacity: 0.3 },
-              { id: 'shelf-2', name: 'Prateleira Inferior', position: 2, capacity: 0.3 },
-              { id: 'legumeira', name: 'Legumeira', position: 3, capacity: 0.2 }
+              { id: 'shelf-1', name: 'Prateleira Superior', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: 0.3, products: [] },
+              { id: 'shelf-2', name: 'Prateleira Inferior', type: 'shelf', position: { x: 0, y: 20, width: 100, height: 10 }, capacity: 0.3, products: [] },
+              { id: 'legumeira', name: 'Legumeira', type: 'drawer', position: { x: 0, y: 30, width: 100, height: 10 }, capacity: 0.2, products: [] }
             ]
           },
           {
@@ -216,7 +216,7 @@ class FridgeLayoutService {
             capacity: 0.2,
             position: { x: 0, y: 80, width: 100, height: 20 },
             shelves: [
-              { id: 'freezer-shelf', name: 'Prateleira Freezer', position: 1, capacity: 0.2 }
+              { id: 'freezer-shelf', name: 'Prateleira Freezer', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: 0.2, products: [] }
             ]
           }
         ]
@@ -327,8 +327,8 @@ class FridgeLayoutService {
         capacity: Math.floor(capacity * 0.35),
         position: { x: 0, y: 0, width: 100, height: 35 },
         shelves: [
-          { id: 'freezer-shelf-1', name: 'Prateleira Freezer', position: 1, capacity: Math.floor(capacity * 0.2) },
-          { id: 'freezer-drawer-1', name: 'Gaveta Freezer', position: 2, capacity: Math.floor(capacity * 0.15) }
+          { id: 'freezer-shelf-1', name: 'Prateleira Freezer', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.2), products: [] },
+          { id: 'freezer-drawer-1', name: 'Gaveta Freezer', type: 'drawer', position: { x: 0, y: 20, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.15), products: [] }
         ]
       },
       {
@@ -338,9 +338,9 @@ class FridgeLayoutService {
         capacity: Math.floor(capacity * 0.65),
         position: { x: 0, y: 35, width: 100, height: 65 },
         shelves: [
-          { id: 'shelf-1', name: 'Prateleira 1', position: 1, capacity: Math.floor(capacity * 0.25) },
-          { id: 'shelf-2', name: 'Prateleira 2', position: 2, capacity: Math.floor(capacity * 0.25) },
-          { id: 'drawer-1', name: 'Gavetão', position: 3, capacity: Math.floor(capacity * 0.15) }
+          { id: 'shelf-1', name: 'Prateleira 1', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.25), products: [] },
+          { id: 'shelf-2', name: 'Prateleira 2', type: 'shelf', position: { x: 0, y: 20, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.25), products: [] },
+          { id: 'drawer-1', name: 'Gavetão', type: 'drawer', position: { x: 0, y: 30, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.15), products: [] }
         ]
       }
     ];
@@ -355,8 +355,8 @@ class FridgeLayoutService {
         capacity: Math.floor(capacity * 0.4),
         position: { x: 0, y: 0, width: 100, height: 40 },
         shelves: [
-          { id: 'shelf-1', name: 'Prateleira 1', position: 1, capacity: Math.floor(capacity * 0.2) },
-          { id: 'shelf-2', name: 'Prateleira 2', position: 2, capacity: Math.floor(capacity * 0.2) }
+          { id: 'shelf-1', name: 'Prateleira 1', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.2), products: [] },
+          { id: 'shelf-2', name: 'Prateleira 2', type: 'shelf', position: { x: 0, y: 20, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.2), products: [] }
         ]
       },
       {
@@ -366,8 +366,8 @@ class FridgeLayoutService {
         capacity: Math.floor(capacity * 0.3),
         position: { x: 0, y: 40, width: 100, height: 30 },
         shelves: [
-          { id: 'drawer-1', name: 'Gavetão 1', position: 1, capacity: Math.floor(capacity * 0.2) },
-          { id: 'drawer-2', name: 'Gavetão 2', position: 2, capacity: Math.floor(capacity * 0.1) }
+          { id: 'drawer-1', name: 'Gavetão 1', type: 'drawer', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.2), products: [] },
+          { id: 'drawer-2', name: 'Gavetão 2', type: 'drawer', position: { x: 0, y: 20, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.1), products: [] }
         ]
       },
       {
@@ -377,7 +377,7 @@ class FridgeLayoutService {
         capacity: Math.floor(capacity * 0.3),
         position: { x: 0, y: 70, width: 100, height: 30 },
         shelves: [
-          { id: 'freezer-shelf-1', name: 'Prateleira Freezer', position: 1, capacity: Math.floor(capacity * 0.3) }
+          { id: 'freezer-shelf-1', name: 'Prateleira Freezer', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.3), products: [] }
         ]
       }
     ];
@@ -392,9 +392,9 @@ class FridgeLayoutService {
         capacity: Math.floor(capacity * 0.8),
         position: { x: 0, y: 0, width: 100, height: 80 },
         shelves: [
-          { id: 'shelf-1', name: 'Prateleira Superior', position: 1, capacity: Math.floor(capacity * 0.4) },
-          { id: 'shelf-2', name: 'Prateleira Inferior', position: 2, capacity: Math.floor(capacity * 0.3) },
-          { id: 'legumeira', name: 'Legumeira', position: 3, capacity: Math.floor(capacity * 0.1) }
+          { id: 'shelf-1', name: 'Prateleira Superior', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.4), products: [] },
+          { id: 'shelf-2', name: 'Prateleira Inferior', type: 'shelf', position: { x: 0, y: 20, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.3), products: [] },
+          { id: 'legumeira', name: 'Legumeira', type: 'drawer', position: { x: 0, y: 30, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.1), products: [] }
         ]
       },
       {
@@ -404,7 +404,7 @@ class FridgeLayoutService {
         capacity: Math.floor(capacity * 0.2),
         position: { x: 0, y: 80, width: 100, height: 20 },
         shelves: [
-          { id: 'freezer-shelf', name: 'Prateleira Freezer', position: 1, capacity: Math.floor(capacity * 0.2) }
+          { id: 'freezer-shelf', name: 'Prateleira Freezer', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.2), products: [] }
         ]
       }
     ];
@@ -419,10 +419,10 @@ class FridgeLayoutService {
         capacity: Math.floor(capacity * 0.7),
         position: { x: 0, y: 0, width: 100, height: 70 },
         shelves: [
-          { id: 'shelf-1', name: 'Prateleira Superior', position: 1, capacity: Math.floor(capacity * 0.25) },
-          { id: 'shelf-2', name: 'Prateleira Meio', position: 2, capacity: Math.floor(capacity * 0.25) },
-          { id: 'shelf-3', name: 'Prateleira Inferior', position: 3, capacity: Math.floor(capacity * 0.15) },
-          { id: 'legumeira', name: 'Legumeira', position: 4, capacity: Math.floor(capacity * 0.05) }
+          { id: 'shelf-1', name: 'Prateleira Superior', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.25), products: [] },
+          { id: 'shelf-2', name: 'Prateleira Meio', type: 'shelf', position: { x: 0, y: 20, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.25), products: [] },
+          { id: 'shelf-3', name: 'Prateleira Inferior', type: 'shelf', position: { x: 0, y: 30, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.15), products: [] },
+          { id: 'legumeira', name: 'Legumeira', type: 'drawer', position: { x: 0, y: 40, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.05), products: [] }
         ]
       },
       {
@@ -432,7 +432,7 @@ class FridgeLayoutService {
         capacity: Math.floor(capacity * 0.3),
         position: { x: 0, y: 70, width: 100, height: 30 },
         shelves: [
-          { id: 'freezer-shelf-1', name: 'Prateleira Freezer', position: 1, capacity: Math.floor(capacity * 0.3) }
+          { id: 'freezer-shelf-1', name: 'Prateleira Freezer', type: 'shelf', position: { x: 0, y: 10, width: 100, height: 10 }, capacity: Math.floor(capacity * 0.3), products: [] }
         ]
       }
     ];

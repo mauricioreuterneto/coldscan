@@ -1,4 +1,4 @@
-import { FridgeModelInfo, Compartment } from '../types';
+import { FridgeModelInfo, Compartment } from '../types/unified';
 
 export interface UserLayout {
   id: string;

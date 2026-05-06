@@ -29,7 +29,7 @@ export interface FridgeModelSpec {
   features: string[];
   energy_efficiency: string;
   year: number;
-  image_url?: string;
+  image?: string;
 }
 
 export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
@@ -70,7 +70,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Frost Free', 'Turbo Congelamento', 'LED Interior', 'Controle Digital'],
     energy_efficiency: 'A',
     year: 2023,
-    image_url: 'https://images-submarino.b2w.io/produtos/01/00/item/133529/3/133529314_1GG.jpg'
+    image: 'https://images-submarino.b2w.io/produtos/01/00/item/133529/3/133529314_1GG.jpg'
   },
   {
     id: 'brastemp-bre57ab',
@@ -108,7 +108,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Inverse', 'Frost Free', 'Turbo Congelamento', 'LED Interior', 'Smart Cool'],
     energy_efficiency: 'A+',
     year: 2023,
-    image_url: 'https://images-americanas.b2w.io/produtos/01/00/item/133529/2/133529287_1GG.jpg'
+    image: 'https://images-americanas.b2w.io/produtos/01/00/item/133529/2/133529287_1GG.jpg'
   },
   {
     id: 'brastemp-brew44ak',
@@ -146,7 +146,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Frost Free', 'Turbo Congelamento', 'LED Interior', 'Controle Digital'],
     energy_efficiency: 'A',
     year: 2022,
-    image_url: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/5/132780534_1GG.jpg'
+    image: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/5/132780534_1GG.jpg'
   },
   {
     id: 'brastemp-brew50ak',
@@ -184,7 +184,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Frost Free', 'Turbo Congelamento', 'LED Interior', 'Controle Eletrônico'],
     energy_efficiency: 'A',
     year: 2023,
-    image_url: 'https://images-submarino.b2w.io/produtos/01/00/item/133529/8/133529876_1GG.jpg'
+    image: 'https://images-submarino.b2w.io/produtos/01/00/item/133529/8/133529876_1GG.jpg'
   },
   {
     id: 'brastemp-bre45ab',
@@ -221,7 +221,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Degelo Automático', 'Economia de Energia', 'Prateleiras Removíveis'],
     energy_efficiency: 'A',
     year: 2022,
-    image_url: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/6/132780645_1GG.jpg'
+    image: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/6/132780645_1GG.jpg'
   },
   {
     id: 'brastemp-bre57ab',
@@ -259,7 +259,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Inverse', 'Frost Free', 'Turbo Congelamento', 'LED Interior', 'Smart Cool'],
     energy_efficiency: 'A+',
     year: 2023,
-    image_url: 'https://images-americanas.b2w.io/produtos/01/00/item/133529/2/133529287_1GG.jpg'
+    image: 'https://images-americanas.b2w.io/produtos/01/00/item/133529/2/133529287_1GG.jpg'
   },
 
   // CONSUL - Modelos Populares
@@ -298,7 +298,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Degelo Automático', 'Economia de Energia', 'Prateleiras Removíveis'],
     energy_efficiency: 'A',
     year: 2022,
-    image_url: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/0/132780062_1GG.jpg'
+    image: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/0/132780062_1GG.jpg'
   },
   {
     id: 'consul-crb53ak',
@@ -336,7 +336,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Frost Free', 'Turbo Congelamento', 'LED Interior', 'Controle Eletrônico'],
     energy_efficiency: 'A',
     year: 2023,
-    image_url: 'https://images-submarino.b2w.io/produtos/01/00/item/133529/8/133529876_1GG.jpg'
+    image: 'https://images-submarino.b2w.io/produtos/01/00/item/133529/8/133529876_1GG.jpg'
   },
   {
     id: 'consul-crm40nb',
@@ -373,7 +373,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Degelo Automático', 'Economia de Energia', 'Prateleiras Removíveis'],
     energy_efficiency: 'A',
     year: 2022,
-    image_url: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/1/132780113_1GG.jpg'
+    image: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/1/132780113_1GG.jpg'
   },
   {
     id: 'consul-crb39bk',
@@ -411,7 +411,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Frost Free', 'Turbo Congelamento', 'LED Interior', 'Controle Eletrônico'],
     energy_efficiency: 'A',
     year: 2023,
-    image_url: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/2/132780127_1GG.jpg'
+    image: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/2/132780127_1GG.jpg'
   },
   {
     id: 'consul-crm53ak',
@@ -448,7 +448,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Degelo Automático', 'Economia de Energia', 'Prateleiras Removíveis'],
     energy_efficiency: 'A',
     year: 2022,
-    image_url: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/3/132780138_1GG.jpg'
+    image: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/3/132780138_1GG.jpg'
   },
   {
     id: 'consul-crb53ak',
@@ -486,7 +486,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Frost Free', 'Turbo Congelamento', 'LED Interior', 'Controle Eletrônico'],
     energy_efficiency: 'A',
     year: 2023,
-    image_url: 'https://images-submarino.b2w.io/produtos/01/00/item/133529/8/133529876_1GG.jpg'
+    image: 'https://images-submarino.b2w.io/produtos/01/00/item/133529/8/133529876_1GG.jpg'
   },
   {
     id: 'consul-cre44b',
@@ -524,7 +524,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Inverse', 'Duplex', 'Evox Technology', 'Turbo Congelamento', 'LED Interior', 'Controle Digital'],
     energy_efficiency: 'A+',
     year: 2023,
-    image_url: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/4/132780456_1GG.jpg'
+    image: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/4/132780456_1GG.jpg'
   },
 
   // SAMSUNG - Modelos Populares
@@ -564,7 +564,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Frost Free', 'Digital Inverter', 'Cooling Zone', 'LED Interior', 'SmartThings'],
     energy_efficiency: 'A+',
     year: 2023,
-    image_url: 'https://images.samsung.com/is/image/samsung/br-refrigerators-rt38k5532s8-rt38k5532s8-dk-001-front-black?$720_576_PNG$'
+    image: 'https://images.samsung.com/is/image/samsung/br-refrigerators-rt38k5532s8-rt38k5532s8-dk-001-front-black?$720_576_PNG$'
   },
   {
     id: 'samsung-rb38t676fb1',
@@ -602,7 +602,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Inverse', 'Frost Free', 'Digital Inverter', 'SpaceMax', 'SmartThings'],
     energy_efficiency: 'A++',
     year: 2023,
-    image_url: 'https://images.samsung.com/is/image/samsung/br-refrigerators-rb38t676fb1-rb38t676fb1-dk-001-front-black?$720_576_PNG$'
+    image: 'https://images.samsung.com/is/image/samsung/br-refrigerators-rb38t676fb1-rb38t676fb1-dk-001-front-black?$720_576_PNG$'
   },
   {
     id: 'samsung-rt32k5532sl',
@@ -640,7 +640,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Frost Free', 'Digital Inverter', 'Cooling Zone', 'LED Interior'],
     energy_efficiency: 'A+',
     year: 2022,
-    image_url: 'https://images.samsung.com/is/image/samsung/br-refrigerators-rt32k5532sl-rt32k5532sl-dk-001-front-silver?$720_576_PNG$'
+    image: 'https://images.samsung.com/is/image/samsung/br-refrigerators-rt32k5532sl-rt32k5532sl-dk-001-front-silver?$720_576_PNG$'
   },
   {
     id: 'samsung-rt42k5532s8',
@@ -678,7 +678,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Frost Free', 'Digital Inverter', 'Cooling Zone', 'LED Interior', 'SmartThings'],
     energy_efficiency: 'A+',
     year: 2023,
-    image_url: 'https://images.samsung.com/is/image/samsung/br-refrigerators-rt42k5532s8-rt42k5532s8-dk-001-front-black?$720_576_PNG$'
+    image: 'https://images.samsung.com/is/image/samsung/br-refrigerators-rt42k5532s8-rt42k5532s8-dk-001-front-black?$720_576_PNG$'
   },
   {
     id: 'samsung-rb29t3132s8',
@@ -716,7 +716,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Inverse', 'Frost Free', 'Digital Inverter', 'SpaceMax'],
     energy_efficiency: 'A+',
     year: 2022,
-    image_url: 'https://images.samsung.com/is/image/samsung/br-refrigerators-rb29t3132s8-rb29t3132s8-dk-001-front-silver?$720_576_PNG$'
+    image: 'https://images.samsung.com/is/image/samsung/br-refrigerators-rb29t3132s8-rb29t3132s8-dk-001-front-silver?$720_576_PNG$'
   },
   {
     id: 'samsung-rb38t676fb1',
@@ -754,7 +754,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Inverse', 'Frost Free', 'Digital Inverter', 'SpaceMax', 'SmartThings'],
     energy_efficiency: 'A++',
     year: 2023,
-    image_url: 'https://images.samsung.com/is/image/samsung/br-refrigerators-rb38t676fb1-rb38t676fb1-dk-001-front-black?$720_576_PNG$'
+    image: 'https://images.samsung.com/is/image/samsung/br-refrigerators-rb38t676fb1-rb38t676fb1-dk-001-front-black?$720_576_PNG$'
   },
 
   // LG - Modelos Populares
@@ -794,7 +794,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Frost Free', 'Smart Cooling', 'LED Interior', 'Door Cooling+', 'SmartThinQ'],
     energy_efficiency: 'A+',
     year: 2023,
-    image_url: 'https://www.lg.com/br/images/refrigeradores/md07535123/gallery/medium01.jpg'
+    image: 'https://www.lg.com/br/images/refrigeradores/md07535123/gallery/medium01.jpg'
   },
   {
     id: 'lg-gc-b489sbuv',
@@ -832,7 +832,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Inverse', 'Frost Free', 'Smart Cooling', 'InstaView', 'SmartThinQ'],
     energy_efficiency: 'A++',
     year: 2023,
-    image_url: 'https://www.lg.com/br/images/refrigeradores/md07535124/gallery/medium01.jpg'
+    image: 'https://www.lg.com/br/images/refrigeradores/md07535124/gallery/medium01.jpg'
   },
   {
     id: 'lg-gc-b389sbuv',
@@ -870,7 +870,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Frost Free', 'Smart Cooling', 'LED Interior', 'Door Cooling+', 'SmartThinQ'],
     energy_efficiency: 'A+',
     year: 2022,
-    image_url: 'https://www.lg.com/br/images/refrigeradores/md07535125/gallery/medium01.jpg'
+    image: 'https://www.lg.com/br/images/refrigeradores/md07535125/gallery/medium01.jpg'
   },
   {
     id: 'lg-gc-b339sluv',
@@ -908,7 +908,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Frost Free', 'Smart Cooling', 'LED Interior', 'Door Cooling+'],
     energy_efficiency: 'A+',
     year: 2022,
-    image_url: 'https://www.lg.com/br/images/refrigeradores/md07535126/gallery/medium01.jpg'
+    image: 'https://www.lg.com/br/images/refrigeradores/md07535126/gallery/medium01.jpg'
   },
   {
     id: 'lg-gc-b429sbuv',
@@ -946,7 +946,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Inverse', 'Frost Free', 'Smart Cooling', 'SmartThinQ'],
     energy_efficiency: 'A+',
     year: 2023,
-    image_url: 'https://www.lg.com/br/images/refrigeradores/md07535127/gallery/medium01.jpg'
+    image: 'https://www.lg.com/br/images/refrigeradores/md07535127/gallery/medium01.jpg'
   },
   {
     id: 'lg-gc-b489sbuv',
@@ -984,7 +984,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Inverse', 'Frost Free', 'Smart Cooling', 'InstaView', 'SmartThinQ'],
     energy_efficiency: 'A++',
     year: 2023,
-    image_url: 'https://www.lg.com/br/images/refrigeradores/md07535124/gallery/medium01.jpg'
+    image: 'https://www.lg.com/br/images/refrigeradores/md07535124/gallery/medium01.jpg'
   },
 
   // ELECTROLUX - Modelos Populares
@@ -1023,7 +1023,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Degelo Automático', 'Turbo Congelamento', 'Controle Eletrônico', 'LED Interior'],
     energy_efficiency: 'A',
     year: 2022,
-    image_url: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/1/132780113_1GG.jpg'
+    image: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/1/132780113_1GG.jpg'
   },
   {
     id: 'electrolux-df54x',
@@ -1061,7 +1061,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Frost Free', 'Turbo Congelamento', 'LED Interior', 'Smart Control'],
     energy_efficiency: 'A+',
     year: 2023,
-    image_url: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/2/132780127_1GG.jpg'
+    image: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/2/132780127_1GG.jpg'
   },
 
   // PANASONIC - Modelos Populares
@@ -1101,7 +1101,7 @@ export const FRIDGE_MODELS_DATABASE: FridgeModelSpec[] = [
     features: ['Frost Free', 'ECONAVI', 'Ag Clean', 'LED Interior'],
     energy_efficiency: 'A+',
     year: 2023,
-    image_url: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/3/132780138_1GG.jpg'
+    image: 'https://images-americanas.b2w.io/produtos/01/00/item/132780/3/132780138_1GG.jpg'
   }
 ];
 

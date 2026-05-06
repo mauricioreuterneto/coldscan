@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FridgeModel } from '../types';
+import { FridgeModel } from '../types/unified';
 import { Camera, Search, Loader2, Check } from 'lucide-react';
 import { apiService } from '../services/apiService';
 import { FridgeModelInfo } from '../types';
