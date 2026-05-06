@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { coreService } from './services/coreService';
 import { supabase } from './lib/supabase';
 import type { User, ShoppingList, Appliance, Product, FridgeModel } from './types/unified';
-import { Plus, Home, Package, ShoppingCart, BarChart3, Grid3X3 } from 'lucide-react';
+import { Plus, Home, Package, ShoppingCart, BarChart3, Grid3X3, Menu, X } from 'lucide-react';
 
 // Componentes existentes que vamos manter
 import { Auth } from './components/Auth';
@@ -28,6 +28,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Carregar dados iniciais
   useEffect(() => {
@@ -274,11 +275,19 @@ function App() {
       <header className="bg-white shadow-sm border-b">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-bold text-gray-800">Fridge Scanner</h1>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+              <h1 className="text-lg md:text-xl font-bold text-gray-800">Fridge Scanner</h1>
+            </div>
             <div className="flex items-center gap-2">
-              {/* Alertas */}
+              {/* Alertas - Hidden on mobile, shown on tablet+ */}
               {(expiredProducts.length > 0 || expiringSoonProducts.length > 0 || lowStockProducts.length > 0) && (
-                <div className="flex items-center gap-1 text-sm">
+                <div className="hidden sm:flex items-center gap-1 text-sm">
                   {expiredProducts.length > 0 && (
                     <span className="px-2 py-1 bg-red-100 text-red-700 rounded-full">
                       {expiredProducts.length} vencido(s)
@@ -308,13 +317,13 @@ function App() {
         </div>
       </header>
 
-      {/* Navigation */}
-      <nav className="bg-white border-b">
+      {/* Navigation - Desktop/Tablet */}
+      <nav className="hidden md:block bg-white border-b">
         <div className="px-4 py-2">
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto">
             <button
               onClick={() => setCurrentPage('home')}
-              className={`px-3 py-1 rounded text-sm flex items-center gap-1 ${
+              className={`px-3 py-1 rounded text-sm flex items-center gap-1 whitespace-nowrap ${
                 currentPage === 'home' 
                   ? 'bg-blue-100 text-blue-700' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -325,7 +334,7 @@ function App() {
             </button>
             <button
               onClick={() => setCurrentPage('fridge')}
-              className={`px-3 py-1 rounded text-sm flex items-center gap-1 ${
+              className={`px-3 py-1 rounded text-sm flex items-center gap-1 whitespace-nowrap ${
                 currentPage === 'fridge' 
                   ? 'bg-blue-100 text-blue-700' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -336,7 +345,7 @@ function App() {
             </button>
             <button
               onClick={() => setCurrentPage('products')}
-              className={`px-3 py-1 rounded text-sm flex items-center gap-1 ${
+              className={`px-3 py-1 rounded text-sm flex items-center gap-1 whitespace-nowrap ${
                 currentPage === 'products' 
                   ? 'bg-blue-100 text-blue-700' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -347,7 +356,7 @@ function App() {
             </button>
             <button
               onClick={() => setCurrentPage('shopping')}
-              className={`px-3 py-1 rounded text-sm flex items-center gap-1 ${
+              className={`px-3 py-1 rounded text-sm flex items-center gap-1 whitespace-nowrap ${
                 currentPage === 'shopping' 
                   ? 'bg-blue-100 text-blue-700' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -358,7 +367,7 @@ function App() {
             </button>
             <button
               onClick={() => setCurrentPage('analytics')}
-              className={`px-3 py-1 rounded text-sm flex items-center gap-1 ${
+              className={`px-3 py-1 rounded text-sm flex items-center gap-1 whitespace-nowrap ${
                 currentPage === 'analytics' 
                   ? 'bg-blue-100 text-blue-700' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -369,7 +378,7 @@ function App() {
             </button>
             <button
               onClick={() => setCurrentPage('storage')}
-              className={`px-3 py-1 rounded text-sm flex items-center gap-1 ${
+              className={`px-3 py-1 rounded text-sm flex items-center gap-1 whitespace-nowrap ${
                 currentPage === 'storage' 
                   ? 'bg-blue-100 text-blue-700' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -382,8 +391,100 @@ function App() {
         </div>
       </nav>
 
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-white border-b shadow-lg">
+          <div className="px-4 py-2 space-y-2">
+            <button
+              onClick={() => {
+                setCurrentPage('home');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full px-3 py-2 rounded text-sm flex items-center gap-2 ${
+                currentPage === 'home' 
+                  ? 'bg-blue-100 text-blue-700' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <Home className="w-4 h-4" />
+              Início
+            </button>
+            <button
+              onClick={() => {
+                setCurrentPage('fridge');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full px-3 py-2 rounded text-sm flex items-center gap-2 ${
+                currentPage === 'fridge' 
+                  ? 'bg-blue-100 text-blue-700' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <Package className="w-4 h-4" />
+              Geladeira
+            </button>
+            <button
+              onClick={() => {
+                setCurrentPage('products');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full px-3 py-2 rounded text-sm flex items-center gap-2 ${
+                currentPage === 'products' 
+                  ? 'bg-blue-100 text-blue-700' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <Package className="w-4 h-4" />
+              Produtos
+            </button>
+            <button
+              onClick={() => {
+                setCurrentPage('shopping');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full px-3 py-2 rounded text-sm flex items-center gap-2 ${
+                currentPage === 'shopping' 
+                  ? 'bg-blue-100 text-blue-700' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <ShoppingCart className="w-4 h-4" />
+              Compras
+            </button>
+            <button
+              onClick={() => {
+                setCurrentPage('analytics');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full px-3 py-2 rounded text-sm flex items-center gap-2 ${
+                currentPage === 'analytics' 
+                  ? 'bg-blue-100 text-blue-700' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <BarChart3 className="w-4 h-4" />
+              Análises
+            </button>
+            <button
+              onClick={() => {
+                setCurrentPage('storage');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full px-3 py-2 rounded text-sm flex items-center gap-2 ${
+                currentPage === 'storage' 
+                  ? 'bg-blue-100 text-blue-700' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <Grid3X3 className="w-4 h-4" />
+              Armazenamento
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
-      <main className="p-4">
+      <main className="p-4 pb-20 md:pb-4">
         {currentPage === 'setup' && (
           <FridgeModelSelector onSelectModel={async (model) => {
             setFridgeModel(model);
@@ -482,7 +583,7 @@ function App() {
       {currentPage !== 'setup' && (
         <button
           onClick={handleOpenAddProduct}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
+          className="fixed bottom-20 md:bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center z-40"
         >
           <Plus className="w-6 h-6" />
         </button>
@@ -491,10 +592,10 @@ function App() {
       {/* Product Modal */}
       {showProductModal && fridgeModel && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl md:max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div className="p-4 md:p-6">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">
+                <h2 className="text-lg md:text-xl font-semibold">
                   {editingProduct ? 'Editar Produto' : 'Adicionar Produto'}
                 </h2>
                 <button

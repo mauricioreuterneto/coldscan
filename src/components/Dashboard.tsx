@@ -71,7 +71,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   ];
 
   const renderSidebar = () => (
-    <div className="w-64 bg-white shadow-lg h-full">
+    <div className="hidden lg:block w-64 bg-white shadow-lg h-full">
       <div className="p-6">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -143,10 +143,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
   );
 
   const renderHeader = () => (
-    <div className="bg-white border-b px-6 py-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4 flex-1">
-          <div className="relative max-w-md flex-1">
+    <div className="bg-white border-b px-4 md:px-6 py-4">
+      <div className="flex flex-col md:flex-row md:items-center gap-4">
+        <div className="flex items-center gap-2 flex-1 w-full md:w-auto">
+          <div className="relative w-full md:max-w-md flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
@@ -156,12 +156,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+          <button className="hidden md:block p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
             <Filter className="w-5 h-5 text-gray-600" />
           </button>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
             className="relative p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
@@ -176,16 +176,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
           <button
             onClick={onAddProduct}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+            className="bg-blue-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
           >
             <Plus className="w-4 h-4" />
-            Adicionar Produto
+            <span className="hidden sm:inline">Adicionar Produto</span>
           </button>
         </div>
       </div>
 
       {showNotifications && (
-        <div className="absolute right-6 top-16 w-80 bg-white rounded-lg shadow-lg border z-50">
+        <div className="absolute right-4 md:right-6 top-16 w-80 bg-white rounded-lg shadow-lg border z-50">
           <div className="p-4 border-b">
             <h3 className="font-semibold">Notificações</h3>
           </div>
@@ -229,108 +229,108 @@ export const Dashboard: React.FC<DashboardProps> = ({
   );
 
   const renderStatsCards = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div className="bg-white rounded-lg shadow p-6">
+    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+      <div className="bg-white rounded-lg shadow p-4 md:p-6">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-medium text-gray-600">Total de Produtos</h3>
-          <Package className="w-5 h-5 text-blue-600" />
+          <h3 className="text-xs md:text-sm font-medium text-gray-600">Total de Produtos</h3>
+          <Package className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
         </div>
-        <p className="text-2xl font-bold text-gray-900">{products.length}</p>
+        <p className="text-xl md:text-2xl font-bold text-gray-900">{products.length}</p>
         <p className="text-xs text-gray-500 mt-1">Na geladeira</p>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white rounded-lg shadow p-4 md:p-6">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-medium text-gray-600">Categorias</h3>
-          <BarChart3 className="w-5 h-5 text-green-600" />
+          <h3 className="text-xs md:text-sm font-medium text-gray-600">Categorias</h3>
+          <BarChart3 className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
         </div>
-        <p className="text-2xl font-bold text-gray-900">{categories.length}</p>
+        <p className="text-xl md:text-2xl font-bold text-gray-900">{categories.length}</p>
         <p className="text-xs text-gray-500 mt-1">Tipos diferentes</p>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white rounded-lg shadow p-4 md:p-6">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-medium text-gray-600">Capacidade Usada</h3>
-          <Refrigerator className="w-5 h-5 text-purple-600" />
+          <h3 className="text-xs md:text-sm font-medium text-gray-600">Capacidade Usada</h3>
+          <Refrigerator className="w-4 h-4 md:w-5 md:h-5 text-purple-600" />
         </div>
-        <p className="text-2xl font-bold text-gray-900">
+        <p className="text-xl md:text-2xl font-bold text-gray-900">
           {fridgeModel ? Math.round((products.reduce((acc, p) => acc + getProductQuantity(p), 0) / fridgeModel.capacity) * 100) : 0}%
         </p>
         <p className="text-xs text-gray-500 mt-1">Do espaço total</p>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white rounded-lg shadow p-4 md:p-6">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-medium text-gray-600">Alertas Ativos</h3>
-          <AlertTriangle className="w-5 h-5 text-red-600" />
+          <h3 className="text-xs md:text-sm font-medium text-gray-600">Alertas Ativos</h3>
+          <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-red-600" />
         </div>
-        <p className="text-2xl font-bold text-gray-900">{totalAlerts}</p>
+        <p className="text-xl md:text-2xl font-bold text-gray-900">{totalAlerts}</p>
         <p className="text-xs text-gray-500 mt-1">Precisam atenção</p>
       </div>
     </div>
   );
 
   const renderQuickActions = () => (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
       <button
         onClick={onAddProduct}
-        className="bg-blue-600 text-white rounded-lg p-6 hover:bg-blue-700 transition-colors text-left"
+        className="bg-blue-600 text-white rounded-lg p-4 md:p-6 hover:bg-blue-700 transition-colors text-left"
       >
-        <Plus className="w-8 h-8 mb-3" />
-        <h3 className="font-semibold mb-1">Adicionar Produto</h3>
-        <p className="text-sm opacity-90">Cadastre novos itens na sua geladeira</p>
+        <Plus className="w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3" />
+        <h3 className="font-semibold text-sm md:text-base mb-1">Adicionar Produto</h3>
+        <p className="text-xs md:text-sm opacity-90">Cadastre novos itens na sua geladeira</p>
       </button>
 
       <button
         onClick={() => setCurrentPage('shopping')}
-        className="bg-green-600 text-white rounded-lg p-6 hover:bg-green-700 transition-colors text-left"
+        className="bg-green-600 text-white rounded-lg p-4 md:p-6 hover:bg-green-700 transition-colors text-left"
       >
-        <ShoppingCart className="w-8 h-8 mb-3" />
-        <h3 className="font-semibold mb-1">Lista de Compras</h3>
-        <p className="text-sm opacity-90">Gerencie suas compras</p>
+        <ShoppingCart className="w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3" />
+        <h3 className="font-semibold text-sm md:text-base mb-1">Lista de Compras</h3>
+        <p className="text-xs md:text-sm opacity-90">Gerencie suas compras</p>
       </button>
 
       <button
         onClick={() => setCurrentPage('analytics')}
-        className="bg-purple-600 text-white rounded-lg p-6 hover:bg-purple-700 transition-colors text-left"
+        className="bg-purple-600 text-white rounded-lg p-4 md:p-6 hover:bg-purple-700 transition-colors text-left"
       >
-        <BarChart3 className="w-8 h-8 mb-3" />
-        <h3 className="font-semibold mb-1">Ver Análises</h3>
-        <p className="text-sm opacity-90">Estatísticas detalhadas</p>
+        <BarChart3 className="w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3" />
+        <h3 className="font-semibold text-sm md:text-base mb-1">Ver Análises</h3>
+        <p className="text-xs md:text-sm opacity-90">Estatísticas detalhadas</p>
       </button>
     </div>
   );
 
   const renderRecentProducts = () => (
     <div className="bg-white rounded-lg shadow">
-      <div className="p-6 border-b">
-        <h3 className="text-lg font-semibold">Produtos Recentes</h3>
+      <div className="p-4 md:p-6 border-b">
+        <h3 className="text-base md:text-lg font-semibold">Produtos Recentes</h3>
       </div>
       <div className="divide-y">
         {products.slice(0, 5).map((product) => (
           <div
             key={product.id}
-            className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+            className="p-3 md:p-4 hover:bg-gray-50 cursor-pointer transition-colors"
             onClick={() => onEditProduct(product)}
           >
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
                 {product.image && (
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="w-10 h-10 rounded-lg object-cover"
+                    className="w-8 h-8 md:w-10 md:h-10 rounded-lg object-cover flex-shrink-0"
                   />
                 )}
-                <div>
-                  <h4 className="font-medium">{product.name}</h4>
-                  <p className="text-sm text-gray-500">{getProductCategoryName(product)}</p>
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-medium text-sm md:text-base truncate">{product.name}</h4>
+                  <p className="text-xs md:text-sm text-gray-500 truncate">{getProductCategoryName(product)}</p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="font-medium">{getProductQuantity(product)} {getProductUnit(product)}</p>
+              <div className="text-right flex-shrink-0 ml-2">
+                <p className="font-medium text-sm md:text-base">{getProductQuantity(product)} {getProductUnit(product)}</p>
                 {product.expiry?.sealedExpiryDate && (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xs md:text-sm text-gray-500 hidden sm:block">
                     {new Date(product.expiry.sealedExpiryDate).toLocaleDateString('pt-BR')}
                   </p>
                 )}
@@ -339,12 +339,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
         ))}
         {products.length === 0 && (
-          <div className="p-8 text-center text-gray-500">
-            <Package className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <p>Nenhum produto cadastrado</p>
+          <div className="p-6 md:p-8 text-center text-gray-500">
+            <Package className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-4 text-gray-300" />
+            <p className="text-sm md:text-base">Nenhum produto cadastrado</p>
             <button
               onClick={onAddProduct}
-              className="mt-4 text-blue-600 hover:text-blue-700 font-medium"
+              className="mt-4 text-blue-600 hover:text-blue-700 font-medium text-sm md:text-base"
             >
               Adicionar primeiro produto
             </button>
@@ -355,19 +355,19 @@ export const Dashboard: React.FC<DashboardProps> = ({
   );
 
   return (
-    <div className="h-screen flex bg-gray-50">
+    <div className="h-screen flex bg-gray-50 flex-col lg:flex-row">
       {renderSidebar()}
       
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {renderHeader()}
         
-        <div className="flex-1 overflow-auto p-6">
+        <div className="flex-1 overflow-auto p-4 md:p-6">
           <div className="max-w-7xl mx-auto">
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <div className="mb-6 md:mb-8">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
                 Bem-vindo de volta, {user.email?.split('@')[0]}!
               </h2>
-              <p className="text-gray-600">
+              <p className="text-sm md:text-base text-gray-600">
                 Aqui está o resumo da sua geladeira {fridgeModel?.brand} {fridgeModel?.model}
               </p>
             </div>

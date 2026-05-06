@@ -225,69 +225,69 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Lista de Compras Inteligente</h2>
-        <p className="text-gray-600">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
+      <div className="mb-6 md:mb-8">
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Lista de Compras Inteligente</h2>
+        <p className="text-sm md:text-base text-gray-600">
           Sugestões automáticas baseadas nos produtos da sua geladeira
         </p>
       </div>
 
       {/* Estatísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6 mb-6 md:mb-8">
+        <div className="bg-white rounded-lg shadow p-3 md:p-6">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Total</h3>
-            <ShoppingCart className="w-5 h-5 text-blue-600" />
+            <h3 className="text-xs md:text-sm font-medium text-gray-600">Total</h3>
+            <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900">{stats.total}</p>
           <p className="text-xs text-gray-500 mt-1">Itens na lista</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-3 md:p-6">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Comprados</h3>
-            <Check className="w-5 h-5 text-green-600" />
+            <h3 className="text-xs md:text-sm font-medium text-gray-600">Comprados</h3>
+            <Check className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">{stats.checked}</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900">{stats.checked}</p>
           <p className="text-xs text-gray-500 mt-1">Itens marcados</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-3 md:p-6">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Alta Prioridade</h3>
-            <AlertTriangle className="w-5 h-5 text-red-600" />
+            <h3 className="text-xs md:text-sm font-medium text-gray-600">Alta Prioridade</h3>
+            <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-red-600" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">{stats.highPriority}</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900">{stats.highPriority}</p>
           <p className="text-xs text-gray-500 mt-1">Precisam urgentemente</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-3 md:p-6 hidden md:block">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Média Prioridade</h3>
-            <Calendar className="w-5 h-5 text-yellow-600" />
+            <h3 className="text-xs md:text-sm font-medium text-gray-600">Média Prioridade</h3>
+            <Calendar className="w-4 h-4 md:w-5 md:h-5 text-yellow-600" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">{stats.mediumPriority}</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900">{stats.mediumPriority}</p>
           <p className="text-xs text-gray-500 mt-1">Importantes</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-3 md:p-6 hidden md:block">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Baixa Prioridade</h3>
-            <Package className="w-5 h-5 text-green-600" />
+            <h3 className="text-xs md:text-sm font-medium text-gray-600">Baixa Prioridade</h3>
+            <Package className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">{stats.lowPriority}</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900">{stats.lowPriority}</p>
           <p className="text-xs text-gray-500 mt-1">Se precisar</p>
         </div>
       </div>
 
       {/* Sugestões Automáticas */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
-          <div className="flex items-center justify-between mb-4">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 md:p-6 mb-6 md:mb-8">
+          <div className="flex items-center justify-between mb-3 md:mb-4">
             <div>
-              <h3 className="text-lg font-semibold text-blue-800">Sugestões Automáticas</h3>
-              <p className="text-blue-600">
+              <h3 className="text-base md:text-lg font-semibold text-blue-800">Sugestões Automáticas</h3>
+              <p className="text-sm md:text-base text-blue-600">
                 {suggestions.length} itens sugeridos baseados na sua geladeira
               </p>
             </div>
@@ -298,16 +298,16 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({
               <X className="w-5 h-5" />
             </button>
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
             <button
               onClick={acceptAllSuggestions}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm md:text-base"
             >
               Aceitar Todas as Sugestões
             </button>
             <button
               onClick={() => setShowSuggestions(false)}
-              className="bg-white text-blue-600 px-4 py-2 rounded-lg border border-blue-600 hover:bg-blue-50 transition-colors"
+              className="bg-white text-blue-600 px-4 py-2 rounded-lg border border-blue-600 hover:bg-blue-50 transition-colors text-sm md:text-base"
             >
               Ignorar Sugestões
             </button>
@@ -316,23 +316,23 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({
       )}
 
       {/* Busca e Filtros */}
-      <div className="bg-white rounded-lg shadow p-4 mb-8">
-        <div className="flex items-center gap-4">
+      <div className="bg-white rounded-lg shadow p-3 md:p-4 mb-6 md:mb-8">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 md:w-5 md:h-5" />
             <input
               type="text"
               placeholder="Buscar itens..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
             />
           </div>
           
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
           >
             <option value="all">Todas as categorias</option>
             {categories.map(cat => (
@@ -342,19 +342,19 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({
 
           <button
             onClick={addNewItem}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+            className="bg-blue-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 text-sm md:text-base"
           >
             <Plus className="w-4 h-4" />
-            Adicionar Item
+            <span className="hidden sm:inline">Adicionar Item</span>
           </button>
 
           {stats.checked > 0 && (
             <button
               onClick={clearCheckedItems}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+              className="bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 text-sm md:text-base"
             >
               <Check className="w-4 h-4" />
-              Limpar Comprados
+              <span className="hidden sm:inline">Limpar Comprados</span>
             </button>
           )}
         </div>
@@ -370,10 +370,10 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({
                 item.checked ? 'bg-gray-50 opacity-75' : ''
               }`}
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-start gap-3 md:gap-4">
                 <button
                   onClick={() => toggleItemChecked(item.id)}
-                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                  className={`w-6 h-6 md:w-6 md:h-6 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0 mt-1 ${
                     item.checked
                       ? 'bg-green-600 border-green-600'
                       : 'border-gray-300 hover:border-green-600'
@@ -382,13 +382,13 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({
                   {item.checked && <Check className="w-4 h-4 text-white" />}
                 </button>
 
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 md:gap-3 mb-2 flex-wrap">
                     <input
                       type="text"
                       value={item.name}
                       onChange={(e) => updateItem(item.id, { name: e.target.value })}
-                      className={`font-medium bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none px-1 ${
+                      className={`font-medium bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none px-1 text-sm md:text-base ${
                         item.checked ? 'line-through text-gray-500' : 'text-gray-900'
                       }`}
                       placeholder="Nome do item"
@@ -398,11 +398,11 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({
                     </span>
                   </div>
                   
-                  <div className="flex items-center gap-4 text-sm">
+                  <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm">
                     <select
                       value={item.category}
                       onChange={(e) => updateItem(item.id, { category: e.target.value })}
-                      className="px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs md:text-sm"
                     >
                       {categories.map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
@@ -415,12 +415,12 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({
                         min="1"
                         value={item.quantity}
                         onChange={(e) => updateItem(item.id, { quantity: parseInt(e.target.value) || 1 })}
-                        className="w-16 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-12 md:w-16 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs md:text-sm"
                       />
                       <select
                         value={item.unit}
                         onChange={(e) => updateItem(item.id, { unit: e.target.value })}
-                        className="px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs md:text-sm"
                       >
                         <option value="unidade">un</option>
                         <option value="kg">kg</option>
@@ -436,7 +436,7 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({
                     <select
                       value={item.priority}
                       onChange={(e) => updateItem(item.id, { priority: e.target.value as 'high' | 'medium' | 'low' })}
-                      className="px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs md:text-sm"
                     >
                       <option value="high">Alta</option>
                       <option value="medium">Média</option>
@@ -451,7 +451,7 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({
 
                 <button
                   onClick={() => removeItem(item.id)}
-                  className="text-red-600 hover:text-red-800"
+                  className="text-red-600 hover:text-red-800 flex-shrink-0 mt-1"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

@@ -87,56 +87,56 @@ export const Analytics: React.FC<AnalyticsProps> = ({
   }, [products, fridgeModel, expiredProducts, expiringSoonProducts, categories]);
 
   const renderOverview = () => (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* KPIs Principais */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+        <div className="bg-white rounded-lg shadow p-3 md:p-6">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Total de Produtos</h3>
-            <Package className="w-5 h-5 text-blue-600" />
+            <h3 className="text-xs md:text-sm font-medium text-gray-600">Total de Produtos</h3>
+            <Package className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">{analytics.totalProducts}</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900">{analytics.totalProducts}</p>
           <p className="text-xs text-gray-500 mt-1">Itens cadastrados</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-3 md:p-6">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Valor Estimado</h3>
-            <DollarSign className="w-5 h-5 text-green-600" />
+            <h3 className="text-xs md:text-sm font-medium text-gray-600">Valor Estimado</h3>
+            <DollarSign className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">R$ {analytics.totalValue.toFixed(2)}</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900">R$ {analytics.totalValue.toFixed(2)}</p>
           <p className="text-xs text-gray-500 mt-1">Valor total em estoque</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-3 md:p-6">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Perda Atual</h3>
-            <TrendingDown className="w-5 h-5 text-red-600" />
+            <h3 className="text-xs md:text-sm font-medium text-gray-600">Perda Atual</h3>
+            <TrendingDown className="w-4 h-4 md:w-5 md:h-5 text-red-600" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">R$ {analytics.expiredValue.toFixed(2)}</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900">R$ {analytics.expiredValue.toFixed(2)}</p>
           <p className="text-xs text-gray-500 mt-1">Produtos vencidos</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-3 md:p-6">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Eficiência</h3>
-            <Activity className="w-5 h-5 text-purple-600" />
+            <h3 className="text-xs md:text-sm font-medium text-gray-600">Eficiência</h3>
+            <Activity className="w-4 h-4 md:w-5 md:h-5 text-purple-600" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">{analytics.efficiencyScore.toFixed(1)}%</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900">{analytics.efficiencyScore.toFixed(1)}%</p>
           <p className="text-xs text-gray-500 mt-1">Taxa de aproveitamento</p>
         </div>
       </div>
 
       {/* Gráficos */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
         {/* Análise por Categoria */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold mb-4">Análise por Categoria</h3>
-          <div className="space-y-4">
+        <div className="bg-white rounded-lg shadow p-4 md:p-6">
+          <h3 className="text-base md:text-lg font-semibold mb-4">Análise por Categoria</h3>
+          <div className="space-y-3 md:space-y-4">
             {analytics.categoryAnalysis.map((cat, index) => (
               <div key={cat.category} className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="font-medium">{cat.category}</span>
+                <div className="flex justify-between text-xs md:text-sm">
+                  <span className="font-medium truncate">{cat.category}</span>
                   <span className="text-gray-600">{cat.total} itens ({cat.percentage.toFixed(1)}%)</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
@@ -161,13 +161,13 @@ export const Analytics: React.FC<AnalyticsProps> = ({
         </div>
 
         {/* Uso por Compartimento */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold mb-4">Uso por Compartimento</h3>
-          <div className="space-y-4">
+        <div className="bg-white rounded-lg shadow p-4 md:p-6">
+          <h3 className="text-base md:text-lg font-semibold mb-4">Uso por Compartimento</h3>
+          <div className="space-y-3 md:space-y-4">
             {analytics.compartmentAnalysis.map((comp) => (
               <div key={comp.name} className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="font-medium">{comp.name}</span>
+                <div className="flex justify-between text-xs md:text-sm">
+                  <span className="font-medium truncate">{comp.name}</span>
                   <span className="text-gray-600">{comp.usage.toFixed(1)}% usado</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
@@ -387,21 +387,21 @@ export const Analytics: React.FC<AnalyticsProps> = ({
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Análises e Estatísticas</h2>
-        <p className="text-gray-600">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
+      <div className="mb-6 md:mb-8">
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Análises e Estatísticas</h2>
+        <p className="text-sm md:text-base text-gray-600">
           Insights detalhados sobre o uso da sua geladeira e gestão de produtos
         </p>
       </div>
 
       {/* Seletor de Métricas */}
-      <div className="bg-white rounded-lg shadow p-4 mb-8">
-        <div className="flex items-center gap-4">
-          <div className="flex gap-2">
+      <div className="bg-white rounded-lg shadow p-3 md:p-4 mb-6 md:mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div className="flex gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
             <button
               onClick={() => setSelectedMetric('overview')}
-              className={`px-4 py-2 rounded-lg transition-colors ${
+              className={`px-3 md:px-4 py-2 rounded-lg transition-colors text-sm md:text-base whitespace-nowrap ${
                 selectedMetric === 'overview'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -411,7 +411,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({
             </button>
             <button
               onClick={() => setSelectedMetric('waste')}
-              className={`px-4 py-2 rounded-lg transition-colors ${
+              className={`px-3 md:px-4 py-2 rounded-lg transition-colors text-sm md:text-base whitespace-nowrap ${
                 selectedMetric === 'waste'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -421,7 +421,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({
             </button>
             <button
               onClick={() => setSelectedMetric('efficiency')}
-              className={`px-4 py-2 rounded-lg transition-colors ${
+              className={`px-3 md:px-4 py-2 rounded-lg transition-colors text-sm md:text-base whitespace-nowrap ${
                 selectedMetric === 'efficiency'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -431,10 +431,10 @@ export const Analytics: React.FC<AnalyticsProps> = ({
             </button>
           </div>
 
-          <div className="ml-auto">
-            <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+          <div className="sm:ml-auto w-full sm:w-auto">
+            <button className="flex items-center justify-center gap-2 px-3 md:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm md:text-base w-full sm:w-auto">
               <Download className="w-4 h-4" />
-              Exportar Relatório
+              <span className="hidden sm:inline">Exportar Relatório</span>
             </button>
           </div>
         </div>

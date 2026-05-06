@@ -167,35 +167,35 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">
+      <div className="bg-white rounded-lg w-full max-w-2xl md:max-w-3xl max-h-[90vh] overflow-y-auto">
+        <div className="p-4 md:p-6">
+          <div className="flex justify-between items-center mb-4 md:mb-6">
+            <h2 className="text-lg md:text-2xl font-bold">
               {initialProduct ? 'Editar Produto' : 'Adicionar Produto'}
             </h2>
             <button
               onClick={onCancel}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-500 hover:text-gray-700 p-1"
             >
               <X className="w-6 h-6" />
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-4">
             {/* Foto do Produto */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Foto do Produto
               </label>
-              <div className="flex items-center gap-4">
-                <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="w-20 h-20 md:w-24 md:h-24 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
                   {imagePreview ? (
                     <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                   ) : (
                     <Camera className="w-8 h-8 text-gray-400" />
                   )}
                 </div>
-                <div>
+                <div className="flex-1">
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -206,7 +206,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                    className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm md:text-base"
                   >
                     Escolher Foto
                   </button>
@@ -225,21 +225,21 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                   value={formData.barcode}
                   onChange={(e) => setFormData(prev => ({ ...prev, barcode: e.target.value }))}
                   placeholder="Digite ou escaneie o código de barras"
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
                 />
                 <button
                   type="button"
                   onClick={() => setShowScanner(true)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  className="bg-blue-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm md:text-base"
                 >
                   <Camera className="w-4 h-4" />
-                  Escanear
+                  <span className="hidden sm:inline">Escanear</span>
                 </button>
               </div>
             </div>
 
             {/* Nome e Categoria */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Nome do Produto *
@@ -250,7 +250,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="Ex: Leite Integral"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
                 />
               </div>
               <div>
@@ -261,7 +261,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                   value={formData.category}
                   onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
                 >
                   <option value="">Selecione...</option>
                   {categories.map(cat => (
@@ -272,7 +272,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             </div>
 
             {/* Quantidade e Unidade */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Quantidade *
@@ -283,7 +283,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                   value={formData.quantity}
                   onChange={(e) => setFormData(prev => ({ ...prev, quantity: parseInt(e.target.value) || 1 }))}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
                 />
               </div>
               <div>
@@ -294,7 +294,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                   value={formData.unit}
                   onChange={(e) => setFormData(prev => ({ ...prev, unit: e.target.value }))}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
                 >
                   {units.map(unit => (
                     <option key={unit} value={unit}>{unit}</option>
@@ -304,7 +304,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             </div>
 
             {/* Datas */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Data de Validade
@@ -313,7 +313,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                   type="date"
                   value={formData.expiryDate}
                   onChange={(e) => setFormData(prev => ({ ...prev, expiryDate: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
                 />
               </div>
               <div>
@@ -324,13 +324,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                   type="date"
                   value={formData.purchaseDate}
                   onChange={(e) => setFormData(prev => ({ ...prev, purchaseDate: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
                 />
               </div>
             </div>
 
             {/* Localização */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Compartimento *
@@ -342,7 +342,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                     location: { ...prev.location, compartmentId: e.target.value, shelfId: '' }
                   }))}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
                 >
                   {compartments.map(comp => (
                     <option key={comp.id} value={comp.id}>{comp.name}</option>
@@ -359,7 +359,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                     ...prev,
                     location: { ...prev.location, shelfId: e.target.value }
                   }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
                 >
                   <option value="">Selecione...</option>
                   {selectedCompartment?.shelves?.map(shelf => (
@@ -379,22 +379,22 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                 onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
                 placeholder="Notas adicionais sobre o produto..."
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
               />
             </div>
 
             {/* Botões */}
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-3 md:gap-4 pt-4">
               <button
                 type="button"
                 onClick={onCancel}
-                className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                className="flex-1 bg-gray-200 text-gray-800 px-4 py-3 rounded-lg hover:bg-gray-300 transition-colors text-sm md:text-base"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors text-sm md:text-base"
               >
                 {initialProduct ? 'Atualizar' : 'Adicionar'} Produto
               </button>

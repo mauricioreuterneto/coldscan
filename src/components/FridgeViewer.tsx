@@ -56,23 +56,23 @@ export const FridgeViewer: React.FC<FridgeViewerProps> = ({
         }}
         onClick={() => onCompartmentClick?.(compartment)}
       >
-        <div className="p-2 h-full flex flex-col">
-          <div className="flex justify-between items-start mb-2">
-            <div>
-              <h4 className="font-semibold text-sm">{compartment.name}</h4>
+        <div className="p-1 md:p-2 h-full flex flex-col">
+          <div className="flex justify-between items-start mb-1 md:mb-2">
+            <div className="min-w-0 flex-1">
+              <h4 className="font-semibold text-xs md:text-sm truncate">{compartment.name}</h4>
               <p className="text-xs text-gray-600">
                 {usage}/{compartment.capacity} ({usagePercentage.toFixed(0)}%)
               </p>
             </div>
-            <div className="w-12 h-12 bg-white bg-opacity-50 rounded flex items-center justify-center">
-              <span className="text-xs font-bold">{compartmentProducts.length}</span>
+            <div className="w-8 h-8 md:w-12 md:h-12 bg-white bg-opacity-50 rounded flex items-center justify-center flex-shrink-0 ml-1">
+              <span className="text-xs md:text-xs font-bold">{compartmentProducts.length}</span>
             </div>
           </div>
 
           {/* Barra de progresso */}
-          <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+          <div className="w-full bg-gray-200 rounded-full h-1 md:h-2 mb-1 md:mb-2">
             <div
-              className={`h-2 rounded-full transition-all ${
+              className={`h-1 md:h-2 rounded-full transition-all ${
                 usagePercentage > 90 ? 'bg-red-500' :
                 usagePercentage > 70 ? 'bg-yellow-500' : 'bg-green-500'
               }`}
@@ -82,7 +82,7 @@ export const FridgeViewer: React.FC<FridgeViewerProps> = ({
 
           {/* Prateleiras */}
           {compartment.shelves && compartment.shelves.length > 0 && (
-            <div className="flex-1 space-y-1">
+            <div className="flex-1 space-y-0.5 md:space-y-1">
               {compartment.shelves.map((shelf, index) => {
                 const shelfProducts = compartmentProducts.filter(
                   product => getProductShelfId(product) === shelf.id
@@ -90,14 +90,14 @@ export const FridgeViewer: React.FC<FridgeViewerProps> = ({
                 return (
                   <div
                     key={shelf.id}
-                    className="bg-white bg-opacity-30 rounded p-1 text-xs"
+                    className="bg-white bg-opacity-30 rounded p-0.5 md:p-1 text-xs"
                   >
                     <div className="flex justify-between items-center">
-                      <span className="font-medium">{shelf.name}</span>
-                      <span className="text-gray-600">{shelfProducts.length} itens</span>
+                      <span className="font-medium text-xs truncate">{shelf.name}</span>
+                      <span className="text-gray-600 text-xs">{shelfProducts.length} itens</span>
                     </div>
                     {shelfProducts.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1">
+                      <div className="flex flex-wrap gap-0.5 md:gap-1 mt-0.5 md:mt-1">
                         {shelfProducts.slice(0, 3).map(product => (
                           <div
                             key={product.id}
@@ -108,11 +108,11 @@ export const FridgeViewer: React.FC<FridgeViewerProps> = ({
                             }}
                             title={product.name}
                           >
-                            {product.name.length > 8 ? product.name.substring(0, 8) + '...' : product.name}
+                            {product.name.length > 6 ? product.name.substring(0, 6) + '...' : product.name}
                           </div>
                         ))}
                         {shelfProducts.length > 3 && (
-                          <span className="text-gray-500">+{shelfProducts.length - 3}</span>
+                          <span className="text-gray-500 text-xs">+{shelfProducts.length - 3}</span>
                         )}
                       </div>
                     )}
@@ -124,10 +124,10 @@ export const FridgeViewer: React.FC<FridgeViewerProps> = ({
 
           {/* Produtos sem prateleira específica */}
           {compartmentProducts.filter(p => !getProductShelfId(p)).length > 0 && (
-            <div className="mt-2">
-              <div className="bg-white bg-opacity-30 rounded p-1 text-xs">
-                <span className="font-medium">Outros</span>
-                <div className="flex flex-wrap gap-1 mt-1">
+            <div className="mt-1 md:mt-2">
+              <div className="bg-white bg-opacity-30 rounded p-0.5 md:p-1 text-xs">
+                <span className="font-medium text-xs">Outros</span>
+                <div className="flex flex-wrap gap-0.5 md:gap-1 mt-0.5 md:mt-1">
                   {compartmentProducts.filter(p => !getProductShelfId(p)).slice(0, 3).map(product => (
                     <div
                       key={product.id}
@@ -138,11 +138,11 @@ export const FridgeViewer: React.FC<FridgeViewerProps> = ({
                       }}
                       title={product.name}
                     >
-                      {product.name.length > 8 ? product.name.substring(0, 8) + '...' : product.name}
+                      {product.name.length > 6 ? product.name.substring(0, 6) + '...' : product.name}
                     </div>
                   ))}
                   {compartmentProducts.filter(p => !getProductShelfId(p)).length > 3 && (
-                    <span className="text-gray-500">+{compartmentProducts.filter(p => !getProductShelfId(p)).length - 3}</span>
+                    <span className="text-gray-500 text-xs">+{compartmentProducts.filter(p => !getProductShelfId(p)).length - 3}</span>
                   )}
                 </div>
               </div>
@@ -154,40 +154,40 @@ export const FridgeViewer: React.FC<FridgeViewerProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="bg-white rounded-lg shadow-lg p-4 md:p-6">
       <div className="mb-4">
-        <h2 className="text-2xl font-bold">
+        <h2 className="text-xl md:text-2xl font-bold">
           {fridgeModel.brand} {fridgeModel.model}
         </h2>
-        <p className="text-gray-600">
+        <p className="text-sm md:text-base text-gray-600">
           Capacidade Total: {fridgeModel.capacity}L | 
           Compartimentos: {fridgeModel.compartments.length}
         </p>
       </div>
 
-      <div className="relative bg-gray-50 rounded-lg" style={{ paddingBottom: '150%' }}>
-        <div className="absolute inset-0 p-4">
+      <div className="relative bg-gray-50 rounded-lg overflow-hidden" style={{ paddingBottom: '150%', minHeight: '400px' }}>
+        <div className="absolute inset-0 p-2 md:p-4">
           {fridgeModel.compartments.map(compartment => renderCompartment(compartment))}
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-4 text-sm">
-        <div className="bg-blue-50 p-3 rounded-lg">
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 text-xs md:text-sm">
+        <div className="bg-blue-50 p-2 md:p-3 rounded-lg">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-blue-500 rounded"></div>
-            <span className="font-medium">Geladeira</span>
+            <div className="w-3 h-3 md:w-4 md:h-4 bg-blue-500 rounded"></div>
+            <span className="font-medium text-xs md:text-sm">Geladeira</span>
           </div>
         </div>
-        <div className="bg-yellow-50 p-3 rounded-lg">
+        <div className="bg-yellow-50 p-2 md:p-3 rounded-lg">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-            <span className="font-medium">Porta</span>
+            <div className="w-3 h-3 md:w-4 md:h-4 bg-yellow-500 rounded"></div>
+            <span className="font-medium text-xs md:text-sm">Porta</span>
           </div>
         </div>
-        <div className="bg-cyan-50 p-3 rounded-lg">
+        <div className="bg-cyan-50 p-2 md:p-3 rounded-lg">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-cyan-500 rounded"></div>
-            <span className="font-medium">Freezer</span>
+            <div className="w-3 h-3 md:w-4 md:h-4 bg-cyan-500 rounded"></div>
+            <span className="font-medium text-xs md:text-sm">Freezer</span>
           </div>
         </div>
       </div>
