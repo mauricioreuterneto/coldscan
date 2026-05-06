@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { coreService } from './services/coreService';
+import { supabase } from './lib/supabase';
 import type { User, ShoppingList, Appliance, Product, FridgeModel } from './types/unified';
 import { Plus, Home, Package, ShoppingCart, BarChart3, Grid3X3 } from 'lucide-react';
 
@@ -31,6 +32,35 @@ function App() {
   // Carregar dados iniciais
   useEffect(() => {
     loadInitialData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Listener de mudanças de autenticação
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Atualizar usuário e carregar dados
+          const currentUser = await coreService.getCurrentUser();
+          setUser(currentUser);
+          if (currentUser) {
+            await Promise.all([
+              loadProducts(),
+              loadShoppingLists(),
+              loadAppliances(),
+              loadDashboardStats()
+            ]);
+          }
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setProducts([]);
+          setShoppingLists([]);
+          setAppliances([]);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
