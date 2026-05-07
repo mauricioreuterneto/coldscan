@@ -158,8 +158,13 @@ class ConsistencyValidator {
   }
 
   private validateCapacityVsDimensions(capacity: number, dimensions: any): string | null {
+    // Converter mm para cm (as dimensões estão em mm)
+    const widthCm = dimensions.width / 10;
+    const heightCm = dimensions.height / 10;
+    const depthCm = dimensions.depth / 10;
+    
     // Estimativa aproximada: 1 litro ≈ 1000 cm³
-    const volumeCm3 = dimensions.width * dimensions.height * dimensions.depth;
+    const volumeCm3 = widthCm * heightCm * depthCm;
     const estimatedCapacityLiters = volumeCm3 / 1000;
 
     // Capacidade interna é geralmente 70-80% do volume externo

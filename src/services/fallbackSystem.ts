@@ -62,14 +62,14 @@ class FallbackSystem {
     // Profundidade padrão: ~65-70cm
     const depth = 680;
     
-    // Peso: ~1kg por litro (geladeira vazia é mais leve, mas com conteúdo)
-    const weight = Math.round(capacity * 0.7);
+    // Peso: ~1.2kg por litro (geladeira vazia é mais pesada devido ao motor/estrutura)
+    const weight = Math.round(capacity * 1.2);
 
     return {
       width: Math.round(width),
       height: Math.round(height),
       depth: Math.round(depth),
-      weight: Math.max(30, weight), // mínimo de 30kg
+      weight: Math.max(35, Math.min(200, weight)), // entre 35-200kg
     };
   }
 
