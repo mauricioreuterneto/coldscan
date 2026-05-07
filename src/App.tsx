@@ -199,13 +199,6 @@ function App() {
     }
   };
 
-  const loadDashboardStats = async () => {
-    const result = await coreService.getDashboardStats();
-    if (result.success && result.data) {
-      console.log('Dashboard stats:', result.data);
-    }
-  };
-
   // Autenticação
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSignIn = async (email: string, password: string) => {
