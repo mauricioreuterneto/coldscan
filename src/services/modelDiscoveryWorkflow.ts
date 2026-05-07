@@ -122,7 +122,17 @@ class ModelDiscoveryWorkflow {
         return workflow;
       }
 
-      // Step 9: Insert into database
+      // Step 9: Check if model already exists in database before inserting
+      const existingModel = await this.findModelInDatabase(identifier);
+      if (existingModel) {
+        workflow.data = existingModel;
+        workflow.warnings.push('Modelo já existe no banco de dados');
+        workflow.currentStep = 'completed';
+        workflow.progress = 100;
+        return workflow;
+      }
+
+      // Step 10: Insert into database
       workflow.currentStep = 'insert_database';
       workflow.progress = 95;
       const processedModel: ProcessedFridgeModel = {
