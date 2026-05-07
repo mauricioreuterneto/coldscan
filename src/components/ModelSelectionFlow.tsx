@@ -3,7 +3,7 @@ import { modelDiscoveryWorkflow } from '../services/modelDiscoveryWorkflow';
 import { ocrService } from '../services/ocrService';
 import { multiPhotoDiscovery } from '../services/multiPhotoDiscovery';
 import { legalComplianceService } from '../services/legalComplianceService';
-import { DiscoveryWorkflow, ProcessedFridgeModel, ModelIdentifier } from '../types/fridgeDiscovery';
+import { ProcessedFridgeModel, ModelIdentifier } from '../types/fridgeDiscovery';
 import './ModelSelectionFlow.css';
 
 type SelectionStep = 'input' | 'searching' | 'not_found' | 'select_variation' | 'confirm' | 'processing' | 'completed';
