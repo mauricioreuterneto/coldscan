@@ -313,9 +313,24 @@ class ModelDiscoveryWorkflow {
 
   private async insertModelIntoDatabase(model: ProcessedFridgeModel): Promise<void> {
     try {
+      // Converter camelCase para snake_case para compatibilidade com Supabase
+      const dbModel = {
+        id: model.id,
+        brand: model.brand,
+        model: model.model,
+        year: model.year,
+        image_url: model.imageUrl,
+        type: model.type,
+        total_capacity: model.totalCapacity,
+        energy: model.energy,
+        dimensions: model.dimensions,
+        compartments: model.compartments,
+        processing_metadata: model.processingMetadata,
+      };
+
       const { error } = await supabase
         .from('fridge_models_processed')
-        .insert(model);
+        .insert(dbModel);
 
       if (error) throw error;
     } catch (error) {
