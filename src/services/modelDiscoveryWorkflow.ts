@@ -43,6 +43,7 @@ class ModelDiscoveryWorkflow {
       workflow.progress = 30;
       const sources = await apiSearchService.searchModel(identifier);
       workflow.sources = sources;
+      console.log('[modelDiscoveryWorkflow] API search returned sources:', sources.length, sources.map(s => s.source));
 
       if (sources.length === 0) {
         workflow.errors.push('Modelo não encontrado em nenhuma fonte de dados');
@@ -55,6 +56,7 @@ class ModelDiscoveryWorkflow {
       workflow.progress = 50;
       const normalizedData = dataNormalizer.mergeMultipleSources(sources);
       workflow.data = normalizedData;
+      console.log('[modelDiscoveryWorkflow] Normalized data:', normalizedData);
 
       // Step 5: Apply fallbacks
       workflow.currentStep = 'validate';
@@ -62,9 +64,11 @@ class ModelDiscoveryWorkflow {
       const withFallbacks = fallbackSystem.applyFallbacks(normalizedData);
       workflow.data = withFallbacks;
       workflow.warnings.push(...fallbackSystem.getAppliedFallbacks().map(f => `Fallback aplicado: ${f}`));
+      console.log('[modelDiscoveryWorkflow] Data with fallbacks:', withFallbacks);
 
       // Step 6: Validate consistency
       const validation = consistencyValidator.validate(withFallbacks);
+      console.log('[modelDiscoveryWorkflow] Validation result:', validation);
       if (!validation.isValid) {
         workflow.errors.push(...validation.errors);
         workflow.warnings.push(...validation.warnings);

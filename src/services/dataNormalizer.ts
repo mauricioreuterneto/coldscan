@@ -20,9 +20,11 @@ class DataNormalizer {
   }
 
   mergeMultipleSources(sources: APISource[]): Partial<FridgeModelUserFocused> {
+    console.log('[dataNormalizer] Merging sources:', sources.map(s => s.source));
     const normalizedData = sources.map(source => 
       this.normalize(source.rawData, source.source)
     );
+    console.log('[dataNormalizer] Normalized data:', normalizedData);
 
     const merged: Partial<FridgeModelUserFocused> = {
       id: this.generateId(),
