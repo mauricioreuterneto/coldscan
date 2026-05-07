@@ -73,7 +73,7 @@ export class CoreService {
 
   async signUp(email: string, password: string, name?: string): Promise<ServiceResponse<User>> {
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {

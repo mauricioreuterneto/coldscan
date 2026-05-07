@@ -27,7 +27,6 @@ function App() {
   const [household, setHousehold] = useState<any>(null);
   const [fridgeModel, setFridgeModel] = useState<FridgeModel | null>(null);
   const [loading, setLoading] = useState(true);
-  const [savingFridgeModel, setSavingFridgeModel] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -519,7 +518,6 @@ function App() {
           <FridgeModelSelector
             onSelectModel={async (model) => {
               console.log('Modelo selecionado:', model);
-              setSavingFridgeModel(true);
               try {
                 console.log('Salvando fridgeModel no Supabase...');
                 await supabaseService.saveFridgeModel({
@@ -537,8 +535,6 @@ function App() {
               } catch (error) {
                 console.error('Erro ao salvar modelo de geladeira:', error);
                 alert('Erro ao salvar modelo de geladeira. Tente novamente.');
-              } finally {
-                setSavingFridgeModel(false);
               }
             }}
             selectedModel={fridgeModel}
