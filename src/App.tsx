@@ -104,12 +104,24 @@ function App() {
         loadProducts(),
         loadShoppingLists(),
         loadAppliances(),
-        loadDashboardStats()
+        loadDashboardStats(),
+        loadFridgeModel()
       ]);
     } catch (error) {
       console.error('Erro ao carregar dados do usuário:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadFridgeModel = async () => {
+    try {
+      const fridgeModelData = await supabaseService.getFridgeModel(user?.id || '');
+      if (fridgeModelData) {
+        setFridgeModel(fridgeModelData as unknown as FridgeModel);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar fridge model:', error);
     }
   };
 
