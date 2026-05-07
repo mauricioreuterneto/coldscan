@@ -225,6 +225,7 @@ function App() {
 
   const handleOnboardingComplete = async () => {
     try {
+      setOnboardingCompleted(true);
       setCurrentPage('setup');
     } catch (error) {
       console.error('Erro ao carregar profile após onboarding:', error);
