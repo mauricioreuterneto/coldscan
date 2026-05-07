@@ -164,7 +164,9 @@ class DataNormalizer {
 
     const counts = new Map<T, number>();
     validValues.forEach(value => {
-      counts.set(value, (counts.get(value) || 0) + 1);
+      if (value !== undefined) {
+        counts.set(value, (counts.get(value) || 0) + 1);
+      }
     });
 
     let maxCount = 0;
