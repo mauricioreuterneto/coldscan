@@ -8,7 +8,7 @@ import { Plus, Home, Package, ShoppingCart, BarChart3, Grid3X3, Menu, X } from '
 // Componentes existentes que vamos manter
 import { Auth } from './components/Auth';
 import { Dashboard } from './components/Dashboard';
-import { FridgeViewer } from './components/FridgeViewer';
+import { Fridge3DViewer } from './components/Fridge3DViewer';
 import { ShoppingList as ShoppingListComponent } from './components/ShoppingList';
 import { Analytics } from './components/Analytics';
 import { ModelSelectionFlow } from './components/ModelSelectionFlow';
@@ -590,7 +590,7 @@ function App() {
         )}
         
         {currentPage === 'fridge' && fridgeModel && (
-          <FridgeViewer
+          <Fridge3DViewer
             fridgeModel={fridgeModel}
             products={products}
             onProductClick={handleOpenEditProduct}
