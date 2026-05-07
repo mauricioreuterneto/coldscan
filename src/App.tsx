@@ -27,6 +27,7 @@ function App() {
   const [household, setHousehold] = useState<any>(null);
   const [fridgeModel, setFridgeModel] = useState<FridgeModel | null>(null);
   const [loading, setLoading] = useState(true);
+  const [savingFridgeModel, setSavingFridgeModel] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -525,24 +526,33 @@ function App() {
       {/* Main Content */}
       <main className="p-4 pb-20 md:pb-4">
         {currentPage === 'setup' && (
-          <FridgeModelSelector onSelectModel={async (model) => {
-            // Salvar o fridgeModel no Supabase
-            try {
-              await supabaseService.saveFridgeModel({
-                user_id: user?.id || '',
-                brand: model.brand,
-                model: model.model,
-                year: model.year,
-                capacity: model.capacity,
-                compartments: model.compartments,
-                image_url: model.image
-              });
-              setFridgeModel(model);
-              setCurrentPage('home');
-            } catch (error) {
-              console.error('Erro ao salvar modelo de geladeira:', error);
-            }
-          }} />
+          <FridgeModelSelector
+            onSelectModel={async (model) => {
+              console.log('Modelo selecionado:', model);
+              setSavingFridgeModel(true);
+              try {
+                console.log('Salvando fridgeModel no Supabase...');
+                await supabaseService.saveFridgeModel({
+                  user_id: user?.id || '',
+                  brand: model.brand,
+                  model: model.model,
+                  year: model.year,
+                  capacity: model.capacity,
+                  compartments: model.compartments,
+                  image_url: model.image
+                });
+                console.log('FridgeModel salvo com sucesso');
+                setFridgeModel(model);
+                setCurrentPage('home');
+              } catch (error) {
+                console.error('Erro ao salvar modelo de geladeira:', error);
+                alert('Erro ao salvar modelo de geladeira. Tente novamente.');
+              } finally {
+                setSavingFridgeModel(false);
+              }
+            }}
+            selectedModel={fridgeModel}
+          />
         )}
         
         {currentPage === 'home' && fridgeModel && (
