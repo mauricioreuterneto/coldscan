@@ -123,18 +123,22 @@ class ModelDiscoveryWorkflow {
       }
 
       // Step 9: Check if model already exists in database before inserting
+      console.log('[modelDiscoveryWorkflow] Checking if model exists in database...');
       const existingModel = await this.findModelInDatabase(identifier);
+      console.log('[modelDiscoveryWorkflow] Existing model found:', existingModel ? 'YES' : 'NO');
       if (existingModel) {
         workflow.data = existingModel;
         workflow.warnings.push('Modelo já existe no banco de dados');
         workflow.currentStep = 'completed';
         workflow.progress = 100;
+        console.log('[modelDiscoveryWorkflow] Returning existing model');
         return workflow;
       }
 
       // Step 10: Insert into database
       workflow.currentStep = 'insert_database';
       workflow.progress = 95;
+      console.log('[modelDiscoveryWorkflow] Inserting model into database...');
       const processedModel: ProcessedFridgeModel = {
         ...withFallbacks as FridgeModelUserFocused,
         id: `${identifier.brand}-${identifier.model}-${identifier.year || 'unknown'}`,
@@ -308,11 +312,12 @@ class ModelDiscoveryWorkflow {
       };
 
       await this.insertModelIntoDatabase(processedModel);
+      console.log('[modelDiscoveryWorkflow] Model inserted successfully');
 
       workflow.currentStep = 'completed';
       workflow.progress = 100;
       workflow.data = processedModel;
-
+      console.log('[modelDiscoveryWorkflow] Workflow completed successfully');
       return workflow;
     } catch (error) {
       workflow.currentStep = 'failed';
