@@ -20,6 +20,7 @@ type Page = 'setup' | 'onboarding' | 'home' | 'fridge' | 'products' | 'shopping'
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
+  const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
   const [currentPage, setCurrentPage] = useState<Page>('setup');
   const [products, setProducts] = useState<Product[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -92,18 +93,18 @@ function App() {
     // 1. Se onboarding não completo → vai para onboarding
     // 2. Se onboarding completo mas não tem fridgeModel → vai para setup (seleção)
     // 3. Se onboarding completo e tem fridgeModel → vai para home
-    if (user?.onboardingCompleted === false) {
+    if (onboardingCompleted === false) {
       if (currentPage !== 'onboarding') {
         setCurrentPage('onboarding');
       }
-    } else if (user?.onboardingCompleted === true) {
+    } else if (onboardingCompleted === true) {
       if (!fridgeModel && currentPage !== 'setup') {
         setCurrentPage('setup');
       } else if (fridgeModel && currentPage === 'setup') {
         setCurrentPage('home');
       }
     }
-  }, [fridgeModel, currentPage, user]);
+  }, [fridgeModel, currentPage, onboardingCompleted]);
 
   const loadUserData = async () => {
     try {
@@ -146,13 +147,14 @@ function App() {
 
       if (!existingProfile) {
         // Redirecionar para onboarding se profile não existir
+        setOnboardingCompleted(false);
         setCurrentPage('onboarding');
         return;
       }
 
-      // Atualizar estado do usuário com onboardingCompleted
+      // Atualizar estado de onboardingCompleted
       if (existingProfile.onboarding_completed !== undefined) {
-        setUser(prev => prev ? { ...prev, onboardingCompleted: existingProfile.onboarding_completed } : null);
+        setOnboardingCompleted(existingProfile.onboarding_completed);
       }
 
       const householdData = await supabaseService.getHousehold(user?.id || '');
