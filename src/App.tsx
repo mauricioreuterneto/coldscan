@@ -650,10 +650,11 @@ function App() {
         )}
 
         {currentPage === 'storage' && user && (
-          <div className="bg-white rounded-lg p-6 text-center">
-            <p className="text-gray-600">A funcionalidade de armazenamento está em desenvolvimento.</p>
-            <p className="text-sm text-gray-500 mt-2">Em breve você poderá gerenciar seus locais de armazenamento.</p>
-          </div>
+          <StorageOverview
+            householdId={user.id}
+            onAddProduct={handleOpenAddProduct}
+            onProductClick={handleOpenEditProduct}
+          />
         )}
       </main>
 

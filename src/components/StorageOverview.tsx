@@ -88,30 +88,53 @@ export const StorageOverview: React.FC<StorageOverviewProps> = ({
     const loadData = async () => {
       try {
         setLoading(true);
-        
-        // Carregar locais de armazenamento
-        const { data: storageLocations } = await supabase
-          .from('storage_locations')
-          .select('*')
-          .eq('household_id', householdId)
-          .order('name');
 
-        // Carregar produtos
+        // Carregar produtos do usuário (sem household_id)
         const { data: allProducts } = await supabase
           .from('products')
           .select('*')
-          .eq('household_id', householdId);
+          .eq('user_id', householdId);
+
+        // Criar locais de armazenamento baseados no fridge_model
+        const fridgeLocations: StorageLocation[] = [
+          {
+            id: 'fridge-main',
+            name: 'Geladeira Principal',
+            type: 'fridge',
+            description: 'Compartimento principal',
+            temperature: { min: 2, max: 8, unit: 'C' },
+            itemCount: 0,
+            expiringItems: 0,
+            expiredItems: 0
+          },
+          {
+            id: 'fridge-door',
+            name: 'Porta da Geladeira',
+            type: 'fridge',
+            description: 'Prateleiras da porta',
+            temperature: { min: 4, max: 10, unit: 'C' },
+            itemCount: 0,
+            expiringItems: 0,
+            expiredItems: 0
+          },
+          {
+            id: 'freezer',
+            name: 'Freezer',
+            type: 'freezer',
+            description: 'Compartimento congelador',
+            temperature: { min: -18, max: -12, unit: 'C' },
+            itemCount: 0,
+            expiringItems: 0,
+            expiredItems: 0
+          }
+        ];
 
         // Processar dados
-        const processStorageLocations = async (locations: any[], products: any[]): Promise<StorageLocation[]> => {
+        const processStorageLocations = (locations: StorageLocation[], products: any[]): StorageLocation[] => {
           const processed = locations.map(location => {
-            const locationProducts = products.filter(product => 
-              getProductLocationId(product) === location.id ||
-              getProductZoneId(product) === location.id ||
-              getProductShelfId(product) === location.id ||
-              product.location?.applianceId === location.id ||
+            const locationProducts = products.filter(product =>
               product.location?.compartmentId === location.id ||
-              product.location?.shelfId === location.id
+              product.location?.zoneId === location.id
             );
 
             const expiringItems = locationProducts.filter(product => {
@@ -125,11 +148,7 @@ export const StorageOverview: React.FC<StorageOverviewProps> = ({
             }).length;
 
             return {
-              id: location.id,
-              name: location.name,
-              type: location.type,
-              description: location.description,
-              temperature: location.temperature,
+              ...location,
               itemCount: locationProducts.length,
               expiringItems,
               expiredItems
@@ -137,7 +156,7 @@ export const StorageOverview: React.FC<StorageOverviewProps> = ({
           });
 
           // Adicionar local "Fora da Geladeira" para produtos não categorizados
-          const uncategorizedProducts = products.filter(product => !getProductLocationId(product));
+          const uncategorizedProducts = products.filter(product => !product.location?.compartmentId);
           if (uncategorizedProducts.length > 0) {
             const uncategorizedExpiring = uncategorizedProducts.filter(product => {
               const status = ExpiryService.getExpiryStatus(product);
@@ -164,7 +183,7 @@ export const StorageOverview: React.FC<StorageOverviewProps> = ({
           return processed;
         };
 
-        const processedLocations = await processStorageLocations(storageLocations || [], allProducts || []);
+        const processedLocations = processStorageLocations(fridgeLocations, allProducts || []);
         setLocations(processedLocations);
         setProducts(allProducts || []);
       } catch (error) {
