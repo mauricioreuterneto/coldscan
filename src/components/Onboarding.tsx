@@ -12,8 +12,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, userId, emai
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
-  const [temperatureUnit, setTemperatureUnit] = useState<'celsius' | 'fahrenheit'>('celsius');
-  const [language, setLanguage] = useState<'pt-BR' | 'en'>('pt-BR');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

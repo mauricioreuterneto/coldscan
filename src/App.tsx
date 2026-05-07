@@ -26,7 +26,7 @@ function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [appliances, setAppliances] = useState<Appliance[]>([]);
   const [household, setHousehold] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
+  const [hasProfile, setHasProfile] = useState(false);
   const [fridgeModel, setFridgeModel] = useState<FridgeModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [showProductModal, setShowProductModal] = useState(false);
@@ -121,7 +121,7 @@ function App() {
         .maybeSingle();
 
       if (existingProfile) {
-        setProfile(existingProfile);
+        setHasProfile(true);
       } else {
         // Redirecionar para onboarding se profile não existir
         setCurrentPage('onboarding');
@@ -197,24 +197,14 @@ function App() {
     setShoppingLists([]);
     setAppliances([]);
     setHousehold(null);
-    setProfile(null);
+    setHasProfile(false);
     setFridgeModel(null);
     setCurrentPage('setup');
   };
 
   const handleOnboardingComplete = async () => {
     try {
-      // Recarregar profile
-      const { data: newProfile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user?.id || '')
-        .single();
-
-      if (newProfile) {
-        setProfile(newProfile);
-      }
-
+      setHasProfile(true);
       setCurrentPage('setup');
     } catch (error) {
       console.error('Erro ao carregar profile após onboarding:', error);
