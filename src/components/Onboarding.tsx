@@ -24,7 +24,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, userId, emai
           id: userId,
           email: email,
           full_name: fullName,
-          username: fullName.toLowerCase().replace(/\s+/g, '.'),
+          name: fullName,
           updated_at: new Date().toISOString()
         });
 
