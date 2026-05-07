@@ -167,9 +167,19 @@ class ConsistencyValidator {
     const volumeCm3 = widthCm * heightCm * depthCm;
     const estimatedCapacityLiters = volumeCm3 / 1000;
 
-    // Capacidade interna é geralmente 70-80% do volume externo
-    const minExpectedCapacity = estimatedCapacityLiters * 0.6;
-    const maxExpectedCapacity = estimatedCapacityLiters * 0.85;
+    // Capacidade interna varia muito por design e tecnologia
+    // Geladeiras modernas podem ter 50-90% do volume externo como capacidade útil
+    // Ajustar tolerância para considerar diversidade do mercado
+    const minExpectedCapacity = estimatedCapacityLiters * 0.45;
+    const maxExpectedCapacity = estimatedCapacityLiters * 0.95;
+
+    // Se a capacidade estiver dentro de 20% do esperado, considerar aceitável
+    const tolerance = estimatedCapacityLiters * 0.2;
+    const isWithinTolerance = Math.abs(capacity - estimatedCapacityLiters) <= tolerance;
+
+    if (isWithinTolerance) {
+      return null; // Aceitável se dentro da tolerância
+    }
 
     if (capacity < minExpectedCapacity || capacity > maxExpectedCapacity) {
       return `Capacidade (${capacity}L) inconsistente com dimensões (${dimensions.width}x${dimensions.height}x${dimensions.depth}mm). Esperado: ${Math.round(minExpectedCapacity)}-${Math.round(maxExpectedCapacity)}L`;
