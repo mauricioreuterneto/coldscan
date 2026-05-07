@@ -88,12 +88,22 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (fridgeModel && currentPage === 'setup') {
-      setCurrentPage('home');
-    } else if (!fridgeModel && currentPage !== 'setup' && currentPage !== 'onboarding') {
-      setCurrentPage('setup');
+    // Fluxo correto baseado em onboarding:
+    // 1. Se onboarding não completo → vai para onboarding
+    // 2. Se onboarding completo mas não tem fridgeModel → vai para setup (seleção)
+    // 3. Se onboarding completo e tem fridgeModel → vai para home
+    if (user?.onboardingCompleted === false) {
+      if (currentPage !== 'onboarding') {
+        setCurrentPage('onboarding');
+      }
+    } else if (user?.onboardingCompleted === true) {
+      if (!fridgeModel && currentPage !== 'setup') {
+        setCurrentPage('setup');
+      } else if (fridgeModel && currentPage === 'setup') {
+        setCurrentPage('home');
+      }
     }
-  }, [fridgeModel, currentPage]);
+  }, [fridgeModel, currentPage, user]);
 
   const loadUserData = async () => {
     try {
@@ -138,6 +148,11 @@ function App() {
         // Redirecionar para onboarding se profile não existir
         setCurrentPage('onboarding');
         return;
+      }
+
+      // Atualizar estado do usuário com onboardingCompleted
+      if (existingProfile.onboarding_completed !== undefined) {
+        setUser(prev => prev ? { ...prev, onboardingCompleted: existingProfile.onboarding_completed } : null);
       }
 
       const householdData = await supabaseService.getHousehold(user?.id || '');
