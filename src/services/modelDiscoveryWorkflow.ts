@@ -1,11 +1,8 @@
 import { 
   ModelIdentifier, 
   DiscoveryWorkflow, 
-  DiscoveryStep, 
   ProcessedFridgeModel, 
-  FridgeModelUserFocused,
-  APISource,
-  UserValidation
+  FridgeModelUserFocused
 } from '../types/fridgeDiscovery';
 import { ocrService } from './ocrService';
 import { apiSearchService } from './apiSearchService';

@@ -1,4 +1,4 @@
-import { FridgeModelUserFocused, APISource, ModelIdentifier } from '../types/fridgeDiscovery';
+import { FridgeModelUserFocused, Compartment, APISource } from '../types/fridgeDiscovery';
 
 // Data Normalizer - normaliza dados de múltiplas fontes
 class DataNormalizer {

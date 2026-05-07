@@ -1,6 +1,5 @@
 import { PhotoDiscoveryRequest, PhotoDiscoveryResult, ModelIdentifier } from '../types/fridgeDiscovery';
 import { ocrService } from './ocrService';
-import { apiSearchService } from './apiSearchService';
 
 // Multi-photo Discovery System - descobre modelo usando múltiplas fotos
 class MultiPhotoDiscovery {

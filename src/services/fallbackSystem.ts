@@ -1,4 +1,4 @@
-import { FridgeModelUserFocused, Compartment, Shelf, Drawer, DoorCompartment } from '../types/fridgeDiscovery';
+import { FridgeModelUserFocused, Compartment, Shelf, DoorCompartment } from '../types/fridgeDiscovery';
 
 // Fallback System - aplica valores padrão inteligentes para dados faltantes
 class FallbackSystem {

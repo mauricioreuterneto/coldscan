@@ -20,10 +20,7 @@ export const ModelSelectionFlow: React.FC<ModelSelectionFlowProps> = ({ onModelS
   const [inputMethod, setInputMethod] = useState<InputMethod>('text');
   const [textInput, setTextInput] = useState('');
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [workflow, setWorkflow] = useState<DiscoveryWorkflow | null>(null);
   const [foundModel, setFoundModel] = useState<ProcessedFridgeModel | null>(null);
-  const [variations, setVariations] = useState<ProcessedFridgeModel[]>([]);
-  const [selectedVariation, setSelectedVariation] = useState<ProcessedFridgeModel | null>(null);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [consentGiven, setConsentGiven] = useState(false);
@@ -33,6 +30,7 @@ export const ModelSelectionFlow: React.FC<ModelSelectionFlowProps> = ({ onModelS
     if (userId) {
       checkConsent();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const checkConsent = async () => {
@@ -65,7 +63,6 @@ export const ModelSelectionFlow: React.FC<ModelSelectionFlowProps> = ({ onModelS
 
       // Se não existe, iniciar workflow de descoberta
       const discoveryResult = await modelDiscoveryWorkflow.discoverModelFromText(textInput);
-      setWorkflow(discoveryResult);
 
       if (discoveryResult.currentStep === 'completed' && discoveryResult.data) {
         setFoundModel(discoveryResult.data as ProcessedFridgeModel);
@@ -112,7 +109,6 @@ export const ModelSelectionFlow: React.FC<ModelSelectionFlowProps> = ({ onModelS
 
         // Iniciar workflow de descoberta
         const discoveryResult = await modelDiscoveryWorkflow.discoverModel(ocrResult.identifier, 'photo');
-        setWorkflow(discoveryResult);
 
         if (discoveryResult.currentStep === 'completed' && discoveryResult.data) {
           setFoundModel(discoveryResult.data as ProcessedFridgeModel);
