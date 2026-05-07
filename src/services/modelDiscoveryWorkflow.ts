@@ -351,13 +351,18 @@ class ModelDiscoveryWorkflow {
 
   async findModelInDatabase(identifier: ModelIdentifier): Promise<ProcessedFridgeModel | null> {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('fridge_models_processed')
         .select('*')
         .eq('brand', identifier.brand)
-        .eq('model', identifier.model)
-        .eq('year', identifier.year || null)
-        .maybeSingle();
+        .eq('model', identifier.model);
+
+      // Só filtrar por year se foi fornecido
+      if (identifier.year) {
+        query = query.eq('year', identifier.year);
+      }
+
+      const { data, error } = await query.maybeSingle();
 
       if (error) throw error;
       return data;
