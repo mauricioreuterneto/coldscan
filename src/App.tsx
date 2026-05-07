@@ -26,7 +26,6 @@ function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [appliances, setAppliances] = useState<Appliance[]>([]);
   const [household, setHousehold] = useState<any>(null);
-  const [hasProfile, setHasProfile] = useState(false);
   const [fridgeModel, setFridgeModel] = useState<FridgeModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [showProductModal, setShowProductModal] = useState(false);
@@ -120,9 +119,7 @@ function App() {
         .eq('id', user?.id || '')
         .maybeSingle();
 
-      if (existingProfile) {
-        setHasProfile(true);
-      } else {
+      if (!existingProfile) {
         // Redirecionar para onboarding se profile não existir
         setCurrentPage('onboarding');
         return;
@@ -197,14 +194,12 @@ function App() {
     setShoppingLists([]);
     setAppliances([]);
     setHousehold(null);
-    setHasProfile(false);
     setFridgeModel(null);
     setCurrentPage('setup');
   };
 
   const handleOnboardingComplete = async () => {
     try {
-      setHasProfile(true);
       setCurrentPage('setup');
     } catch (error) {
       console.error('Erro ao carregar profile após onboarding:', error);
