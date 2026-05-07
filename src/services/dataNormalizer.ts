@@ -61,6 +61,13 @@ class DataNormalizer {
         const snippet = item.snippet || '';
         const text = `${title} ${snippet}`;
 
+        // Extrair marca e modelo do título
+        const brandModelMatch = title.match(/(\w+)\s+([A-Z]{2,}\d{2,}[A-Z]?)/i);
+        if (brandModelMatch && !data.brand) {
+          data.brand = brandModelMatch[1].trim();
+          data.model = brandModelMatch[2].trim().toUpperCase();
+        }
+
         // Extrair capacidade
         const capacityMatch = text.match(/(\d+)\s*(?:litros|L)/i);
         if (capacityMatch && !data.totalCapacity) {
