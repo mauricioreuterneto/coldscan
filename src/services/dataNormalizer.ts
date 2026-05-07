@@ -56,17 +56,11 @@ class DataNormalizer {
 
     if (rawData.organic && rawData.organic.length > 0) {
       // Analisar os resultados orgânicos para extrair informações
+      // Não extrair brand e model - usar identificador original do workflow
       for (const item of rawData.organic.slice(0, 5)) {
         const title = item.title || '';
         const snippet = item.snippet || '';
         const text = `${title} ${snippet}`;
-
-        // Extrair marca e modelo do título
-        const brandModelMatch = title.match(/(\w+)\s+([A-Z]{2,}\d{2,}[A-Z]?)/i);
-        if (brandModelMatch && !data.brand) {
-          data.brand = brandModelMatch[1].trim();
-          data.model = brandModelMatch[2].trim().toUpperCase();
-        }
 
         // Extrair capacidade
         const capacityMatch = text.match(/(\d+)\s*(?:litros|L)/i);
