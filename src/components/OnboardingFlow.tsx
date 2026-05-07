@@ -58,7 +58,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete
   const saveProgress = async (step: number, completedSteps: string[] = []) => {
     try {
       const isCompleted = step >= totalSteps;
-      
+
       const { data } = await supabase
         .from('onboarding_progress')
         .upsert({
@@ -72,8 +72,6 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete
         .select()
         .single();
 
-      setProgress(data);
-      
       if (isCompleted) {
         await completeOnboarding();
       }
