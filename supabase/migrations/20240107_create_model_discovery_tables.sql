@@ -143,9 +143,9 @@ ALTER TABLE data_deletion_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
 
 -- Políticas RLS básicas (ajustar conforme necessário)
--- fridge_models_processed: todos podem ler, apenas admin pode escrever
+-- fridge_models_processed: todos podem ler, usuários autenticados podem escrever
 CREATE POLICY "Todos podem ler modelos processados" ON fridge_models_processed FOR SELECT USING (true);
-CREATE POLICY "Apenas admin pode inserir modelos" ON fridge_models_processed FOR INSERT WITH CHECK (auth.jwt() ->> 'role' = 'admin');
+CREATE POLICY "Usuários autenticados podem inserir modelos" ON fridge_models_processed FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
 CREATE POLICY "Apenas admin pode atualizar modelos" ON fridge_models_processed FOR UPDATE USING (auth.jwt() ->> 'role' = 'admin');
 
 -- user_fridge_customizations: usuário pode ler suas próprias, inserir suas próprias
