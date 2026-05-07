@@ -111,14 +111,40 @@ function App() {
 
   const loadHousehold = async () => {
     try {
+      // Primeiro garantir que o profile existe
+      await ensureProfileExists();
+
       const householdData = await supabaseService.getHousehold(user?.id || '');
       if (householdData) {
         setHousehold(householdData);
       }
-      // Se não existir, não vamos criar automaticamente para evitar erro de foreign key
-      // O usuário pode criar household manualmente quando necessário
     } catch (error) {
       console.error('Erro ao carregar household:', error);
+    }
+  };
+
+  const ensureProfileExists = async () => {
+    try {
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user?.id || '')
+        .maybeSingle();
+
+      if (!existingProfile && user) {
+        // Criar profile se não existir
+        await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            email: user.email,
+            full_name: user.email?.split('@')[0],
+            updated_at: new Date().toISOString()
+          });
+        console.log('Profile criado para usuário:', user.id);
+      }
+    } catch (error) {
+      console.error('Erro ao garantir profile existe:', error);
     }
   };
 
