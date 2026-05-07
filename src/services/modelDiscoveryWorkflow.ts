@@ -55,6 +55,16 @@ class ModelDiscoveryWorkflow {
       workflow.currentStep = 'normalize';
       workflow.progress = 50;
       const normalizedData = dataNormalizer.mergeMultipleSources(sources);
+      // Use the original identifier for brand and model if not extracted
+      if (!normalizedData.brand && identifier.brand) {
+        normalizedData.brand = identifier.brand;
+      }
+      if (!normalizedData.model && identifier.model) {
+        normalizedData.model = identifier.model;
+      }
+      if (!normalizedData.year && identifier.year) {
+        normalizedData.year = identifier.year;
+      }
       workflow.data = normalizedData;
       console.log('[modelDiscoveryWorkflow] Normalized data:', normalizedData);
 
