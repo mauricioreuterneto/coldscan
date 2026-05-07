@@ -14,7 +14,7 @@ import { Analytics } from './components/Analytics';
 import { ModelSelectionFlow } from './components/ModelSelectionFlow';
 import { ProductForm } from './components/ProductForm';
 import { StorageOverview } from './components/StorageOverview';
-import { Onboarding } from './components/Onboarding';
+import { OnboardingFlow } from './components/OnboardingFlow';
 
 type Page = 'setup' | 'onboarding' | 'home' | 'fridge' | 'products' | 'shopping' | 'analytics' | 'settings' | 'storage';
 
@@ -561,9 +561,8 @@ function App() {
       {/* Main Content */}
       <main className="p-4 pb-20 md:pb-4">
         {currentPage === 'onboarding' && user && (
-          <Onboarding
-            userId={user.id}
-            email={user.email}
+          <OnboardingFlow
+            user={user}
             onComplete={handleOnboardingComplete}
           />
         )}
