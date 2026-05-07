@@ -13,8 +13,9 @@ import { Analytics } from './components/Analytics';
 import { FridgeModelSelector } from './components/FridgeModelSelector';
 import { ProductForm } from './components/ProductForm';
 import { StorageOverview } from './components/StorageOverview';
+import { Onboarding } from './components/Onboarding';
 
-type Page = 'setup' | 'home' | 'fridge' | 'products' | 'shopping' | 'analytics' | 'settings' | 'storage';
+type Page = 'setup' | 'onboarding' | 'home' | 'fridge' | 'products' | 'shopping' | 'analytics' | 'settings' | 'storage';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -25,6 +26,7 @@ function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [appliances, setAppliances] = useState<Appliance[]>([]);
   const [household, setHousehold] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [fridgeModel, setFridgeModel] = useState<FridgeModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [showProductModal, setShowProductModal] = useState(false);
@@ -111,8 +113,20 @@ function App() {
 
   const loadHousehold = async () => {
     try {
-      // Primeiro garantir que o profile existe
-      await ensureProfileExists();
+      // Verificar se profile existe
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user?.id || '')
+        .maybeSingle();
+
+      if (existingProfile) {
+        setProfile(existingProfile);
+      } else {
+        // Redirecionar para onboarding se profile não existir
+        setCurrentPage('onboarding');
+        return;
+      }
 
       const householdData = await supabaseService.getHousehold(user?.id || '');
       if (householdData) {
@@ -120,31 +134,6 @@ function App() {
       }
     } catch (error) {
       console.error('Erro ao carregar household:', error);
-    }
-  };
-
-  const ensureProfileExists = async () => {
-    try {
-      const { data: existingProfile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('id', user?.id || '')
-        .maybeSingle();
-
-      if (!existingProfile && user) {
-        // Criar profile se não existir
-        await supabase
-          .from('profiles')
-          .insert({
-            id: user.id,
-            email: user.email,
-            full_name: user.email?.split('@')[0],
-            updated_at: new Date().toISOString()
-          });
-        console.log('Profile criado para usuário:', user.id);
-      }
-    } catch (error) {
-      console.error('Erro ao garantir profile existe:', error);
     }
   };
 
@@ -208,8 +197,28 @@ function App() {
     setShoppingLists([]);
     setAppliances([]);
     setHousehold(null);
+    setProfile(null);
     setFridgeModel(null);
     setCurrentPage('setup');
+  };
+
+  const handleOnboardingComplete = async () => {
+    try {
+      // Recarregar profile
+      const { data: newProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user?.id || '')
+        .single();
+
+      if (newProfile) {
+        setProfile(newProfile);
+      }
+
+      setCurrentPage('setup');
+    } catch (error) {
+      console.error('Erro ao carregar profile após onboarding:', error);
+    }
   };
 
   // Gestão de Produtos
@@ -540,6 +549,14 @@ function App() {
 
       {/* Main Content */}
       <main className="p-4 pb-20 md:pb-4">
+        {currentPage === 'onboarding' && user && (
+          <Onboarding
+            userId={user.id}
+            email={user.email}
+            onComplete={handleOnboardingComplete}
+          />
+        )}
+
         {currentPage === 'setup' && (
           <FridgeModelSelector
             onSelectModel={async (model) => {
