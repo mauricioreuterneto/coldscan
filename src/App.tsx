@@ -115,19 +115,9 @@ function App() {
       const householdData = await supabaseService.getHousehold(user?.id || '');
       if (householdData) {
         setHousehold(householdData);
-      } else {
-        // Criar household se não existir
-        const newHousehold = await supabaseService.createHousehold({
-          user_id: user?.id || '',
-          name: 'Minha Casa',
-          settings: {
-            defaultAlerts: true,
-            temperatureUnit: 'celsius',
-            inventoryTracking: true
-          }
-        });
-        setHousehold(newHousehold);
       }
+      // Se não existir, não vamos criar automaticamente para evitar erro de foreign key
+      // O usuário pode criar household manualmente quando necessário
     } catch (error) {
       console.error('Erro ao carregar household:', error);
     }

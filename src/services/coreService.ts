@@ -30,17 +30,11 @@ export class CoreService {
     try {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error) throw error;
-      
+
       if (!user) return null;
 
-      // Buscar dados completos do usuário
-      const { data: userData } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      return userData || {
+      // Retornar usuário do auth sem buscar na tabela users (que não existe)
+      return {
         id: user.id,
         email: user.email!,
         createdAt: new Date()
@@ -88,21 +82,6 @@ export class CoreService {
       });
 
       if (error) throw error;
-
-      // Criar registro do usuário na tabela users
-      if (data.user) {
-        const { error: insertError } = await supabase
-          .from('users')
-          .insert({
-            id: data.user.id,
-            email: data.user.email!,
-            name: name || data.user.email?.split('@')[0],
-            onboarding_completed: false,
-            created_at: new Date().toISOString()
-          });
-
-        if (insertError) throw insertError;
-      }
 
       const user = await this.getCurrentUser();
       if (!user) throw new Error('Falha ao criar usuário');
@@ -182,12 +161,6 @@ export class CoreService {
         .single();
 
       if (error) throw error;
-
-      // Atualizar usuário com householdId
-      await supabase
-        .from('users')
-        .update({ household_id: data.id })
-        .eq('id', user.id);
 
       const household = await this.getHousehold(data.id);
       if (!household) throw new Error('Falha ao buscar household criado');

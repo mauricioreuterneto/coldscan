@@ -364,16 +364,35 @@ export const supabaseService = {
   },
 
   async saveFridgeModel(model: Database['public']['Tables']['fridge_models']['Insert']) {
-    const { data, error } = await supabase
+    // Primeiro verificar se já existe um modelo para este usuário
+    const { data: existing } = await supabase
       .from('fridge_models')
-      .upsert(model, {
-        onConflict: 'user_id'
-      })
-      .select()
-      .single();
-    
-    if (error) throw error;
-    return data;
+      .select('id')
+      .eq('user_id', model.user_id)
+      .maybeSingle();
+
+    if (existing) {
+      // Atualizar se já existe
+      const { data, error } = await supabase
+        .from('fridge_models')
+        .update(model)
+        .eq('id', existing.id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    } else {
+      // Criar novo se não existe
+      const { data, error } = await supabase
+        .from('fridge_models')
+        .insert(model)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
   },
 
   // Households
