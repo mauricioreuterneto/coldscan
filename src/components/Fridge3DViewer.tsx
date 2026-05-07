@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Product } from '../types/unified';
 import { FridgeModel } from '../types/unified';
 import { ProcessedFridgeModel } from '../types/fridgeDiscovery';
