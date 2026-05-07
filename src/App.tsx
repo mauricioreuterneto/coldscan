@@ -87,7 +87,9 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!fridgeModel && currentPage !== 'setup' && currentPage !== 'onboarding') {
+    if (fridgeModel && currentPage === 'setup') {
+      setCurrentPage('home');
+    } else if (!fridgeModel && currentPage !== 'setup' && currentPage !== 'onboarding') {
       setCurrentPage('setup');
     }
   }, [fridgeModel, currentPage]);
