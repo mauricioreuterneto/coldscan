@@ -20,12 +20,14 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, userId, emai
     try {
       const { error } = await supabase
         .from('profiles')
-        .insert({
+        .upsert({
           id: userId,
           email: email,
           full_name: fullName,
           name: fullName,
           updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'id'
         });
 
       if (error) throw error;
