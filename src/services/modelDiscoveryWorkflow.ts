@@ -79,6 +79,7 @@ class ModelDiscoveryWorkflow {
       // Step 6: Validate consistency
       const validation = consistencyValidator.validate(withFallbacks);
       console.log('[modelDiscoveryWorkflow] Validation result:', validation);
+      console.log('[modelDiscoveryWorkflow] Validation errors:', validation.errors);
       if (!validation.isValid) {
         workflow.errors.push(...validation.errors);
         workflow.warnings.push(...validation.warnings);
