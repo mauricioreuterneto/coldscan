@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS fridge_models_pending_review (
 -- Tabela de customizações de usuários (crowd-sourcing)
 CREATE TABLE IF NOT EXISTS user_fridge_customizations (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   base_model_id TEXT NOT NULL REFERENCES fridge_models_processed(id) ON DELETE CASCADE,
   customizations JSONB NOT NULL,
   appliance_age INTEGER NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS user_fridge_customizations (
 -- Tabela de consentimentos de usuários
 CREATE TABLE IF NOT EXISTS user_consents (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   consent_type TEXT NOT NULL CHECK (consent_type IN ('crowd_sourcing', 'photo_upload', 'data_processing')),
   consented_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   revoked_at TIMESTAMP WITH TIME ZONE,
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS user_consents (
 -- Tabela de fotos de usuários
 CREATE TABLE IF NOT EXISTS user_photos (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   storage_path TEXT NOT NULL,
   purpose TEXT NOT NULL CHECK (purpose IN ('model_discovery', 'customization')),
   uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS user_photos (
 -- Tabela de aceitação de termos de uso
 CREATE TABLE IF NOT EXISTS user_terms_acceptance (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   terms_version TEXT NOT NULL,
   accepted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   ip_address TEXT,
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS model_data_sources (
 -- Tabela de solicitações de deleção de dados
 CREATE TABLE IF NOT EXISTS data_deletion_requests (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   requested_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   completed_at TIMESTAMP WITH TIME ZONE,
   status TEXT NOT NULL CHECK (status IN ('pending', 'processing', 'completed', 'failed')),
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS data_deletion_requests (
 -- Tabela de log de auditoria
 CREATE TABLE IF NOT EXISTS audit_log (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id TEXT REFERENCES profiles(id) ON DELETE SET NULL,
+  user_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
   action TEXT NOT NULL,
   details JSONB,
   timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -149,17 +149,17 @@ CREATE POLICY "Apenas admin pode inserir modelos" ON fridge_models_processed FOR
 CREATE POLICY "Apenas admin pode atualizar modelos" ON fridge_models_processed FOR UPDATE USING (auth.jwt() ->> 'role' = 'admin');
 
 -- user_fridge_customizations: usuário pode ler suas próprias, inserir suas próprias
-CREATE POLICY "Usuário pode ler suas customizações" ON user_fridge_customizations FOR SELECT USING (auth.uid()::text = user_id);
-CREATE POLICY "Usuário pode inserir suas customizações" ON user_fridge_customizations FOR INSERT WITH CHECK (auth.uid()::text = user_id);
-CREATE POLICY "Usuário pode atualizar suas customizações" ON user_fridge_customizations FOR UPDATE USING (auth.uid()::text = user_id);
+CREATE POLICY "Usuário pode ler suas customizações" ON user_fridge_customizations FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Usuário pode inserir suas customizações" ON user_fridge_customizations FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Usuário pode atualizar suas customizações" ON user_fridge_customizations FOR UPDATE USING (auth.uid() = user_id);
 
 -- user_photos: usuário pode ler suas próprias, inserir suas próprias
-CREATE POLICY "Usuário pode ler suas fotos" ON user_photos FOR SELECT USING (auth.uid()::text = user_id);
-CREATE POLICY "Usuário pode inserir suas fotos" ON user_photos FOR INSERT WITH CHECK (auth.uid()::text = user_id);
+CREATE POLICY "Usuário pode ler suas fotos" ON user_photos FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Usuário pode inserir suas fotos" ON user_photos FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- user_consents: usuário pode ler suas próprias, inserir suas próprias
-CREATE POLICY "Usuário pode ler seus consentimentos" ON user_consents FOR SELECT USING (auth.uid()::text = user_id);
-CREATE POLICY "Usuário pode inserir seus consentimentos" ON user_consents FOR INSERT WITH CHECK (auth.uid()::text = user_id);
+CREATE POLICY "Usuário pode ler seus consentimentos" ON user_consents FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Usuário pode inserir seus consentimentos" ON user_consents FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- audit_log: apenas admin pode ler, sistema pode inserir
 CREATE POLICY "Apenas admin pode ler audit log" ON audit_log FOR SELECT USING (auth.jwt() ->> 'role' = 'admin');
