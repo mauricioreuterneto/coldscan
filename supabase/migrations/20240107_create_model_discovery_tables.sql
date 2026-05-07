@@ -144,23 +144,35 @@ ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
 
 -- Políticas RLS básicas (ajustar conforme necessário)
 -- fridge_models_processed: todos podem ler, usuários autenticados podem escrever
+DROP POLICY IF EXISTS "Todos podem ler modelos processados" ON fridge_models_processed;
+DROP POLICY IF EXISTS "Usuários autenticados podem inserir modelos" ON fridge_models_processed;
+DROP POLICY IF EXISTS "Apenas admin pode atualizar modelos" ON fridge_models_processed;
 CREATE POLICY "Todos podem ler modelos processados" ON fridge_models_processed FOR SELECT USING (true);
 CREATE POLICY "Usuários autenticados podem inserir modelos" ON fridge_models_processed FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
 CREATE POLICY "Apenas admin pode atualizar modelos" ON fridge_models_processed FOR UPDATE USING (auth.jwt() ->> 'role' = 'admin');
 
 -- user_fridge_customizations: usuário pode ler suas próprias, inserir suas próprias
+DROP POLICY IF EXISTS "Usuário pode ler suas customizações" ON user_fridge_customizations;
+DROP POLICY IF EXISTS "Usuário pode inserir suas customizações" ON user_fridge_customizations;
+DROP POLICY IF EXISTS "Usuário pode atualizar suas customizações" ON user_fridge_customizations;
 CREATE POLICY "Usuário pode ler suas customizações" ON user_fridge_customizations FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Usuário pode inserir suas customizações" ON user_fridge_customizations FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Usuário pode atualizar suas customizações" ON user_fridge_customizations FOR UPDATE USING (auth.uid() = user_id);
 
 -- user_photos: usuário pode ler suas próprias, inserir suas próprias
+DROP POLICY IF EXISTS "Usuário pode ler suas fotos" ON user_photos;
+DROP POLICY IF EXISTS "Usuário pode inserir suas fotos" ON user_photos;
 CREATE POLICY "Usuário pode ler suas fotos" ON user_photos FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Usuário pode inserir suas fotos" ON user_photos FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- user_consents: usuário pode ler suas próprias, inserir suas próprias
+DROP POLICY IF EXISTS "Usuário pode ler seus consentimentos" ON user_consents;
+DROP POLICY IF EXISTS "Usuário pode inserir seus consentimentos" ON user_consents;
 CREATE POLICY "Usuário pode ler seus consentimentos" ON user_consents FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Usuário pode inserir seus consentimentos" ON user_consents FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- audit_log: apenas admin pode ler, sistema pode inserir
+DROP POLICY IF EXISTS "Apenas admin pode ler audit log" ON audit_log;
+DROP POLICY IF EXISTS "Sistema pode inserir audit log" ON audit_log;
 CREATE POLICY "Apenas admin pode ler audit log" ON audit_log FOR SELECT USING (auth.jwt() ->> 'role' = 'admin');
 CREATE POLICY "Sistema pode inserir audit log" ON audit_log FOR INSERT WITH CHECK (true);

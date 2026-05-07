@@ -95,7 +95,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete
     setLoading(true);
     try {
       // Criar household
-      const { data: household } = await supabase
+      const { data: household, error: householdError } = await supabase
         .from('households')
         .insert({
           name: householdName,
@@ -108,10 +108,20 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete
         .select()
         .single();
 
+      if (householdError) {
+        console.error('Erro ao criar household:', householdError);
+        throw householdError;
+      }
+
+      if (!household) {
+        console.error('Household é null após inserção');
+        throw new Error('Falha ao criar household');
+      }
+
       // Atualizar perfil do usuário
       await supabase
         .from('profiles')
-        .update({ 
+        .update({
           household_id: household.id,
           name: user.name || user.email.split('@')[0]
         })
