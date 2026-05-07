@@ -49,19 +49,27 @@ class FallbackSystem {
   }
 
   estimateDimensionsFromCapacity(capacity: number): { width: number; height: number; depth: number; weight: number } {
-    // Estimativa baseada em capacidade média
-    const baseVolume = capacity * 1000; // cm³
+    // Estimativa baseada em dimensões típicas de geladeiras
+    // Geladeiras comuns: 450-500L têm ~60cm x 170-180cm x 65-70cm
+    // Fórmula ajustada para valores realistas em mm
     
-    // Assumindo proporção típica de geladeira
-    const height = Math.cbrt(baseVolume * 1.5);
-    const width = height * 0.6;
-    const depth = height * 0.7;
+    // Base: 60cm de largura para geladeiras padrão
+    const width = 600;
+    
+    // Altura varia com capacidade: ~170cm para 300L, ~190cm para 500L
+    const height = 1600 + (capacity * 0.6); 
+    
+    // Profundidade padrão: ~65-70cm
+    const depth = 680;
+    
+    // Peso: ~1kg por litro (geladeira vazia é mais leve, mas com conteúdo)
+    const weight = Math.round(capacity * 0.7);
 
     return {
       width: Math.round(width),
       height: Math.round(height),
       depth: Math.round(depth),
-      weight: Math.round(capacity * 0.8), // ~0.8kg por litro
+      weight: Math.max(30, weight), // mínimo de 30kg
     };
   }
 
