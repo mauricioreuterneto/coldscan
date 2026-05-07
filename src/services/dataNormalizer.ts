@@ -186,7 +186,7 @@ class DataNormalizer {
     const validValues = values.filter(v => v !== undefined);
     if (validValues.length === 0) return undefined;
 
-    const sum = validValues.reduce((acc, val) => acc + (val || 0), 0);
+    const sum = validValues.reduce((acc: number, val) => acc + (val || 0), 0);
     return sum / validValues.length;
   }
 
