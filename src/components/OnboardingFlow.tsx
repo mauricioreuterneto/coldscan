@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   ChevronRight, 
   ChevronLeft, 
@@ -11,11 +11,10 @@ import {
   Plus,
   Camera,
   AlertCircle,
-  Clock,
   Target
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { User, OnboardingProgress, StorageLocation, ProductCategory } from '../types/enhanced';
+import { User, OnboardingProgress } from '../types/enhanced';
 
 interface OnboardingFlowProps {
   user: User;
@@ -25,7 +24,6 @@ interface OnboardingFlowProps {
 export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState<OnboardingProgress | null>(null);
   const [householdName, setHouseholdName] = useState('Minha Casa');
   const [selectedLocations, setSelectedLocations] = useState<string[]>(['Geladeira Principal', 'Despensa']);
   const [firstProducts, setFirstProducts] = useState<string[]>([]);
@@ -37,11 +35,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete
 
   const totalSteps = 5;
 
-  useEffect(() => {
-    loadProgress();
-  }, [user.id]);
-
-  const loadProgress = async () => {
+  const loadProgress = useCallback(async () => {
     try {
       const { data } = await supabase
         .from('onboarding_progress')
@@ -50,13 +44,16 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete
         .single();
 
       if (data) {
-        setProgress(data);
         setCurrentStep(data.current_step);
       }
     } catch (error) {
       console.error('Erro ao carregar progresso:', error);
     }
-  };
+  }, [user.id]);
+
+  useEffect(() => {
+    loadProgress();
+  }, [loadProgress]);
 
   const saveProgress = async (step: number, completedSteps: string[] = []) => {
     try {
@@ -179,12 +176,6 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete
       ];
 
       for (const product of commonProducts) {
-        const { data: category } = await supabase
-          .from('product_categories')
-          .select('id')
-          .eq('name', product.category)
-          .single();
-
         await supabase
           .from('products')
           .insert({
