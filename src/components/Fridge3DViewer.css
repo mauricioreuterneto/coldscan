@@ -1,0 +1,224 @@
+.fridge-3d-viewer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.view-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: flex-end;
+}
+
+.view-btn {
+  padding: 0.5rem 1rem;
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.view-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.view-btn.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+/* 2D View Styles */
+.fridge-2d-view .fridge-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.compartment {
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.compartment:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.compartment.selected {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.compartment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.compartment-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.compartment-stats {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: #f3f4f6;
+  border-radius: 4px;
+  color: #6b7280;
+}
+
+.stat-item.expired {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.stat-item.expiring {
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.compartment-products {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.product-item {
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.product-item:hover {
+  background: #f3f4f6;
+  border-color: #3b82f6;
+}
+
+.product-item.expired {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.product-item.expiring {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.product-name {
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.product-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.expiry-date {
+  font-weight: 500;
+}
+
+.expiry-date.expired {
+  color: #ef4444;
+}
+
+.expiry-date.expiring {
+  color: #f59e0b;
+}
+
+.empty-compartment {
+  text-align: center;
+  padding: 2rem;
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+/* 3D View Styles */
+.fridge-3d-view .fridge-3d-container {
+  position: relative;
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.fridge-canvas {
+  width: 100%;
+  height: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+}
+
+.3d-controls {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.door-toggle-btn {
+  padding: 0.75rem 1.5rem;
+  background: #3b82f6;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.door-toggle-btn:hover {
+  background: #2563eb;
+}
+
+.3d-legend {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .fridge-2d-view .fridge-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .compartment-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .compartment-stats {
+    width: 100%;
+  }
+}
