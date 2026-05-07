@@ -150,18 +150,15 @@ function App() {
 
   const loadAppliances = async () => {
     try {
+      // Carregar fridgeModel primeiro (independente de appliances)
+      const fridgeModelData = await supabaseService.getFridgeModel(user?.id || '');
+      if (fridgeModelData) {
+        setFridgeModel(fridgeModelData as unknown as FridgeModel);
+      }
+
       if (household) {
         const appliancesData = await supabaseService.getAppliances(household.id);
         setAppliances(appliancesData);
-        // Definir primeiro aparelho ativo como principal
-        const activeAppliance = appliancesData.find(a => a.is_active);
-        if (activeAppliance) {
-          // Carregar modelo da geladeira associado ao appliance
-          const fridgeModelData = await supabaseService.getFridgeModel(user?.id || '');
-          if (fridgeModelData) {
-            setFridgeModel(fridgeModelData as unknown as FridgeModel);
-          }
-        }
       }
     } catch (error) {
       console.error('Erro ao carregar appliances:', error);
@@ -529,8 +526,22 @@ function App() {
       <main className="p-4 pb-20 md:pb-4">
         {currentPage === 'setup' && (
           <FridgeModelSelector onSelectModel={async (model) => {
-            setFridgeModel(model);
-            setCurrentPage('home');
+            // Salvar o fridgeModel no Supabase
+            try {
+              await supabaseService.saveFridgeModel({
+                user_id: user?.id || '',
+                brand: model.brand,
+                model: model.model,
+                year: model.year,
+                capacity: model.capacity,
+                compartments: model.compartments,
+                image_url: model.image
+              });
+              setFridgeModel(model);
+              setCurrentPage('home');
+            } catch (error) {
+              console.error('Erro ao salvar modelo de geladeira:', error);
+            }
           }} />
         )}
         
