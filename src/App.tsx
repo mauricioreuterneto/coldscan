@@ -115,9 +115,9 @@ function App() {
         loadProducts(),
         loadShoppingLists(),
         loadAppliances(),
-        loadDashboardStats(),
         loadFridgeModel()
       ]);
+      // loadDashboardStats chamado separadamente para evitar loop
     } catch (error) {
       console.error('Erro ao carregar dados do usuário:', error);
     } finally {
