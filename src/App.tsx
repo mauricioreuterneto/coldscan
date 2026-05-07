@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { coreService } from './services/coreService';
 import { supabase, supabaseService } from './lib/supabase';
 import type { User, ShoppingList, Appliance, Product, FridgeModel } from './types/unified';
+import { ProcessedFridgeModel } from './types/fridgeDiscovery';
 import { Plus, Home, Package, ShoppingCart, BarChart3, Grid3X3, Menu, X } from 'lucide-react';
 
 // Componentes existentes que vamos manter
@@ -10,7 +11,7 @@ import { Dashboard } from './components/Dashboard';
 import { FridgeViewer } from './components/FridgeViewer';
 import { ShoppingList as ShoppingListComponent } from './components/ShoppingList';
 import { Analytics } from './components/Analytics';
-import { FridgeModelSelector } from './components/FridgeModelSelector';
+import { ModelSelectionFlow } from './components/ModelSelectionFlow';
 import { ProductForm } from './components/ProductForm';
 import { StorageOverview } from './components/StorageOverview';
 import { Onboarding } from './components/Onboarding';
@@ -545,8 +546,8 @@ function App() {
         )}
 
         {currentPage === 'setup' && (
-          <FridgeModelSelector
-            onSelectModel={async (model) => {
+          <ModelSelectionFlow
+            onModelSelected={async (model: ProcessedFridgeModel) => {
               console.log('Modelo selecionado:', model);
               try {
                 console.log('Salvando fridgeModel no Supabase...');
@@ -555,19 +556,22 @@ function App() {
                   brand: model.brand,
                   model: model.model,
                   year: model.year,
-                  capacity: model.capacity,
+                  capacity: model.totalCapacity,
                   compartments: model.compartments,
-                  image_url: model.image
+                  image_url: model.imageUrl
                 });
                 console.log('FridgeModel salvo com sucesso');
-                setFridgeModel(model);
+                setFridgeModel(model as unknown as FridgeModel);
                 setCurrentPage('home');
               } catch (error) {
                 console.error('Erro ao salvar modelo de geladeira:', error);
                 alert('Erro ao salvar modelo de geladeira. Tente novamente.');
               }
             }}
-            selectedModel={fridgeModel}
+            onCancel={() => {
+              console.log('Seleção de modelo cancelada');
+            }}
+            userId={user?.id}
           />
         )}
         
