@@ -76,7 +76,8 @@ class APISearchService {
       const data = await response.json();
       console.log('Serper response:', data);
 
-      if (data.items && data.items.length > 0) {
+      // Serper returns data in 'organic' array, not 'items'
+      if (data.organic && data.organic.length > 0) {
         return {
           source: 'serper',
           rawData: data,
