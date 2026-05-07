@@ -549,24 +549,10 @@ function App() {
           <ModelSelectionFlow
             onModelSelected={async (model: ProcessedFridgeModel) => {
               console.log('Modelo selecionado:', model);
-              try {
-                console.log('Salvando fridgeModel no Supabase...');
-                await supabaseService.saveFridgeModel({
-                  user_id: user?.id || '',
-                  brand: model.brand,
-                  model: model.model,
-                  year: model.year,
-                  capacity: model.totalCapacity,
-                  compartments: model.compartments,
-                  image_url: model.imageUrl
-                });
-                console.log('FridgeModel salvo com sucesso');
-                setFridgeModel(model as unknown as FridgeModel);
-                setCurrentPage('home');
-              } catch (error) {
-                console.error('Erro ao salvar modelo de geladeira:', error);
-                alert('Erro ao salvar modelo de geladeira. Tente novamente.');
-              }
+              // O workflow já salvou o modelo em fridge_models_processed
+              // Apenas atualizar o estado local e navegar
+              setFridgeModel(model as unknown as FridgeModel);
+              setCurrentPage('home');
             }}
             onCancel={() => {
               console.log('Seleção de modelo cancelada');
