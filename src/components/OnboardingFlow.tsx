@@ -41,7 +41,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete
         .from('onboarding_progress')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (data) {
         setCurrentStep(data.current_step);
