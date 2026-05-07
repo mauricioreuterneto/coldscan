@@ -68,6 +68,24 @@ class DataNormalizer {
           data.totalCapacity = parseInt(capacityMatch[1], 10);
         }
 
+        // Extrair dimensões (padrões: 60x180x70, 600x1800x700, etc.)
+        const dimensionsMatch = text.match(/(\d{2,3})[xX](\d{3,4})[xX](\d{2,3})\s*(?:cm|mm)?/);
+        if (dimensionsMatch && !data.dimensions) {
+          const width = parseInt(dimensionsMatch[1], 10);
+          const height = parseInt(dimensionsMatch[2], 10);
+          const depth = parseInt(dimensionsMatch[3], 10);
+          
+          // Converter para mm se estiver em cm (valores < 100 são cm)
+          const multiplier = width < 100 ? 10 : 1;
+          
+          data.dimensions = {
+            width: width * multiplier,
+            height: height * multiplier,
+            depth: depth * multiplier,
+            weight: data.totalCapacity ? Math.round(data.totalCapacity * 0.7) : 50, // estimativa baseada na capacidade
+          };
+        }
+
         // Extrair ano
         const yearMatch = text.match(/(20\d{2})/);
         if (yearMatch && !data.year) {
@@ -118,6 +136,22 @@ class DataNormalizer {
           const capacityMatch = answer.match(/(\d+)\s*(?:litros|L)/i);
           if (capacityMatch && !data.totalCapacity) {
             data.totalCapacity = parseInt(capacityMatch[1], 10);
+          }
+          
+          const dimensionsMatch = answer.match(/(\d{2,3})[xX](\d{3,4})[xX](\d{2,3})\s*(?:cm|mm)?/);
+          if (dimensionsMatch && !data.dimensions) {
+            const width = parseInt(dimensionsMatch[1], 10);
+            const height = parseInt(dimensionsMatch[2], 10);
+            const depth = parseInt(dimensionsMatch[3], 10);
+            
+            const multiplier = width < 100 ? 10 : 1;
+            
+            data.dimensions = {
+              width: width * multiplier,
+              height: height * multiplier,
+              depth: depth * multiplier,
+              weight: data.totalCapacity ? Math.round(data.totalCapacity * 0.7) : 50,
+            };
           }
         }
       }
