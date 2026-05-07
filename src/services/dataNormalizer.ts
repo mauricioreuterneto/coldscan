@@ -4,6 +4,8 @@ import { FridgeModelUserFocused, APISource } from '../types/fridgeDiscovery';
 class DataNormalizer {
   normalize(rawData: any, source: string): Partial<FridgeModelUserFocused> {
     switch (source) {
+      case 'serper':
+        return this.normalizeSerperData(rawData);
       case 'google-shopping':
         return this.normalizeGoogleShoppingData(rawData);
       case 'manufacturer-site':
@@ -45,6 +47,80 @@ class DataNormalizer {
       seen.add(key);
       return true;
     });
+  }
+
+  private normalizeSerperData(rawData: any): Partial<FridgeModelUserFocused> {
+    const data: Partial<FridgeModelUserFocused> = {};
+
+    if (rawData.organic && rawData.organic.length > 0) {
+      // Analisar os resultados orgânicos para extrair informações
+      for (const item of rawData.organic.slice(0, 5)) {
+        const title = item.title || '';
+        const snippet = item.snippet || '';
+        const text = `${title} ${snippet}`;
+
+        // Extrair capacidade
+        const capacityMatch = text.match(/(\d+)\s*(?:litros|L)/i);
+        if (capacityMatch && !data.totalCapacity) {
+          data.totalCapacity = parseInt(capacityMatch[1], 10);
+        }
+
+        // Extrair ano
+        const yearMatch = text.match(/(20\d{2})/);
+        if (yearMatch && !data.year) {
+          data.year = parseInt(yearMatch[1], 10);
+        }
+
+        // Extrair voltagem
+        if (text.includes('110V') || text.includes('bivolt')) {
+          data.energy = { 
+            monthlyKwh: data.energy?.monthlyKwh || 45,
+            efficiency: data.energy?.efficiency || 'C',
+            voltage: 'bivolt' 
+          };
+        } else if (text.includes('220V')) {
+          data.energy = { 
+            monthlyKwh: data.energy?.monthlyKwh || 45,
+            efficiency: data.energy?.efficiency || 'C',
+            voltage: '220V' 
+          };
+        }
+
+        // Extrair eficiência energética
+        if (text.includes('A+')) {
+          data.energy = { 
+            monthlyKwh: data.energy?.monthlyKwh || 45,
+            efficiency: 'A',
+            voltage: data.energy?.voltage || 'bivolt' 
+          };
+        } else if (text.includes('B+')) {
+          data.energy = { 
+            monthlyKwh: data.energy?.monthlyKwh || 45,
+            efficiency: 'B',
+            voltage: data.energy?.voltage || 'bivolt' 
+          };
+        } else if (text.includes('C+')) {
+          data.energy = { 
+            monthlyKwh: data.energy?.monthlyKwh || 45,
+            efficiency: 'C',
+            voltage: data.energy?.voltage || 'bivolt' 
+          };
+        }
+      }
+
+      // Extrair do peopleAlsoAsk se disponível
+      if (rawData.peopleAlsoAsk && rawData.peopleAlsoAsk.length > 0) {
+        for (const question of rawData.peopleAlsoAsk) {
+          const answer = question.snippet || '';
+          const capacityMatch = answer.match(/(\d+)\s*(?:litros|L)/i);
+          if (capacityMatch && !data.totalCapacity) {
+            data.totalCapacity = parseInt(capacityMatch[1], 10);
+          }
+        }
+      }
+    }
+
+    return data;
   }
 
   private normalizeGoogleShoppingData(rawData: any): Partial<FridgeModelUserFocused> {
