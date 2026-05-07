@@ -8,18 +8,23 @@ class APISearchService {
   private readonly SERPER_URL = 'https://google.serper.dev/search';
 
   async searchModel(identifier: ModelIdentifier): Promise<APISource[]> {
+    console.log('[apiSearchService] Version with Serper priority - searching for:', identifier);
     const sources: APISource[] = [];
 
     // Prioridade: Serper API (gratuita e sem CORS)
     const serperResults = await this.searchWithSerper(identifier);
     if (serperResults) {
+      console.log('[apiSearchService] Serper returned results, skipping other methods');
       sources.push(serperResults);
     }
 
     // Se Serper funcionou, não precisa tentar outros métodos
     if (sources.length > 0) {
+      console.log('[apiSearchService] Returning Serper results only');
       return sources;
     }
+
+    console.log('[apiSearchService] Serper failed, trying fallback methods');
 
     // Fallback: Google Shopping (se configurado)
     const googleResults = await this.searchGoogleShopping(identifier);
