@@ -14,7 +14,7 @@ import {
   Target
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { User, OnboardingProgress } from '../types/enhanced';
+import { User } from '../types/enhanced';
 
 interface OnboardingFlowProps {
   user: User;
@@ -59,7 +59,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete
     try {
       const isCompleted = step >= totalSteps;
 
-      const { data } = await supabase
+      await supabase
         .from('onboarding_progress')
         .upsert({
           user_id: user.id,
@@ -68,9 +68,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete
           completed_steps: completedSteps,
           is_completed: isCompleted,
           completed_at: isCompleted ? new Date().toISOString() : null
-        })
-        .select()
-        .single();
+        });
 
       if (isCompleted) {
         await completeOnboarding();
