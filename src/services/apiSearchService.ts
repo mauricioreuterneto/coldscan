@@ -4,29 +4,87 @@ import { ModelIdentifier, FridgeModelUserFocused, APISource } from '../types/fri
 class APISearchService {
   private readonly GOOGLE_CUSTOM_SEARCH_API_KEY = process.env.REACT_APP_GOOGLE_SEARCH_API_KEY;
   private readonly GOOGLE_SEARCH_ENGINE_ID = process.env.REACT_APP_GOOGLE_SEARCH_ENGINE_ID;
+  private readonly SERPER_API_KEY = process.env.REACT_APP_SERPER_API_KEY;
+  private readonly SERPER_URL = 'https://google.serper.dev/search';
 
   async searchModel(identifier: ModelIdentifier): Promise<APISource[]> {
     const sources: APISource[] = [];
 
-    // Busca em Google Shopping (100 requisições grátis/dia)
+    // Prioridade: Serper API (gratuita e sem CORS)
+    const serperResults = await this.searchWithSerper(identifier);
+    if (serperResults) {
+      sources.push(serperResults);
+    }
+
+    // Se Serper funcionou, não precisa tentar outros métodos
+    if (sources.length > 0) {
+      return sources;
+    }
+
+    // Fallback: Google Shopping (se configurado)
     const googleResults = await this.searchGoogleShopping(identifier);
     if (googleResults) {
       sources.push(googleResults);
     }
 
-    // Busca em sites de fabricantes (scraping)
+    // Fallback: Scraping (vai falhar por CORS no browser, mas tenta)
     const manufacturerResults = await this.searchManufacturerSites(identifier);
     if (manufacturerResults) {
       sources.push(manufacturerResults);
     }
 
-    // Busca em sites de comparação
     const comparisonResults = await this.searchComparisonSites(identifier);
     if (comparisonResults) {
       sources.push(comparisonResults);
     }
 
     return sources;
+  }
+
+  private async searchWithSerper(identifier: ModelIdentifier): Promise<APISource | null> {
+    if (!this.SERPER_API_KEY) {
+      console.warn('Serper API key not configured');
+      return null;
+    }
+
+    try {
+      const query = `${identifier.brand} ${identifier.model} geladeira especificações técnicas capacidade`;
+      console.log('Searching Serper with query:', query);
+
+      const response = await fetch(this.SERPER_URL, {
+        method: 'POST',
+        headers: {
+          'X-API-KEY': this.SERPER_API_KEY,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          q: query,
+          num: 10,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Serper API error:', response.status, response.statusText);
+        return null;
+      }
+
+      const data = await response.json();
+      console.log('Serper response:', data);
+
+      if (data.items && data.items.length > 0) {
+        return {
+          source: 'serper',
+          rawData: data,
+          confidence: 0.85,
+          timestamp: new Date().toISOString(),
+        };
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Serper search error:', error);
+      return null;
+    }
   }
 
   private async searchGoogleShopping(identifier: ModelIdentifier): Promise<APISource | null> {
