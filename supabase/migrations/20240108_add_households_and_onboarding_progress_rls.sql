@@ -50,10 +50,12 @@ CREATE POLICY "Usuários podem atualizar households" ON households FOR UPDATE US
 -- Enable RLS and add policies for onboarding_progress table
 ALTER TABLE onboarding_progress ENABLE ROW LEVEL SECURITY;
 
--- Drop existing policies if they exist
-DROP POLICY IF EXISTS "Usuários podem ver onboarding_progress" ON onboarding_progress;
-DROP POLICY IF EXISTS "Usuários podem criar onboarding_progress" ON onboarding_progress;
+-- Drop ALL existing policies (including conflicting ones)
+DROP POLICY IF EXISTS "Users can manage own onboarding_progress" ON onboarding_progress;
+DROP POLICY IF EXISTS "Users can view own onboarding_progress" ON onboarding_progress;
 DROP POLICY IF EXISTS "Usuários podem atualizar onboarding_progress" ON onboarding_progress;
+DROP POLICY IF EXISTS "Usuários podem criar onboarding_progress" ON onboarding_progress;
+DROP POLICY IF EXISTS "Usuários podem ver onboarding_progress" ON onboarding_progress;
 
 -- Allow authenticated users to read their own progress
 CREATE POLICY "Usuários podem ver onboarding_progress" ON onboarding_progress FOR SELECT USING (
