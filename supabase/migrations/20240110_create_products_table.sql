@@ -20,20 +20,7 @@ CREATE TABLE IF NOT EXISTS products (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Adicionar coluna household_id se não existir
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'products' 
-        AND column_name = 'household_id'
-    ) THEN
-        ALTER TABLE products ADD COLUMN household_id UUID;
-    END IF;
-END $$;
-
--- Criar índices
-CREATE INDEX IF NOT EXISTS idx_products_household_id ON products(household_id);
+-- Criar índices (sem household_id por enquanto)
 CREATE INDEX IF NOT EXISTS idx_products_storage_location_id ON products(storage_location_id);
 CREATE INDEX IF NOT EXISTS idx_products_barcode ON products(barcode);
 CREATE INDEX IF NOT EXISTS idx_products_user_id ON products(user_id);
