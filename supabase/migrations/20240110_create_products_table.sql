@@ -2,7 +2,6 @@
 CREATE TABLE IF NOT EXISTS products (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID,
-  household_id UUID,
   storage_location_id UUID,
   name TEXT NOT NULL,
   brand TEXT,
