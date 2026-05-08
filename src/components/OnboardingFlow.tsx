@@ -68,6 +68,8 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete
           completed_steps: completedSteps,
           is_completed: isCompleted,
           completed_at: isCompleted ? new Date().toISOString() : null
+        }, {
+          onConflict: 'user_id'
         });
 
       if (isCompleted) {
@@ -142,13 +144,12 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete
           .insert({
             household_id: household.id,
             name: locationName,
-            type: locationTypes[locationName as keyof typeof locationTypes] || 'other',
-            description: `Local principal para ${locationName.toLowerCase()}`
+            type: locationTypes[locationName as keyof typeof locationTypes] || 'other'
           });
       }
 
       await saveProgress(2, ['household_setup']);
-      setCurrentStep(3);
+      setCurrentStep(2);
     } catch (error) {
       console.error('Erro ao criar household:', error);
     } finally {
