@@ -228,7 +228,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ user, onComplete
       }
 
       await saveProgress(4, ['household_setup', 'first_products']);
-      setCurrentStep(5);
+      setCurrentStep(4);
     } catch (error) {
       console.error('Erro ao adicionar produtos:', error);
     } finally {
