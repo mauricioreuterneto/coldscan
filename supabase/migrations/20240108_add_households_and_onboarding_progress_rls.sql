@@ -22,7 +22,15 @@ CREATE POLICY "Usuários podem atualizar storage_locations" ON storage_locations
 );
 
 -- Add unique constraint to onboarding_progress for upsert to work
-ALTER TABLE onboarding_progress ADD CONSTRAINT IF NOT EXISTS onboarding_progress_user_id_key UNIQUE (user_id);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint 
+        WHERE conname = 'onboarding_progress_user_id_key'
+    ) THEN
+        ALTER TABLE onboarding_progress ADD CONSTRAINT onboarding_progress_user_id_key UNIQUE (user_id);
+    END IF;
+END $$;
 
 -- Enable RLS and add policies for households table
 ALTER TABLE households ENABLE ROW LEVEL SECURITY;
