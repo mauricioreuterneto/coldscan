@@ -71,7 +71,6 @@ CREATE TABLE IF NOT EXISTS onboarding_progress (
 CREATE INDEX IF NOT EXISTS idx_profiles_household_id ON profiles(household_id);
 CREATE INDEX IF NOT EXISTS idx_households_user_id ON households(user_id);
 CREATE INDEX IF NOT EXISTS idx_storage_locations_household_id ON storage_locations(household_id);
-CREATE INDEX IF NOT EXISTS idx_products_household_id ON products(household_id);
 CREATE INDEX IF NOT EXISTS idx_products_storage_location_id ON products(storage_location_id);
 CREATE INDEX IF NOT EXISTS idx_products_user_id ON products(user_id);
 CREATE INDEX IF NOT EXISTS idx_onboarding_progress_user_id ON onboarding_progress(user_id);
