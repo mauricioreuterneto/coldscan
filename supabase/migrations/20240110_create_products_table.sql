@@ -20,10 +20,10 @@ CREATE TABLE IF NOT EXISTS products (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Criar índices (sem household_id por enquanto)
-CREATE INDEX IF NOT EXISTS idx_products_storage_location_id ON products(storage_location_id);
-CREATE INDEX IF NOT EXISTS idx_products_barcode ON products(barcode);
-CREATE INDEX IF NOT EXISTS idx_products_user_id ON products(user_id);
+-- Criar índices (removidos por enquanto devido a conflitos com tabela existente)
+-- CREATE INDEX IF NOT EXISTS idx_products_storage_location_id ON products(storage_location_id);
+-- CREATE INDEX IF NOT EXISTS idx_products_barcode ON products(barcode);
+-- CREATE INDEX IF NOT EXISTS idx_products_user_id ON products(user_id);
 
 -- Habilitar RLS
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
