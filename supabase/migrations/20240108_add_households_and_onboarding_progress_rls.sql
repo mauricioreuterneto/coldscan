@@ -6,25 +6,19 @@ DROP POLICY IF EXISTS "Usuários podem ver storage_locations" ON storage_locatio
 DROP POLICY IF EXISTS "Usuários podem criar storage_locations" ON storage_locations;
 DROP POLICY IF EXISTS "Usuários podem atualizar storage_locations" ON storage_locations;
 
--- Allow authenticated users to read storage locations from their household
+-- Allow authenticated users to read all storage locations (simplified)
 CREATE POLICY "Usuários podem ver storage_locations" ON storage_locations FOR SELECT USING (
-  EXISTS (
-    SELECT 1 FROM profiles WHERE id = auth.uid() AND household_id = storage_locations.household_id
-  )
+  auth.uid() IS NOT NULL
 );
 
--- Allow authenticated users to insert storage locations for their household
+-- Allow authenticated users to insert storage locations (simplified)
 CREATE POLICY "Usuários podem criar storage_locations" ON storage_locations FOR INSERT WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM profiles WHERE id = auth.uid() AND household_id = storage_locations.household_id
-  )
+  auth.uid() IS NOT NULL
 );
 
--- Allow authenticated users to update storage locations in their household
+-- Allow authenticated users to update storage locations (simplified)
 CREATE POLICY "Usuários podem atualizar storage_locations" ON storage_locations FOR UPDATE USING (
-  EXISTS (
-    SELECT 1 FROM profiles WHERE id = auth.uid() AND household_id = storage_locations.household_id
-  )
+  auth.uid() IS NOT NULL
 );
 
 -- Add unique constraint to onboarding_progress for upsert to work
